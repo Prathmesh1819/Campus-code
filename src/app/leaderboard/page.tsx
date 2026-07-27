@@ -36,45 +36,7 @@ export default function LeaderboardPage() {
       const data = await res.json();
       if (data.rankings) setRankings(data.rankings);
     } catch {
-      // Fallback mock data
-      setRankings([
-        {
-          id: "student-1",
-          name: "Aarav Sharma",
-          className: "Final Year CSE",
-          branch: "Computer Science & Engineering",
-          avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80",
-          xp: 2850,
-          level: 12,
-          streakDays: 14,
-          rank: 1,
-          rankChange: 0,
-        },
-        {
-          id: "student-2",
-          name: "Ananya Roy",
-          className: "Third Year IT",
-          branch: "Information Technology",
-          avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&auto=format&fit=crop&q=80",
-          xp: 2210,
-          level: 10,
-          streakDays: 9,
-          rank: 2,
-          rankChange: 1,
-        },
-        {
-          id: "student-3",
-          name: "Rohan Verma",
-          className: "Second Year ECE",
-          branch: "Electronics & Communication",
-          avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80",
-          xp: 1890,
-          level: 8,
-          streakDays: 5,
-          rank: 3,
-          rankChange: -1,
-        },
-      ]);
+      setRankings([]);
     } finally {
       setLoading(false);
     }
