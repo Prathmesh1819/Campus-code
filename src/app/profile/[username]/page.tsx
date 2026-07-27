@@ -125,23 +125,47 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
     document.body.removeChild(link);
   };
 
-  // Generate 52 weeks x 7 days GitHub matrix
-  const weeks = Array.from({ length: 52 }, (_, weekIndex) => {
-    return Array.from({ length: 7 }, (_, dayIndex) => {
-      const globalIndex = weekIndex * 7 + dayIndex;
-      // Real submission check or simulated distribution
-      const hasRealSubmission = globalIndex === 360 && submissions.length > 0;
-      const simulatedCount = hasRealSubmission ? 3 : (globalIndex * 13 + dayIndex * 5) % 9 === 0 ? ((globalIndex % 3) + 1) : 0;
-      return {
-        count: simulatedCount,
-        dayIndex,
-        weekIndex,
-      };
+  // Real-Time 365 Days Date Matrix & Submission Grouping
+  const generateRealCalendarData = () => {
+    const countsByDate: Record<string, number> = {};
+    submissions.forEach((sub) => {
+      if (sub.createdAt) {
+        const dStr = new Date(sub.createdAt).toISOString().split("T")[0];
+        countsByDate[dStr] = (countsByDate[dStr] || 0) + 1;
+      }
     });
-  });
 
+    const today = new Date();
+    const daysList: { dateStr: string; formattedDate: string; count: number }[] = [];
+
+    // Generate 364 days backwards from today
+    for (let i = 363; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+
+      const dateStr = d.toISOString().split("T")[0];
+      const formattedDate = d.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+
+      const count = countsByDate[dateStr] || 0;
+      daysList.push({ dateStr, formattedDate, count });
+    }
+
+    const weeksMatrix: { dateStr: string; formattedDate: string; count: number }[][] = [];
+    for (let w = 0; w < 52; w++) {
+      const week = daysList.slice(w * 7, (w + 1) * 7);
+      weeksMatrix.push(week);
+    }
+
+    return weeksMatrix;
+  };
+
+  const weeksMatrix = generateRealCalendarData();
   const displayUser = profileUser || currentUser;
-  const totalContributions = submissions.length > 0 ? submissions.length + 56 : 57;
+  const totalContributions = submissions.length;
 
   return (
     <div className="min-h-screen flex flex-col bg-[#070913]">
@@ -220,11 +244,12 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
             </div>
           </div>
 
-          {/* GitHub-Style Month-Wise Contribution Heatmap Calendar */}
+          {/* GitHub-Style Month-Wise Real-Time Contribution Heatmap */}
           <div className="rounded-3xl glass-card border border-slate-800 p-6 space-y-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <h3 className="text-lg font-black text-white tracking-tight">
-                {totalContributions} contributions in the last year
+              <h3 className="text-lg font-black text-white tracking-tight flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-purple-400" />
+                <span>{totalContributions} {totalContributions === 1 ? "contribution" : "contributions"} in the last year</span>
               </h3>
 
               {/* Year Selectors */}
@@ -272,17 +297,21 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
 
                 {/* 52-Week Columns */}
                 <div className="flex-1 grid grid-flow-col grid-cols-52 gap-1">
-                  {weeks.map((week, wIdx) => (
+                  {weeksMatrix.map((week, wIdx) => (
                     <div key={wIdx} className="flex flex-col gap-1">
                       {week.map((day, dIdx) => (
                         <div
                           key={dIdx}
-                          title={`Day ${wIdx * 7 + dIdx + 1}: ${day.count} contributions`}
+                          title={
+                            day.count > 0
+                              ? `${day.count} ${day.count === 1 ? "submission" : "submissions"} on ${day.formattedDate}`
+                              : `No submissions on ${day.formattedDate}`
+                          }
                           className={`w-3 h-3 rounded-[3px] transition-all hover:scale-125 cursor-pointer ${
                             day.count === 0
                               ? "bg-slate-900/80 border border-slate-800/60"
                               : day.count === 1
-                              ? "bg-purple-900/60 border border-purple-700/50"
+                              ? "bg-purple-900/80 border border-purple-700/60"
                               : day.count === 2
                               ? "bg-purple-600 border border-purple-500 shadow-glow"
                               : "bg-cyan-400 border border-cyan-300 shadow-glow-cyan"
@@ -301,7 +330,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                 <div className="flex items-center gap-1.5 text-xs">
                   <span className="text-gray-500 text-[10px]">Less</span>
                   <span className="w-3 h-3 rounded-[3px] bg-slate-900/80 border border-slate-800/60" />
-                  <span className="w-3 h-3 rounded-[3px] bg-purple-900/60 border border-purple-700/50" />
+                  <span className="w-3 h-3 rounded-[3px] bg-purple-900/80 border border-purple-700/60" />
                   <span className="w-3 h-3 rounded-[3px] bg-purple-600" />
                   <span className="w-3 h-3 rounded-[3px] bg-cyan-400 shadow-glow-cyan" />
                   <span className="text-gray-500 text-[10px]">More</span>
