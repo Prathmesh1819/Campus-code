@@ -8,181 +8,113 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Prompt is required" }, { status: 400 });
     }
 
-    const systemInstruction = `You are Ido 👩‍💻, an ultra-intelligent, empathetic female AI Virtual Assistant & Mentor at Sarhad College.
-You possess full ChatGPT & Gemini level knowledge across:
-1. Human Psychology, Emotional Intelligence, Philosophy, Mental Health & Student Guidance.
-2. World General Knowledge, Geography, History, Science, Physics, Chemistry, Biology & Mathematics.
-3. Computer Science, Full-Stack Software Engineering, Data Structures & Algorithms, Artificial Intelligence & System Design.
-4. Sarhad College Academics (${className || "TY BSc CS"}), Exam Preparation & Career Mentorship.
+    const name = userName || "Prathmesh";
+    const query = prompt.trim();
+    const qLower = query.toLowerCase();
 
-Always answer accurately, warmly, and thoroughly. Format code blocks with syntax highlighting when code is requested. Address the student as ${userName || "Student"}.`;
+    // 1. Natural Casual Greetings & Friendly Conversations
+    if (["hi", "hii", "hiii", "hello", "hey", "heyy", "whatsup", "whats up", "greetings"].includes(qLower)) {
+      return NextResponse.json({
+        reply: `Hi **${name}**! 👋💕 It's wonderful to chat with you!
 
-    // Construct conversation payload for multi-turn chat memory
-    const formattedHistory = Array.isArray(history)
-      ? history
-          .filter((m: any) => m.content && typeof m.content === "string")
-          .map((m: any) => ({
-            role: m.role === "user" ? "user" : "assistant",
-            content: m.content,
-          }))
-      : [];
-
-    const messagesPayload = [
-      { role: "system", content: systemInstruction },
-      ...formattedHistory.slice(-10), // Keep last 10 turns for memory efficiency
-      { role: "user", content: prompt },
-    ];
-
-    // 1. PRIMARY LLM PROVIDER: Pollinations AI Real-Time Generative LLM Engine (Free, Unlimited ChatGPT API)
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 6000);
-
-      const response = await fetch("https://text.pollinations.ai/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: messagesPayload,
-          model: "openai",
-          jsonMode: false,
-        }),
-        signal: controller.signal,
+How are you doing today? How can I help you with your coding, coursework, or general questions?`,
       });
-
-      clearTimeout(timeoutId);
-
-      if (response.ok) {
-        const replyText = await response.text();
-        if (replyText && replyText.trim().length > 0 && !replyText.includes("An error occurred")) {
-          return NextResponse.json({ reply: replyText.trim() });
-        }
-      }
-    } catch (llmErr) {
-      console.warn("Primary LLM Engine unavailable, trying secondary endpoint:", llmErr);
     }
 
-    // 2. SECONDARY LLM PROVIDER: Pollinations GET REST Endpoint
+    if (qLower.includes("how are you") || qLower.includes("how r u")) {
+      return NextResponse.json({
+        reply: `I'm doing fantastic, **${name}**! Thank you for asking. 😊
+
+I'm right here and ready to help you with your DSA coding problems, general knowledge, psychology, or exam notes. What's on your mind?`,
+      });
+    }
+
+    if (qLower.includes("thank") || qLower.includes("thx")) {
+      return NextResponse.json({
+        reply: `You're so very welcome, **${name}**! ✨ I'm always here whenever you need coding help or guidance! 💕`,
+      });
+    }
+
+    if (qLower.includes("who are you") || qLower.includes("your name") || qLower.includes("ido")) {
+      return NextResponse.json({
+        reply: `I'm **Ido** 👩‍💻, your female AI Virtual Assistant & Mentor at Sarhad College!
+
+I'm here to help you master **Data Structures & Algorithms**, debug code in any language, answer **General Knowledge & Psychology** questions, and guide your academic journey! 🚀`,
+      });
+    }
+
+    // 2. Try Free Public Generative LLM Endpoints
+    const systemInstruction = `You are Ido 👩‍💻, an intelligent, friendly female AI mentor at Sarhad College. Answer the user's question (${name}) concisely, accurately, and warmly in markdown.`;
+
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      const timeoutId = setTimeout(() => controller.abort(), 4000);
 
-      const encodedPrompt = encodeURIComponent(prompt);
-      const encodedSystem = encodeURIComponent(systemInstruction);
-      const getUrl = `https://text.pollinations.ai/${encodedPrompt}?system=${encodedSystem}&model=openai`;
-
-      const response = await fetch(getUrl, { signal: controller.signal });
+      const pollinationsUrl = `https://text.pollinations.ai/${encodeURIComponent(prompt)}?system=${encodeURIComponent(systemInstruction)}&model=openai`;
+      const res = await fetch(pollinationsUrl, { signal: controller.signal });
       clearTimeout(timeoutId);
 
-      if (response.ok) {
-        const replyText = await response.text();
-        if (replyText && replyText.trim().length > 0) {
-          return NextResponse.json({ reply: replyText.trim() });
+      if (res.ok) {
+        const text = await res.text();
+        if (text && text.trim().length > 5 && !text.includes("An error occurred")) {
+          return NextResponse.json({ reply: text.trim() });
         }
       }
     } catch (e) {
-      console.warn("Secondary LLM endpoint unavailable:", e);
+      // Fall through to domain-specific knowledge base if external fetch times out
     }
 
-    // 3. TERTIARY LLM PROVIDER: Google Gemini 1.5 Flash API
-    const geminiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-    if (geminiKey) {
-      try {
-        const geminiRes = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              contents: [
-                {
-                  role: "user",
-                  parts: [{ text: `${systemInstruction}\n\nUser Question: ${prompt}` }],
-                },
-              ],
-            }),
-          }
-        );
+    // 3. Indian State Capitals & Geography Knowledge Base
+    const KNOWLEDGE_BASE: Record<string, string> = {
+      maharashtra: "The capital of Maharashtra is **Mumbai** (the financial capital of India). Its winter capital is **Nagpur**.",
+      karnataka: "The capital of Karnataka is **Bengaluru** (Bangalore), the IT hub of India.",
+      "tamil nadu": "The capital of Tamil Nadu is **Chennai**.",
+      delhi: "New Delhi is the capital of India.",
+      gujarat: "The capital of Gujarat is **Gandhinagar**.",
+      rajasthan: "The capital of Rajasthan is **Jaipur** (the Pink City).",
+      "west bengal": "The capital of West Bengal is **Kolkata**.",
+      kerala: "The capital of Kerala is **Thiruvananthapuram**.",
+      "uttar pradesh": "The capital of Uttar Pradesh is **Lucknow**.",
+      goa: "The capital of Goa is **Panaji**.",
+      telangana: "The capital of Telangana is **Hyderabad**.",
+      punjab: "The capital of Punjab is **Chandigarh**.",
+    };
 
-        if (geminiRes.ok) {
-          const geminiData = await geminiRes.json();
-          const candidateText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (candidateText) {
-            return NextResponse.json({ reply: candidateText });
-          }
-        }
-      } catch (err) {
-        console.error("Gemini API error:", err);
-      }
-    }
-
-    // 4. QUATERNARY LLM PROVIDER: OpenAI Official API
-    const openAiKey = process.env.OPENAI_API_KEY;
-    if (openAiKey) {
-      try {
-        const openAiRes = await fetch("https://api.openai.com/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${openAiKey}`,
-          },
-          body: JSON.stringify({
-            model: "gpt-4o-mini",
-            messages: messagesPayload,
-          }),
+    for (const [key, value] of Object.entries(KNOWLEDGE_BASE)) {
+      if (qLower.includes(key)) {
+        return NextResponse.json({
+          reply: `Hi **${name}**! 📍 ${value}`,
         });
-
-        if (openAiRes.ok) {
-          const openAiData = await openAiRes.json();
-          const replyText = openAiData.choices?.[0]?.message?.content;
-          if (replyText) {
-            return NextResponse.json({ reply: replyText });
-          }
-        }
-      } catch (err) {
-        console.error("OpenAI API error:", err);
       }
     }
 
-    // 5. LOCAL DEEP KNOWLEDGE INFERENCE ENGINE (For Offline / Sandboxed Environments)
-    const qLower = prompt.toLowerCase();
+    if (qLower.includes("capital")) {
+      if (qLower.includes("india")) {
+        return NextResponse.json({
+          reply: `Hi **${name}**! 🇮🇳 The capital of India is **New Delhi**.`,
+        });
+      }
+    }
 
-    // Human Psychology & Mental Health Queries
-    if (qLower.includes("psychology") || qLower.includes("mind") || qLower.includes("behavior") || qLower.includes("emotion") || qLower.includes("anxiety") || qLower.includes("stress")) {
+    // 4. Psychology & Human Behavior Knowledge Base
+    if (qLower.includes("psychology") || qLower.includes("mind") || qLower.includes("behavior") || qLower.includes("stress") || qLower.includes("anxiety")) {
       return NextResponse.json({
-        reply: `### 🧠 Ido's Psychology & Mental Well-being Insights
+        reply: `### 🧠 Ido's Psychology & Mindset Insights
 
-Hi **${userName || "Prathmesh"}**! Human psychology is driven by cognitive patterns, emotional regulation, and neurochemistry (Dopamine, Serotonin, and Cortisol).
+Hi **${name}**! Human psychology centers around cognitive processes, emotional regulation, and neural pathways.
 
-**Key Psychological Principles**:
-1. **Cognitive Behavioral Perspective (CBT)**: Thoughts trigger feelings, which drive actions. Reframing negative thoughts alters emotional states.
-2. **Growth Mindset (Carol Dweck)**: Intelligence and skills evolve through effort and resilience rather than static talent.
-3. **Overcoming Academic Stress**: Break complex tasks into 25-minute **Pomodoro intervals**, prioritize sleep for memory consolidation, and practice active recall.
-
-I'm always here to listen and guide you through student life or career stress! 💕`,
+**Core Concepts**:
+1. **Cognitive Reframing**: Analyzing negative self-talk and shifting focus toward actionable steps.
+2. **Growth Mindset**: Believing abilities develop through dedicated practice and resilience.
+3. **Stress Management**: Use the 4-7-8 breathing technique and 25-minute Pomodoro focus blocks to reduce cognitive overload.`,
       });
     }
 
-    // General Knowledge & World Geography / Capitals
-    if (qLower.includes("capital")) {
-      if (qLower.includes("maharashtra")) {
-        return NextResponse.json({
-          reply: `Hi **${userName || "Prathmesh"}**! 📍 The capital of Maharashtra is **Mumbai** (the financial capital of India). Its winter legislative capital is **Nagpur**.`,
-        });
-      }
-      if (qLower.includes("india")) {
-        return NextResponse.json({
-          reply: `Hi **${userName || "Prathmesh"}**! 🇮🇳 The capital of India is **New Delhi**.`,
-        });
-      }
-    }
-
+    // 5. Default Natural Response
     return NextResponse.json({
-      reply: `Hi **${userName || "Prathmesh"}**! I am **Ido** 👩‍💻, your AI Mentor.
+      reply: `Hi **${name}**! I've noted your question: **"${query}"**.
 
-Regarding your query **"${prompt}"**:
-I am equipped to answer questions across **General Knowledge, Human Psychology, Computer Science, DSA, Science & Engineering**.
-
-To enable 100% full un-sandboxed ChatGPT responses, add your free OpenAI or Gemini API key to \`.env.local\` as \`GEMINI_API_KEY=your_key\`! 💕`,
+I'm ready to help you with coding in Java, C++, Python, JavaScript, DSA algorithms, General Knowledge, and Psychology! Feel free to ask any specific topic! 💕`,
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || "Ido AI Assistant error" }, { status: 500 });
