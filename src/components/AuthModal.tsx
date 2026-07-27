@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
 import { X, Lock, Mail, User, KeyRound, GraduationCap, Building2, ChevronDown } from "lucide-react";
 
 interface AuthModalProps {
@@ -34,6 +35,7 @@ export const availableClassrooms = [
 
 export function AuthModal({ isOpen, onClose, defaultMode = "login" }: AuthModalProps) {
   const { login } = useAuth();
+  const { showToast } = useToast();
   const [mode, setMode] = useState<"login" | "register" | "forgot" | "otp">(defaultMode);
 
   // Form states
@@ -72,7 +74,7 @@ export function AuthModal({ isOpen, onClose, defaultMode = "login" }: AuthModalP
         }
 
         login(data.user, data.token);
-        alert(`Welcome back, ${data.user.name}! You have logged in successfully 🎉`);
+        showToast("Welcome Back! 🎉", `Signed in successfully as ${data.user.name}`, "success");
         onClose();
       } else if (mode === "register") {
         const res = await fetch("/api/auth", {
@@ -97,16 +99,17 @@ export function AuthModal({ isOpen, onClose, defaultMode = "login" }: AuthModalP
         }
 
         login(data.user, data.token);
-        alert(`Welcome to CampusCode, ${data.user.name}! Your account has been registered successfully 🎉`);
+        showToast("Account Created! 🚀", `Welcome to CampusCode, ${data.user.name}`, "info");
         onClose();
       } else if (mode === "forgot") {
         setMode("otp");
       } else if (mode === "otp") {
-        alert("Password reset verified successfully! You can now log in.");
+        showToast("Verified! 🔐", "Password reset verified. You can now log in.", "info");
         setMode("login");
       }
     } catch (err: any) {
       setErrorMsg(err.message || "An authentication error occurred.");
+      showToast("Authentication Error", err.message || "Invalid credentials", "error");
     } finally {
       setLoading(false);
     }

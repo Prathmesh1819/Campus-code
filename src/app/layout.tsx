@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
+import { ToastProvider } from "@/context/ToastContext";
 import { AuthModal } from "@/components/AuthModal";
 
 export const metadata: Metadata = {
@@ -24,10 +25,12 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased animated-bg min-h-screen bg-[#070913] text-gray-100 selection:bg-purple-500 selection:text-white">
-        <AuthProvider>
-          {children}
-          <AuthModal />
-        </AuthProvider>
+        <ToastProvider>
+          <AuthProvider>
+            {children}
+            <AuthModal />
+          </AuthProvider>
+        </ToastProvider>
       </body>
     </html>
   );

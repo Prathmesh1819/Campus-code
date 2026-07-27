@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { useToast } from "@/context/ToastContext";
 
 export interface User {
   id: string;
@@ -43,6 +44,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
+  const { showToast } = useToast();
 
   useEffect(() => {
     const savedUser = localStorage.getItem("campuscode_user");
@@ -94,12 +96,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const logout = () => {
-    alert("You have signed out of your account successfully. Goodbye!");
+    showToast("Signed Out 👋", "You have been logged out of CampusCode.", "logout");
     setUser(null);
     setToken(null);
     localStorage.removeItem("campuscode_user");
     localStorage.removeItem("campuscode_token");
-    window.location.href = "/";
+    setTimeout(() => {
+      window.location.href = "/";
+    }, 400);
   };
 
   const updateUserAvatar = (newAvatarUrl: string) => {
@@ -129,6 +133,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setToken(data.token || "token");
         localStorage.setItem("campuscode_user", JSON.stringify(data.user));
         localStorage.setItem("campuscode_token", data.token || "token");
+        showToast("Role Switched 🛡️", `Active account role: ${role}`, "info");
       }
     } catch {
       // fallback
