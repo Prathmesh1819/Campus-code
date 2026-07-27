@@ -117,7 +117,7 @@ export default function HomePage() {
               </button>
 
               {profileDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-64 bg-[#0a0c1a] border border-purple-500/40 rounded-3xl p-2.5 shadow-2xl space-y-1.5 z-[100] animate-in fade-in slide-in-from-top-2 text-left">
+                <div className="absolute right-0 mt-2 w-64 profile-popover bg-[#0a0c1a] border border-purple-500/40 rounded-3xl p-2.5 shadow-2xl space-y-1.5 z-[100] animate-in fade-in slide-in-from-top-2 text-left">
                   {/* User Info Header */}
                   <div className="p-3 bg-slate-950 rounded-2xl border border-slate-800 space-y-1">
                     <p className="text-xs font-black text-white truncate">{user?.name}</p>

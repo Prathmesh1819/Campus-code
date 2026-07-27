@@ -52,9 +52,17 @@ body {
 
 html.light body,
 html.light .bg-\[\#070913\],
-html.light .bg-\[\#0b0f19\] {
+html.light .bg-\[\#0b0f19\],
+html.light .bg-\[\#0a0c1a\],
+html.light .bg-\[\#0c0a1a\] {
   background-color: #f8fafc !important;
   color: #0f172a !important;
+}
+
+html.light .profile-popover {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.12) !important;
 }
 
 html.light main {
