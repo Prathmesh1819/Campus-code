@@ -41,6 +41,7 @@ export function AuthModal({ isOpen, onClose, defaultMode = "login" }: AuthModalP
   // Form states
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [name, setName] = useState("");
   const [role, setRole] = useState<"STUDENT" | "TEACHER">("STUDENT");
   const [rollNumber, setRollNumber] = useState("");
@@ -49,7 +50,7 @@ export function AuthModal({ isOpen, onClose, defaultMode = "login" }: AuthModalP
   const [academicYear, setAcademicYear] = useState("2025-26");
 
   // OTP State
-  const [otp, setOtp] = useState(["", "", "", ""]);
+  const [otp, setOtp] = useState(["1", "2", "3", "4"]);
   const [errorMsg, setErrorMsg] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -102,14 +103,46 @@ export function AuthModal({ isOpen, onClose, defaultMode = "login" }: AuthModalP
         showToast("Account Created! 🚀", `Welcome to CampusCode, ${data.user.name}`, "info");
         onClose();
       } else if (mode === "forgot") {
+        const res = await fetch("/api/auth", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "forgot_password", email }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || "Email not registered.");
+        }
+
+        const otpArray = (data.otp || "1234").split("");
+        setOtp(otpArray);
+        showToast("OTP Generated! 🔑", `Your 4-digit OTP is: ${data.otp}. Code entered on screen.`, "info");
         setMode("otp");
       } else if (mode === "otp") {
-        showToast("Verified! 🔐", "Password reset verified. You can now log in.", "info");
-        setMode("login");
+        const otpCodeStr = otp.join("");
+        const res = await fetch("/api/auth", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "verify_otp",
+            email,
+            otpCode: otpCodeStr,
+            newPassword: newPassword || "password123",
+          }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || "OTP verification failed.");
+        }
+
+        login(data.user, data.token);
+        showToast("Password Reset Successful! 🎉", "Your password has been updated and you are now logged in.", "success");
+        onClose();
       }
     } catch (err: any) {
       setErrorMsg(err.message || "An authentication error occurred.");
-      showToast("Authentication Error", err.message || "Invalid credentials", "error");
+      showToast("Auth Notice", err.message || "Invalid credentials", "error");
     } finally {
       setLoading(false);
     }
@@ -157,8 +190,8 @@ export function AuthModal({ isOpen, onClose, defaultMode = "login" }: AuthModalP
           <p className="text-xs text-gray-400">
             {mode === "login" && "Sign in to access your coding dashboard, leaderboards & projects"}
             {mode === "register" && "Select your Stream & Virtual Classroom for batch registration"}
-            {mode === "forgot" && "Enter your college email to receive password reset OTP"}
-            {mode === "otp" && "We sent a 4-digit code to your email address"}
+            {mode === "forgot" && "Enter your registered college email to generate OTP code"}
+            {mode === "otp" && "Verification code generated! Confirm OTP and set your new password"}
           </p>
         </div>
 
@@ -220,7 +253,7 @@ export function AuthModal({ isOpen, onClose, defaultMode = "login" }: AuthModalP
                     <label className="font-bold text-gray-300 block mb-1">Roll Number</label>
                     <input
                       type="text"
-                      placeholder="e.g. 2024-BSC-001"
+                      placeholder="e.g. 2025-BSC-001"
                       value={rollNumber}
                       onChange={(e) => setRollNumber(e.target.value)}
                       className="w-full bg-slate-900 border border-slate-800 focus:border-purple-500 rounded-xl py-2.5 px-3 text-white focus:outline-none"
@@ -330,17 +363,37 @@ export function AuthModal({ isOpen, onClose, defaultMode = "login" }: AuthModalP
           )}
 
           {mode === "otp" && (
-            <div className="flex items-center justify-center gap-3 py-2">
-              {otp.map((digit, i) => (
-                <input
-                  key={i}
-                  type="text"
-                  maxLength={1}
-                  value={digit}
-                  onChange={(e) => handleOtpChange(i, e.target.value)}
-                  className="w-12 h-12 text-center text-lg font-black bg-slate-900 border border-slate-800 focus:border-purple-500 rounded-xl text-white focus:outline-none"
-                />
-              ))}
+            <div className="space-y-3">
+              <div>
+                <label className="font-bold text-gray-300 block mb-1 text-center">Enter 4-Digit OTP Code</label>
+                <div className="flex items-center justify-center gap-3 py-1">
+                  {otp.map((digit, i) => (
+                    <input
+                      key={i}
+                      type="text"
+                      maxLength={1}
+                      value={digit}
+                      onChange={(e) => handleOtpChange(i, e.target.value)}
+                      className="w-12 h-12 text-center text-lg font-black bg-slate-900 border border-purple-500/50 rounded-xl text-white focus:outline-none shadow-glow"
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="font-bold text-gray-300 block mb-1">Set New Password</label>
+                <div className="relative">
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <input
+                    type="password"
+                    required
+                    placeholder="Enter new password (e.g. password123)"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-800 focus:border-purple-500 rounded-xl py-2.5 pl-10 pr-3 text-white focus:outline-none"
+                  />
+                </div>
+              </div>
             </div>
           )}
 
@@ -366,9 +419,9 @@ export function AuthModal({ isOpen, onClose, defaultMode = "login" }: AuthModalP
               ) : mode === "register" ? (
                 "Complete Registration"
               ) : mode === "forgot" ? (
-                "Send OTP Code"
+                "Generate & Send OTP"
               ) : (
-                "Verify OTP"
+                "Verify OTP & Update Password"
               )}
             </button>
           </div>
@@ -389,7 +442,7 @@ export function AuthModal({ isOpen, onClose, defaultMode = "login" }: AuthModalP
             </p>
           ) : (
             <p>
-              Already registered?{" "}
+              Remember password?{" "}
               <button
                 type="button"
                 onClick={() => setMode("login")}

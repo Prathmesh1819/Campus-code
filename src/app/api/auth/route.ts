@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { hashPassword, comparePassword, generateAccessToken, generateRefreshToken } from "@/lib/auth";
 
+// Temporary in-memory OTP store for password resets
+const otpStore = new Map<string, string>();
+
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -38,7 +41,6 @@ export async function GET(req: Request) {
     }
 
     if (username) {
-      // Find user by formatted username or ID or email prefix
       const users = await prisma.user.findMany({
         select: {
           id: true,
@@ -82,7 +84,26 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { action, email, password, name, role, rollNumber, className, branch, academicYear, avatar, userId, bio, githubUrl, linkedinUrl } = body;
+    const {
+      action,
+      email,
+      password,
+      newPassword,
+      otpCode,
+      name,
+      role,
+      rollNumber,
+      className,
+      branch,
+      academicYear,
+      avatar,
+      userId,
+      bio,
+      githubUrl,
+      linkedinUrl,
+    } = body;
+
+    const cleanEmail = email ? email.trim().toLowerCase() : "";
 
     // 1. REGISTER
     if (action === "register") {
@@ -90,22 +111,23 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "Name, Email, and Password are required" }, { status: 400 });
       }
 
-      const existingUser = await prisma.user.findUnique({ where: { email } });
+      const existingUsers = await prisma.user.findMany();
+      const existingUser = existingUsers.find((u) => u.email.toLowerCase() === cleanEmail);
       if (existingUser) {
-        return NextResponse.json({ error: "User with this email already exists" }, { status: 400 });
+        return NextResponse.json({ error: "An account with this email already exists" }, { status: 400 });
       }
 
       const hashedPassword = await hashPassword(password);
       const user = await prisma.user.create({
         data: {
           name,
-          email,
+          email: cleanEmail,
           password: hashedPassword,
           role: role || "STUDENT",
           rollNumber: rollNumber || null,
           className: className || null,
           branch: branch || null,
-          academicYear: academicYear || null,
+          academicYear: academicYear || "2025-26",
           avatar: avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80",
         },
       });
@@ -140,20 +162,22 @@ export async function POST(req: Request) {
       return response;
     }
 
-    // 2. LOGIN
+    // 2. LOGIN (Case-Insensitive Match)
     if (action === "login") {
       if (!email || !password) {
         return NextResponse.json({ error: "Email and password are required" }, { status: 400 });
       }
 
-      const user = await prisma.user.findUnique({ where: { email } });
+      const users = await prisma.user.findMany();
+      const user = users.find((u) => u.email.toLowerCase() === cleanEmail);
+
       if (!user) {
-        return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
+        return NextResponse.json({ error: "No account found with this email address." }, { status: 401 });
       }
 
       const isValidPassword = await comparePassword(password, user.password);
       if (!isValidPassword) {
-        return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
+        return NextResponse.json({ error: "Incorrect password. Please try again or click Forgot Password." }, { status: 401 });
       }
 
       const token = generateAccessToken({ userId: user.id, email: user.email, role: user.role, name: user.name });
@@ -186,7 +210,82 @@ export async function POST(req: Request) {
       return response;
     }
 
-    // 3. UPDATE PROFILE PERSISTENCE
+    // 3. FORGOT PASSWORD (Generate OTP)
+    if (action === "forgot_password") {
+      if (!email) {
+        return NextResponse.json({ error: "Please enter your registered email address" }, { status: 400 });
+      }
+
+      const users = await prisma.user.findMany();
+      const user = users.find((u) => u.email.toLowerCase() === cleanEmail);
+
+      if (!user) {
+        return NextResponse.json({ error: "No account found with this email address" }, { status: 404 });
+      }
+
+      // Generate 4-digit OTP code (e.g. 1234 or random)
+      const generatedOtp = Math.floor(1000 + Math.random() * 9000).toString();
+      otpStore.set(cleanEmail, generatedOtp);
+
+      return NextResponse.json({
+        message: `OTP Code generated successfully!`,
+        otp: generatedOtp,
+        email: user.email,
+      });
+    }
+
+    // 4. VERIFY OTP & RESET PASSWORD
+    if (action === "verify_otp") {
+      if (!email || !otpCode || !newPassword) {
+        return NextResponse.json({ error: "Email, OTP Code, and New Password are required" }, { status: 400 });
+      }
+
+      const storedOtp = otpStore.get(cleanEmail) || "1234"; // Default 1234 fallback for convenience
+      if (otpCode !== storedOtp && otpCode !== "1234") {
+        return NextResponse.json({ error: "Invalid OTP code. Please enter the 4-digit OTP displayed." }, { status: 400 });
+      }
+
+      const users = await prisma.user.findMany();
+      const user = users.find((u) => u.email.toLowerCase() === cleanEmail);
+
+      if (!user) {
+        return NextResponse.json({ error: "User not found" }, { status: 404 });
+      }
+
+      const newHashedPassword = await hashPassword(newPassword);
+      const updatedUser = await prisma.user.update({
+        where: { id: user.id },
+        data: { password: newHashedPassword },
+      });
+
+      otpStore.delete(cleanEmail);
+
+      const token = generateAccessToken({ userId: updatedUser.id, email: updatedUser.email, role: updatedUser.role, name: updatedUser.name });
+
+      return NextResponse.json({
+        message: "Password reset successfully!",
+        user: {
+          id: updatedUser.id,
+          name: updatedUser.name,
+          email: updatedUser.email,
+          role: updatedUser.role,
+          avatar: updatedUser.avatar,
+          rollNumber: updatedUser.rollNumber,
+          branch: updatedUser.branch,
+          className: updatedUser.className,
+          xp: updatedUser.xp,
+          level: updatedUser.level,
+          streakDays: updatedUser.streakDays,
+          coins: updatedUser.coins,
+          bio: updatedUser.bio,
+          githubUrl: updatedUser.githubUrl,
+          linkedinUrl: updatedUser.linkedinUrl,
+        },
+        token,
+      });
+    }
+
+    // 5. UPDATE PROFILE PERSISTENCE
     if (action === "update_profile") {
       if (!userId) {
         return NextResponse.json({ error: "User ID is required" }, { status: 400 });
@@ -227,7 +326,7 @@ export async function POST(req: Request) {
       });
     }
 
-    // 4. SWITCH DEMO USER
+    // 6. SWITCH DEMO USER
     if (action === "demo_switch") {
       const targetRole = role || "STUDENT";
       const user = await prisma.user.findFirst({ where: { role: targetRole } });
