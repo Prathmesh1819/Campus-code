@@ -17,17 +17,24 @@ import {
   CheckCircle2,
   Terminal,
   Cpu,
-  Globe,
   Sun,
   Moon,
+  User,
+  Github,
+  Linkedin,
+  LogOut,
+  ChevronDown,
+  ExternalLink,
+  Settings,
 } from "lucide-react";
 
 const SARHAD_COLLEGE_LOGO =
   "https://play-lh.googleusercontent.com/wa7ffYAuxK3CPrBHmHPVXRgueD9m7kjWFNB0a4xaCHWqrzKdNumpq_mZN8iQb2bIowERDjYkBTOflnishysXpL8=w240-h480-rw";
 
 export default function HomePage() {
-  const { openAuthModal, closeAuthModal, isAuthModalOpen, authMode } = useAuth();
+  const { user, isAuthenticated, logout, openAuthModal, closeAuthModal, isAuthModalOpen, authMode } = useAuth();
   const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("campuscode_theme") as "dark" | "light" | null;
@@ -51,6 +58,8 @@ export default function HomePage() {
       document.documentElement.classList.remove("light");
     }
   };
+
+  const profileUsername = user?.name?.toLowerCase().replace(/\s+/g, "") || "aaravsharma";
 
   return (
     <div className="min-h-screen flex flex-col bg-[#070913] text-white selection:bg-purple-500 selection:text-white">
@@ -91,18 +100,117 @@ export default function HomePage() {
             )}
           </button>
 
-          <button
-            onClick={() => openAuthModal("login")}
-            className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-300 hover:text-white hover:bg-slate-800 transition-colors"
-          >
-            Sign In
-          </button>
-          <button
-            onClick={() => openAuthModal("register")}
-            className="px-5 py-2.5 rounded-xl text-xs font-bold text-white gradient-bg shadow-glow hover:opacity-95 transition-all"
-          >
-            Get Started Free
-          </button>
+          {isAuthenticated ? (
+            /* Logged In Profile Menu Component */
+            <div className="relative">
+              <button
+                onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                className="flex items-center gap-2.5 p-1.5 rounded-2xl border border-purple-500/40 bg-slate-900 hover:bg-slate-800 transition-all shadow-glow"
+              >
+                <img
+                  src={user?.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80"}
+                  alt={user?.name || "User Avatar"}
+                  className="w-8 h-8 rounded-xl object-cover ring-2 ring-purple-500/50"
+                />
+                <span className="text-xs font-bold text-white hidden sm:inline">{user?.name}</span>
+                <ChevronDown className="w-3.5 h-3.5 text-gray-400 pr-1" />
+              </button>
+
+              {profileDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-64 glass-card border border-purple-500/30 rounded-3xl p-2.5 shadow-2xl space-y-1.5 z-50 animate-in fade-in slide-in-from-top-2 text-left">
+                  {/* User Info Header */}
+                  <div className="p-3 bg-slate-950/80 rounded-2xl border border-slate-800 space-y-1">
+                    <p className="text-xs font-black text-white truncate">{user?.name}</p>
+                    <p className="text-[10px] text-purple-400 truncate font-mono">{user?.email}</p>
+                    <div className="flex items-center justify-between text-[10px] text-gray-400 uppercase font-semibold pt-1 border-t border-slate-800/80">
+                      <span>Role: {user?.role}</span>
+                      <span>{user?.className || "TY BSc CS"}</span>
+                    </div>
+                  </div>
+
+                  {/* View My Profile */}
+                  <Link
+                    href={`/profile/${profileUsername}`}
+                    onClick={() => setProfileDropdownOpen(false)}
+                    className="flex items-center justify-between px-3 py-2.5 text-xs font-bold text-gray-200 hover:text-white hover:bg-purple-600/20 rounded-xl transition-all border border-transparent hover:border-purple-500/30"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <User className="w-4 h-4 text-purple-400" />
+                      <span>View My Profile</span>
+                    </div>
+                    <ChevronDown className="w-3.5 h-3.5 -rotate-90 text-gray-500" />
+                  </Link>
+
+                  {/* GitHub Profile Link */}
+                  <a
+                    href="https://github.com"
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={() => setProfileDropdownOpen(false)}
+                    className="flex items-center justify-between px-3 py-2.5 text-xs font-bold text-gray-300 hover:text-white hover:bg-slate-800 rounded-xl transition-all"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Github className="w-4 h-4 text-gray-300" />
+                      <span>GitHub Profile</span>
+                    </div>
+                    <ExternalLink className="w-3 h-3 text-gray-500" />
+                  </a>
+
+                  {/* LinkedIn Profile Link */}
+                  <a
+                    href="https://linkedin.com"
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={() => setProfileDropdownOpen(false)}
+                    className="flex items-center justify-between px-3 py-2.5 text-xs font-bold text-gray-300 hover:text-white hover:bg-slate-800 rounded-xl transition-all"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Linkedin className="w-4 h-4 text-cyan-400" />
+                      <span>LinkedIn Profile</span>
+                    </div>
+                    <ExternalLink className="w-3 h-3 text-gray-500" />
+                  </a>
+
+                  {/* Settings */}
+                  <Link
+                    href="/settings"
+                    onClick={() => setProfileDropdownOpen(false)}
+                    className="flex items-center gap-2.5 px-3 py-2.5 text-xs font-bold text-gray-300 hover:text-white hover:bg-slate-800 rounded-xl transition-all"
+                  >
+                    <Settings className="w-4 h-4 text-cyan-400" />
+                    <span>Account Settings</span>
+                  </Link>
+
+                  {/* Sign Out / Log Out */}
+                  <button
+                    onClick={() => {
+                      setProfileDropdownOpen(false);
+                      logout();
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2.5 text-xs font-bold text-rose-400 hover:bg-rose-500/10 rounded-xl transition-all text-left border-t border-slate-800 mt-1"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Sign Out / Log Out</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <>
+              <button
+                onClick={() => openAuthModal("login")}
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-300 hover:text-white hover:bg-slate-800 transition-colors"
+              >
+                Sign In
+              </button>
+              <button
+                onClick={() => openAuthModal("register")}
+                className="px-5 py-2.5 rounded-xl text-xs font-bold text-white gradient-bg shadow-glow hover:opacity-95 transition-all"
+              >
+                Get Started Free
+              </button>
+            </>
+          )}
         </div>
       </header>
 
@@ -125,13 +233,24 @@ export default function HomePage() {
         </p>
 
         <div className="flex flex-col sm:flex-row items-center gap-4 mt-8 w-full sm:w-auto">
-          <button
-            onClick={() => openAuthModal("register")}
-            className="w-full sm:w-auto px-8 py-4 rounded-2xl text-sm font-bold text-white gradient-bg shadow-glow hover:scale-105 transition-all flex items-center justify-center gap-2"
-          >
-            <span>Join Your College Today</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
+          {isAuthenticated ? (
+            <Link
+              href="/dashboard"
+              className="w-full sm:w-auto px-8 py-4 rounded-2xl text-sm font-bold text-white gradient-bg shadow-glow hover:scale-105 transition-all flex items-center justify-center gap-2"
+            >
+              <span>Go to My Dashboard</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          ) : (
+            <button
+              onClick={() => openAuthModal("register")}
+              className="w-full sm:w-auto px-8 py-4 rounded-2xl text-sm font-bold text-white gradient-bg shadow-glow hover:scale-105 transition-all flex items-center justify-center gap-2"
+            >
+              <span>Join Your College Today</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          )}
+
           <Link
             href="/dashboard"
             className="w-full sm:w-auto px-8 py-4 rounded-2xl text-sm font-bold text-gray-300 bg-slate-900 border border-slate-800 hover:border-slate-700 transition-all flex items-center justify-center gap-2"
