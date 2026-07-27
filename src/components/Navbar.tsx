@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { AuthModal } from "@/components/AuthModal";
@@ -18,6 +18,8 @@ import {
   ShieldCheck,
   GraduationCap,
   Sparkles,
+  Sun,
+  Moon,
 } from "lucide-react";
 
 interface NavbarProps {
@@ -34,6 +36,30 @@ export function Navbar({ onToggleSidebar, collegeLogoUrl = DEFAULT_COLLEGE_LOGO 
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [logoError, setLogoError] = useState(false);
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("campuscode_theme") as "dark" | "light" | null;
+    if (savedTheme) {
+      setTheme(savedTheme);
+      if (savedTheme === "light") {
+        document.documentElement.classList.add("light");
+      } else {
+        document.documentElement.classList.remove("light");
+      }
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === "dark" ? "light" : "dark";
+    setTheme(nextTheme);
+    localStorage.setItem("campuscode_theme", nextTheme);
+    if (nextTheme === "light") {
+      document.documentElement.classList.add("light");
+    } else {
+      document.documentElement.classList.remove("light");
+    }
+  };
 
   const openAuth = (mode: "login" | "register") => {
     setAuthMode(mode);
@@ -94,6 +120,25 @@ export function Navbar({ onToggleSidebar, collegeLogoUrl = DEFAULT_COLLEGE_LOGO 
 
         {/* Action Controls & Profile Menu */}
         <div className="flex items-center gap-3">
+          {/* Light / Dark Mode Theme Toggle Button */}
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-2xl bg-slate-900 border border-slate-800 hover:border-purple-500/50 text-gray-300 hover:text-white transition-all shadow-sm flex items-center gap-1.5 text-xs font-bold"
+            title={`Switch to ${theme === "dark" ? "Light" : "Dark"} Mode`}
+          >
+            {theme === "dark" ? (
+              <>
+                <Sun className="w-4 h-4 text-amber-400" />
+                <span className="hidden sm:inline">Light Mode</span>
+              </>
+            ) : (
+              <>
+                <Moon className="w-4 h-4 text-purple-400" />
+                <span className="hidden sm:inline">Dark Mode</span>
+              </>
+            )}
+          </button>
+
           {isAuthenticated ? (
             <>
               {/* Gamification Stats (Streak & XP) */}

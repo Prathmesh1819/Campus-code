@@ -1,73 +1,110 @@
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
+@import "tailwindcss";
 
-:root {
-  color-scheme: dark;
+@layer base {
+  :root {
+    --bg-primary: #070913;
+    --text-primary: #ffffff;
+    --card-bg: rgba(15, 23, 42, 0.75);
+    --card-border: rgba(51, 65, 85, 0.6);
+    --header-bg: rgba(7, 9, 19, 0.85);
+  }
+
+  html.light {
+    --bg-primary: #f8fafc;
+    --text-primary: #0f172a;
+    --card-bg: rgba(255, 255, 255, 0.9);
+    --card-border: rgba(226, 232, 240, 0.9);
+    --header-bg: rgba(255, 255, 255, 0.85);
+  }
+
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
 }
 
-html,
-body {
-  background-color: #070913 !important;
-  color: #f3f4f6 !important;
-  min-height: 100vh;
-  margin: 0;
-  padding: 0;
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  overflow-x: hidden;
-}
-
-/* Glassmorphism Utilities */
+/* Glassmorphism Cards for Dark & Light Mode */
 .glass-card {
-  background: rgba(15, 23, 42, 0.75) !important;
+  background: var(--card-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  border: 1px solid var(--card-border);
 }
 
-.glass-card-hover {
-  transition: all 0.3s ease;
-}
-.glass-card-hover:hover {
-  background: rgba(30, 41, 59, 0.85) !important;
-  border-color: rgba(139, 92, 246, 0.4) !important;
-  transform: translateY(-2px);
-  box-shadow: 0 12px 40px 0 rgba(139, 92, 246, 0.25);
+html.light .glass-card {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
 }
 
-.glass-nav {
-  background: rgba(7, 9, 19, 0.9) !important;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+html.light .text-white {
+  color: #0f172a !important;
 }
 
-.gradient-text {
-  background: linear-gradient(135deg, #c084fc 0%, #60a5fa 50%, #22d3ee 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+html.light .text-gray-400 {
+  color: #475569 !important;
 }
 
+html.light .text-gray-300 {
+  color: #334155 !important;
+}
+
+html.light .bg-slate-950 {
+  background-color: #f1f5f9 !important;
+}
+
+html.light .bg-slate-900 {
+  background-color: #ffffff !important;
+}
+
+html.light .border-slate-800 {
+  border-color: #cbd5e1 !important;
+}
+
+html.light .glass-header {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid #e2e8f0;
+}
+
+html.light .glass-sidebar {
+  background: rgba(255, 255, 255, 0.95);
+  border-right: 1px solid #e2e8f0;
+}
+
+.glass-header {
+  background: var(--header-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.glass-sidebar {
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-right: 1px solid rgba(51, 65, 85, 0.5);
+}
+
+/* Neon Glow Accents */
+.shadow-glow {
+  box-shadow: 0 0 25px -5px rgba(139, 92, 246, 0.5);
+}
+
+.shadow-glow-cyan {
+  box-shadow: 0 0 25px -5px rgba(6, 182, 212, 0.5);
+}
+
+/* Electric Gradients */
 .gradient-bg {
   background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 50%, #06b6d4 100%);
 }
 
-.shadow-glow {
-  box-shadow: 0 0 30px -5px rgba(139, 92, 246, 0.5);
-}
-
-.shadow-glow-cyan {
-  box-shadow: 0 0 30px -5px rgba(6, 182, 212, 0.5);
-}
-
-.animated-bg {
-  background-color: #070913 !important;
-  background-image: 
-    radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.18), transparent 50%),
-    radial-gradient(circle at 100% 50%, rgba(59, 130, 246, 0.12), transparent 40%),
-    radial-gradient(circle at 0% 100%, rgba(6, 182, 212, 0.14), transparent 40%);
-  background-attachment: fixed;
+.gradient-text {
+  background: linear-gradient(135deg, #a78bfa 0%, #60a5fa 50%, #22d3ee 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 /* Custom Scrollbar */
@@ -75,13 +112,24 @@ body {
   width: 8px;
   height: 8px;
 }
+
 ::-webkit-scrollbar-track {
   background: #070913;
 }
+
+html.light ::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
 ::-webkit-scrollbar-thumb {
   background: #1e293b;
   border-radius: 4px;
 }
+
+html.light ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+}
+
 ::-webkit-scrollbar-thumb:hover {
   background: #334155;
 }
