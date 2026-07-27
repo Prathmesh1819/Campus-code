@@ -4,27 +4,27 @@ import React, { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import {
   Sparkles,
-  Bot,
   X,
   Send,
   Code2,
   Bug,
   Lightbulb,
   BookOpen,
-  ChevronDown,
-  Maximize2,
-  Minimize2,
   Trash2,
   Copy,
   Check,
+  Heart,
+  UserCheck,
 } from "lucide-react";
 
 interface Message {
   id: string;
-  sender: "user" | "ai";
+  sender: "user" | "ido";
   text: string;
   timestamp: string;
 }
+
+const IDO_AVATAR = "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop&q=80";
 
 export function AIAssistantWidget() {
   const { user } = useAuth();
@@ -32,8 +32,8 @@ export function AIAssistantWidget() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
-      sender: "ai",
-      text: `Hello ${user?.name || "Student"}! 👋 I am **Sarhad AI**, your 24/7 Virtual Tutor & Academic Guide.\n\nHow can I help you with your coding, DSA problems, or coursework today?`,
+      sender: "ido",
+      text: `Hello ${user?.name || "Student"}! 👋 I'm **Ido** 👩‍💻, your female AI Virtual Assistant & Coding Mentor at Sarhad College.\n\nHow can I help you with your coding, DSA problems, or coursework today?`,
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     },
   ]);
@@ -53,6 +53,7 @@ export function AIAssistantWidget() {
   }, [messages, isOpen]);
 
   const quickPrompts = [
+    { label: "👩‍💻 Who is Ido?", prompt: "Who are you and how can you help me?" },
     { label: "💡 Explain Two Sum DSA", prompt: "Explain the optimal Hash Map approach for Two Sum Target Pair" },
     { label: "🐛 Debug My Code", prompt: "How do I debug array index out of bounds error in C++?" },
     { label: "🚀 Web Project Ideas", prompt: "Suggest high impact web development project ideas for my resume" },
@@ -82,13 +83,14 @@ export function AIAssistantWidget() {
           prompt: query,
           userRole: user?.role || "STUDENT",
           className: user?.className || "TY BSc CS",
+          userName: user?.name || "Student",
         }),
       });
 
       const data = await res.json();
       const aiMsg: Message = {
         id: (Date.now() + 1).toString(),
-        sender: "ai",
+        sender: "ido",
         text: data.reply || "I am processing your query. Please ask again!",
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
@@ -97,8 +99,8 @@ export function AIAssistantWidget() {
     } catch (err) {
       const errorMsg: Message = {
         id: (Date.now() + 1).toString(),
-        sender: "ai",
-        text: "I encountered a momentary connection error. Please try asking again!",
+        sender: "ido",
+        text: "I encountered a connection error. Please try asking me again!",
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
       setMessages((prev) => [...prev, errorMsg]);
@@ -114,21 +116,17 @@ export function AIAssistantWidget() {
   };
 
   const renderFormattedText = (text: string) => {
-    // Simple markdown-style renderer for headers, bold, bullet points, and code blocks
     const lines = text.split("\n");
-    let inCodeBlock = false;
-    let codeContent = [];
 
     return lines.map((line, idx) => {
       if (line.startsWith("```")) {
-        inCodeBlock = !inCodeBlock;
         return null;
       }
 
       if (line.startsWith("### ")) {
         return (
           <h4 key={idx} className="text-sm font-black text-white mt-2 mb-1 flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-purple-400" /> {line.replace("### ", "")}
+            <Sparkles className="w-3.5 h-3.5 text-pink-400" /> {line.replace("### ", "")}
           </h4>
         );
       }
@@ -141,14 +139,13 @@ export function AIAssistantWidget() {
         );
       }
 
-      // Bold text formatting
       const parts = line.split(/(\*\*.*?\*\*)/g);
       return (
         <p key={idx} className="text-xs leading-relaxed my-1">
           {parts.map((part, pIdx) => {
             if (part.startsWith("**") && part.endsWith("**")) {
               return (
-                <strong key={pIdx} className="font-extrabold text-purple-300">
+                <strong key={pIdx} className="font-extrabold text-pink-300">
                   {part.slice(2, -2)}
                 </strong>
               );
@@ -166,35 +163,49 @@ export function AIAssistantWidget() {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-[999] p-3.5 rounded-3xl gradient-bg text-white shadow-glow hover:scale-110 transition-all flex items-center gap-2.5 group"
-          title="Open Sarhad AI Student Guide"
+          className="fixed bottom-6 right-6 z-[999] p-3 rounded-full bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-600 text-white shadow-glow hover:scale-110 transition-all flex items-center gap-3 group border-2 border-pink-400/40"
+          title="Open Ido - Female AI Student Guide"
         >
           <div className="relative">
-            <Bot className="w-6 h-6 text-white group-hover:rotate-12 transition-transform" />
-            <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-emerald-400 ring-2 ring-slate-950 animate-ping" />
-            <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-emerald-400 ring-2 ring-slate-950" />
+            <img
+              src={IDO_AVATAR}
+              alt="Ido AI Assistant"
+              className="w-10 h-10 rounded-full object-cover ring-2 ring-pink-400 shadow-lg group-hover:scale-105 transition-transform"
+            />
+            <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-400 ring-2 ring-slate-950 animate-ping" />
+            <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-400 ring-2 ring-slate-950" />
           </div>
-          <span className="text-xs font-black tracking-wide pr-1 hidden sm:inline">Sarhad AI Assistant</span>
+          <div className="flex flex-col text-left pr-2 hidden sm:flex">
+            <span className="text-xs font-black tracking-wide text-white flex items-center gap-1">
+              Ask Ido AI 👩‍💻
+            </span>
+            <span className="text-[10px] text-pink-200 font-semibold">Virtual Mentor</span>
+          </div>
         </button>
       )}
 
       {/* Floating Chat Modal Box */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 z-[999] w-full max-w-md h-[560px] glass-card border border-purple-500/40 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-6 duration-300 bg-[#080b18]">
+        <div className="fixed bottom-6 right-6 z-[999] w-full max-w-md h-[580px] glass-card border border-pink-500/40 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-6 duration-300 bg-[#0c0a1a]">
           {/* Top Header */}
           <div className="p-4 bg-slate-950/90 border-b border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-2xl gradient-bg flex items-center justify-center shadow-glow">
-                <Bot className="w-5 h-5 text-white" />
+              <div className="relative">
+                <img
+                  src={IDO_AVATAR}
+                  alt="Ido AI Assistant"
+                  className="w-10 h-10 rounded-2xl object-cover ring-2 ring-pink-400 shadow-glow"
+                />
+                <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-400 ring-2 ring-slate-950" />
               </div>
               <div>
                 <h3 className="text-xs font-black text-white flex items-center gap-1.5">
-                  <span>Sarhad AI Virtual Assistant</span>
-                  <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[9px] font-bold">
-                    ONLINE 🟢
+                  <span>Ido 👩‍💻</span>
+                  <span className="px-2 py-0.5 rounded-full bg-pink-500/20 text-pink-300 border border-pink-500/30 text-[9px] font-bold">
+                    FEMALE AI MENTOR 💖
                   </span>
                 </h3>
-                <p className="text-[10px] text-gray-400">24/7 Student Tutor & Coding Mentor</p>
+                <p className="text-[10px] text-gray-400">Sarhad College Virtual Guide & Coding Assistant</p>
               </div>
             </div>
 
@@ -226,16 +237,22 @@ export function AIAssistantWidget() {
                   className={`max-w-[88%] p-3.5 rounded-2xl relative shadow-md ${
                     m.sender === "user"
                       ? "gradient-bg text-white rounded-br-none shadow-glow"
-                      : "bg-slate-900/90 border border-slate-800 text-gray-200 rounded-bl-none"
+                      : "bg-slate-900/90 border border-pink-500/30 text-gray-200 rounded-bl-none"
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1 text-[10px] text-gray-400 font-semibold border-b border-white/10 pb-1">
                     <span className="flex items-center gap-1">
-                      {m.sender === "user" ? "You" : "🤖 Sarhad AI Guide"}
+                      {m.sender === "user" ? (
+                        user?.name || "You"
+                      ) : (
+                        <span className="text-pink-300 font-bold flex items-center gap-1">
+                          <Sparkles className="w-3 h-3 text-pink-400" /> Ido AI
+                        </span>
+                      )}
                     </span>
                     <div className="flex items-center gap-2">
                       <span>{m.timestamp}</span>
-                      {m.sender === "ai" && (
+                      {m.sender === "ido" && (
                         <button
                           onClick={() => handleCopyText(m.text, m.id)}
                           className="hover:text-white transition-colors"
@@ -247,16 +264,16 @@ export function AIAssistantWidget() {
                     </div>
                   </div>
 
-                  {m.sender === "ai" ? renderFormattedText(m.text) : <p className="text-xs">{m.text}</p>}
+                  {m.sender === "ido" ? renderFormattedText(m.text) : <p className="text-xs">{m.text}</p>}
                 </div>
               </div>
             ))}
 
             {loading && (
               <div className="flex items-start gap-2">
-                <div className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 text-xs text-purple-300 flex items-center gap-2 animate-pulse">
-                  <Sparkles className="w-4 h-4 text-purple-400 animate-spin" />
-                  <span>Sarhad AI is thinking...</span>
+                <div className="p-3.5 rounded-2xl bg-slate-900 border border-pink-500/30 text-xs text-pink-300 flex items-center gap-2 animate-pulse">
+                  <Sparkles className="w-4 h-4 text-pink-400 animate-spin" />
+                  <span>Ido is typing a response...</span>
                 </div>
               </div>
             )}
@@ -269,7 +286,7 @@ export function AIAssistantWidget() {
               <button
                 key={idx}
                 onClick={() => handleSend(qp.prompt)}
-                className="px-2.5 py-1 rounded-xl bg-slate-900 hover:bg-purple-600/20 border border-slate-800 hover:border-purple-500/40 text-purple-300 text-[10px] font-bold whitespace-nowrap transition-all"
+                className="px-2.5 py-1 rounded-xl bg-slate-900 hover:bg-pink-600/20 border border-slate-800 hover:border-pink-500/40 text-pink-300 text-[10px] font-bold whitespace-nowrap transition-all"
               >
                 {qp.label}
               </button>
@@ -288,13 +305,13 @@ export function AIAssistantWidget() {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask Sarhad AI about DSA, code errors, exams..."
-              className="flex-1 bg-slate-900 border border-slate-800 rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-purple-500"
+              placeholder="Ask Ido 👩‍💻 about DSA, code bugs, exams..."
+              className="flex-1 bg-slate-900 border border-slate-800 rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-pink-500"
             />
             <button
               type="submit"
               disabled={!input.trim() || loading}
-              className="px-3.5 py-2 rounded-xl gradient-bg text-white text-xs font-bold shadow-glow hover:opacity-95 disabled:opacity-50 transition-all flex items-center gap-1 shrink-0"
+              className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 text-white text-xs font-bold shadow-glow hover:opacity-95 disabled:opacity-50 transition-all flex items-center gap-1 shrink-0"
             >
               <Send className="w-3.5 h-3.5" />
             </button>

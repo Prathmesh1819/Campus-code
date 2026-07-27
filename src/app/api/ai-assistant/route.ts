@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const { prompt, userRole, className } = await req.json();
+    const { prompt, userRole, className, userName } = await req.json();
 
     if (!prompt || typeof prompt !== "string") {
       return NextResponse.json({ error: "Prompt is required" }, { status: 400 });
@@ -11,12 +11,21 @@ export async function POST(req: Request) {
     const query = prompt.toLowerCase();
     let reply = "";
 
-    // Intelligent Knowledge Base & Context Engine for Sarhad College
-    if (query.includes("two sum") || query.includes("array")) {
-      reply = `### 💡 Array & Hash Map Optimization Guide
+    // Persona: Ido (Female AI Virtual Assistant & Coding Guide for Sarhad College)
+    if (query.includes("who are you") || query.includes("your name") || query.includes("ido")) {
+      reply = `Hello ${userName || "there"}! I'm **Ido** 👩‍💻, your dedicated female AI Virtual Assistant & Coding Mentor at Sarhad College.
 
-**Problem Pattern**: Two Sum Target Pair
-**Optimal Approach**: Use a Hash Map (Unordered Map in C++ / Object in JS) to achieve **O(n)** time complexity.
+I'm here to guide you through:
+- 💡 **Data Structures & Algorithms (DSA)**
+- 🐛 **Debugging C++, Java, Python & Web Code**
+- 🚀 **Building Resume Projects**
+- 📚 **Exam Preparation & Lecture Notes Guidance**
+
+How can I help you today?`;
+    } else if (query.includes("two sum") || query.includes("array")) {
+      reply = `### 💡 Ido's DSA Guide: Two Sum Target Pair
+
+Hi ${userName || "student"}! The Two Sum problem is a classic array question. Here is the optimal Hash Map approach (**O(n)** time complexity):
 
 \`\`\`javascript
 function twoSum(nums, target) {
@@ -32,54 +41,54 @@ function twoSum(nums, target) {
 }
 \`\`\`
 
-**Tip**: Always state your space complexity (**O(n)** for hash map) during technical interview rounds!`;
+**Ido's Tip**: Using a hash map avoids the \\(O(n^2)\\) nested loop approach. Always mention space complexity (**O(n)**) during technical interviews!`;
     } else if (query.includes("debug") || query.includes("error") || query.includes("bug")) {
-      reply = `### 🐛 AI Code Debugging Checklist
+      reply = `### 🐛 Ido's Code Debugging Checklist
 
-Here is a step-by-step checklist to debug your code:
-1. **Check Array Off-By-One Errors**: Ensure loops run \`< length\` instead of \`<= length\`.
-2. **Null Pointer dereference**: Verify pointers/objects are initialized before accessing properties.
-3. **Memory Limits**: In recursion (e.g. DFS), ensure a base case is defined to prevent Stack Overflow.
-4. **Data Type Overflows**: Use \`long long\` in C++ or \`BigInt\` in JS for numbers exceeding \\(2^{31} - 1\\).
+Let's solve your bug together! Check these common issues:
+1. **Array Off-By-One**: Ensure loop bounds use \`< length\` instead of \`<= length\`.
+2. **Uninitialized Variables**: Verify pointers or objects are initialized before accessing properties.
+3. **Infinite Loops**: Check if your loop control variables are being updated on every iteration.
+4. **Type Overflows**: Use \`long long\` in C++ or \`BigInt\` in JS for large values.
 
-Need me to review a specific code snippet? Paste your code here and I will find the bug for you!`;
+Paste your broken code snippet here, and I'll debug it for you! 🛠️`;
     } else if (query.includes("project") || query.includes("idea")) {
-      reply = `### 🚀 Recommended Student Project Ideas for ${className || "TY BSc CS"}
+      reply = `### 🚀 Ido's Top Project Ideas for ${className || "TY BSc CS"}
 
-Here are top resume-worthy project ideas you can build and showcase on CampusCode:
+Here are standout project ideas you can build and showcase on CampusCode:
 1. **AI-Powered Code Reviewer**: Integrates OpenAI API to analyze pull requests and highlight security vulnerabilities.
-2. **Distributed File Storage System**: Node.js & WebSockets peer-to-peer file sharing app with end-to-end encryption.
-3. **Campus Placement Analytics Portal**: Next.js & PostgreSQL dashboard tracking student interview clears and DSA leaderboard stats.
+2. **Distributed Peer-to-Peer File Vault**: WebSockets & React app with end-to-end encryption.
+3. **Campus Placement Analytics Portal**: Real-time dashboard tracking student interview clears and DSA leaderboard stats.
 
-You can publish your completed project in the **Class Projects Showcase** tab!`;
+Once finished, upload your project to the **Class Projects Showcase** tab!`;
     } else if (query.includes("exam") || query.includes("notes") || query.includes("study")) {
-      reply = `### 📚 Academic & Exam Preparation Guidance
+      reply = `### 📚 Ido's Exam Preparation Advice
 
-To excel in your **${className || "B.Sc Computer Science"}** semester exams:
-- Download the official lecture notes uploaded by **Dr. Vikramaditya Gupta** in the **Virtual Classroom Hub**.
-- Focus heavily on **Graph Algorithms (BFS/DFS/Dijkstra)**, **Paging in Operating Systems**, and **Database Normalization (3NF/BCNF)**.
-- Practice solving at least 2 Medium difficulty problems on CampusCode daily to maintain your **Streak** & **XP**!`;
+For your **${className || "B.Sc Computer Science"}** semester exams:
+- Download the official lecture PDFs uploaded by **Dr. Vikramaditya Gupta** in the **Virtual Classroom Hub**.
+- Focus on **Graph Algorithms (BFS/DFS)**, **Paging in Operating Systems**, and **Database Normalization (3NF/BCNF)**.
+- Solve at least 2 coding problems daily on CampusCode to maintain your **Streak** & **XP**!`;
     } else if (query.includes("submit") || query.includes("assignment")) {
-      reply = `### 📝 How to Submit Assignments & Projects
+      reply = `### 📝 Submitting Assignments with Ido
 
-1. Go to **Virtual Classrooms** from the sidebar menu.
+1. Open **Virtual Classrooms** from the sidebar menu.
 2. Select your batch (**${className || "TY BSc CS"}**).
-3. Switch to the **Class Projects** tab and click **+ Add New Project**.
-4. Include your GitHub Repository URL, Live Demo link, and project description. Your faculty will review it directly!`;
+3. Click the **Class Projects** tab and select **+ Add New Project**.
+4. Include your GitHub repo URL and live demo link. Your faculty will review it!`;
     } else {
-      reply = `Hello! I am **Sarhad AI**, your Virtual Coding Assistant & Academic Guide.
+      reply = `Hi ${userName || "there"}! I'm **Ido** 👩‍💻, your AI Virtual Assistant & Coding Mentor.
 
-I am here to help you:
-- 💡 **Understand DSA Algorithms** (Arrays, Trees, Graphs, DP, Dynamic Programming)
+I'm ready to help you:
+- 💡 **Master DSA Algorithms** (Arrays, Trees, Graphs, DP)
 - 🐛 **Debug Code** in C++, Java, Python, JavaScript & SQL
-- 🚀 **Brainstorm High-Impact Web & AI Projects**
-- 📚 **Navigate Course Notes & Exam Schedules** for ${className || "TY BSc CS"}
+- 🚀 **Build Impactful Web & AI Projects**
+- 📚 **Prepare for Exams & Review Class Notes**
 
-Feel free to ask me any question or paste a code snippet! How can I assist you today?`;
+Feel free to ask me anything or paste your code snippet below! 💕`;
     }
 
     return NextResponse.json({ reply });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "AI Assistant processing error" }, { status: 500 });
+    return NextResponse.json({ error: error.message || "Ido AI Assistant error" }, { status: 500 });
   }
 }
