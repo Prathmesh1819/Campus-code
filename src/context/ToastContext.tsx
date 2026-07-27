@@ -38,39 +38,41 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
     <ToastContext.Provider value={{ showToast }}>
       {children}
 
-      {/* Floating UI Toast Container */}
-      <div className="fixed top-5 right-5 z-[200] flex flex-col gap-3 max-w-sm w-full pointer-events-none px-4 sm:px-0">
+      {/* Centered Top Floating UI Toast Container */}
+      <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[9999] flex flex-col gap-3 max-w-md w-full pointer-events-none px-4">
         {toasts.map((toast) => (
           <div
             key={toast.id}
-            className={`pointer-events-auto flex items-start gap-3.5 p-4 rounded-2xl shadow-2xl border backdrop-blur-xl animate-in slide-in-from-top-4 duration-300 fade-in transition-all ${
+            className={`pointer-events-auto flex items-center justify-between gap-4 p-4 rounded-2xl shadow-2xl border backdrop-blur-2xl animate-in slide-in-from-top-6 duration-300 fade-in transition-all ${
               toast.type === "logout"
-                ? "bg-slate-900/95 border-amber-500/40 text-amber-300 shadow-glow"
+                ? "bg-[#0d111e] border-amber-500/50 text-amber-300 shadow-glow"
                 : toast.type === "error"
-                ? "bg-slate-900/95 border-rose-500/40 text-rose-300 shadow-lg"
+                ? "bg-[#0d111e] border-rose-500/50 text-rose-300 shadow-lg"
                 : toast.type === "info"
-                ? "bg-slate-900/95 border-cyan-500/40 text-cyan-300 shadow-glow-cyan"
-                : "bg-slate-900/95 border-emerald-500/40 text-emerald-300 shadow-glow"
+                ? "bg-[#0d111e] border-cyan-500/50 text-cyan-300 shadow-glow-cyan"
+                : "bg-[#0d111e] border-emerald-500/50 text-emerald-300 shadow-glow"
             }`}
           >
-            {/* Icon */}
-            <div className="shrink-0 mt-0.5">
-              {toast.type === "logout" && <LogOut className="w-5 h-5 text-amber-400" />}
-              {toast.type === "success" && <CheckCircle2 className="w-5 h-5 text-emerald-400" />}
-              {toast.type === "info" && <Sparkles className="w-5 h-5 text-cyan-400" />}
-              {toast.type === "error" && <AlertCircle className="w-5 h-5 text-rose-400" />}
-            </div>
+            <div className="flex items-center gap-3">
+              {/* Icon */}
+              <div className="p-2 rounded-xl bg-slate-900 border border-slate-800 shrink-0">
+                {toast.type === "logout" && <LogOut className="w-5 h-5 text-amber-400" />}
+                {toast.type === "success" && <CheckCircle2 className="w-5 h-5 text-emerald-400" />}
+                {toast.type === "info" && <Sparkles className="w-5 h-5 text-cyan-400" />}
+                {toast.type === "error" && <AlertCircle className="w-5 h-5 text-rose-400" />}
+              </div>
 
-            {/* Text Content */}
-            <div className="flex-1 space-y-0.5">
-              <h4 className="text-xs font-black tracking-wide uppercase text-white">{toast.title}</h4>
-              <p className="text-xs font-medium text-gray-300 leading-snug">{toast.message}</p>
+              {/* Text Content */}
+              <div className="space-y-0.5">
+                <h4 className="text-xs font-black tracking-wide uppercase text-white">{toast.title}</h4>
+                <p className="text-xs font-medium text-gray-300 leading-snug">{toast.message}</p>
+              </div>
             </div>
 
             {/* Close Button */}
             <button
               onClick={() => removeToast(toast.id)}
-              className="text-gray-400 hover:text-white p-1 rounded-lg transition-colors"
+              className="text-gray-400 hover:text-white p-1 rounded-lg transition-colors shrink-0"
             >
               <X className="w-4 h-4" />
             </button>
