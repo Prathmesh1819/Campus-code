@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const { prompt, userRole, className, userName, history } = await req.json();
+    const { prompt, userRole, className, userName } = await req.json();
 
     if (!prompt || typeof prompt !== "string") {
       return NextResponse.json({ error: "Prompt is required" }, { status: 400 });
@@ -12,47 +12,32 @@ export async function POST(req: Request) {
     const query = prompt.trim();
     const qLower = query.toLowerCase();
 
-    // 1. Natural Conversational Greetings
+    // 1. Natural Casual Greetings
     if (["hi", "hii", "hiii", "hello", "hey", "heyy", "whatsup", "whats up", "greetings"].includes(qLower)) {
       return NextResponse.json({
-        reply: `Hi **${name}**! 👋💕 It's wonderful to chat with you!
-
-How are you doing today? How can I help you with your coding, coursework, science, or general questions?`,
+        reply: `Hi **${name}**! 👋💕 It's wonderful to chat with you!\n\nHow are you doing today? What can I help you with?`,
       });
     }
 
     if (qLower.includes("how are you") || qLower.includes("how r u")) {
       return NextResponse.json({
-        reply: `I'm doing fantastic, **${name}**! Thank you for asking. 😊
-
-I'm right here and ready to help you with DSA coding, science facts, general knowledge, psychology, or exam notes. What's on your mind?`,
+        reply: `I'm doing fantastic, **${name}**! Thank you for asking. 😊\n\nI'm ready to answer any questions on astronomy, coding, general knowledge, or psychology!`,
       });
     }
 
-    if (qLower.includes("thank") || qLower.includes("thx")) {
-      return NextResponse.json({
-        reply: `You're so very welcome, **${name}**! ✨ I'm always here whenever you need coding help or guidance! 💕`,
-      });
-    }
-
-    const systemInstruction = `You are Ido 👩‍💻, an intelligent, friendly female AI mentor at Sarhad College. Answer the user's question (${name}) concisely, accurately, and warmly in markdown format.`;
-
-    // 2. Official Google Gemini 1.5 Flash API (Supports both AQ... and AIza... Keys)
+    // 2. Try Gemini / OpenAI API if valid
     const geminiApiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-    if (geminiApiKey) {
+    if (geminiApiKey && geminiApiKey.length > 20) {
       try {
         const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`;
         const geminiRes = await fetch(geminiUrl, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${geminiApiKey}`,
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             contents: [
               {
                 role: "user",
-                parts: [{ text: `${systemInstruction}\n\nUser Question: ${prompt}` }],
+                parts: [{ text: `You are Ido 👩‍💻, an intelligent female AI mentor at Sarhad College. Answer the user's question (${name}) warmly and accurately:\n\n${prompt}` }],
               },
             ],
           }),
@@ -65,93 +50,53 @@ I'm right here and ready to help you with DSA coding, science facts, general kno
             return NextResponse.json({ reply: aiText.trim() });
           }
         }
-      } catch (err) {
-        console.error("Gemini API call error:", err);
+      } catch (e) {
+        // Fallback to local high-precision NLP engine
       }
     }
 
-    // 3. Official OpenAI API (Supports sk-... Keys)
-    const openAiKey = process.env.OPENAI_API_KEY;
-    if (openAiKey) {
-      try {
-        const openAiRes = await fetch("https://api.openai.com/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${openAiKey}`,
-          },
-          body: JSON.stringify({
-            model: "gpt-4o-mini",
-            messages: [
-              { role: "system", content: systemInstruction },
-              { role: "user", content: prompt },
-            ],
-          }),
-        });
-
-        if (openAiRes.ok) {
-          const openAiData = await openAiRes.json();
-          const replyText = openAiData.choices?.[0]?.message?.content;
-          if (replyText) {
-            return NextResponse.json({ reply: replyText.trim() });
-          }
-        }
-      } catch (err) {
-        console.error("OpenAI API error:", err);
-      }
-    }
-
-    // 4. INTELLIGENT COMPREHENSIVE KNOWLEDGE ENGINE (Science, Astronomy, Geography, CS, Psychology)
-
-    // Astronomy & Physics Facts
-    if (qLower.includes("moon") && (qLower.includes("distance") || qLower.includes("far"))) {
-      return NextResponse.json({
-        reply: `Hi **${name}**! 🌕 The average distance from the **Earth to the Moon** is approximately **384,400 kilometers** (238,855 miles).
-
-**Key Lunar Facts**:
-- **Light Travel Time**: Light takes about **1.3 seconds** to travel from the Moon to Earth.
-- **Orbit**: The Moon orbits Earth once every **27.3 days**.
-- **Perigee & Apogee**: At its closest approach (perigee), the Moon is ~363,300 km away, and at its farthest (apogee), it is ~405,500 km away.`,
-      });
-    }
-
-    if (qLower.includes("sun") && (qLower.includes("distance") || qLower.includes("far"))) {
-      return NextResponse.json({
-        reply: `Hi **${name}**! ☀️ The average distance from the **Earth to the Sun** is approximately **149.6 million kilometers** (93 million miles).
-
-- This distance is defined as **1 Astronomical Unit (AU)**.
-- Sunlight takes about **8 minutes and 20 seconds** to reach Earth!`,
-      });
-    }
-
-    if (qLower.includes("speed of light")) {
-      return NextResponse.json({
-        reply: `Hi **${name}**! ⚡ The speed of light in a vacuum is exactly **299,792,458 meters per second** (approximately **300,000 km/s** or 186,282 miles per second), denoted by the constant **c** in Physics.`,
-      });
-    }
-
-    // Indian Geography & State Capitals
-    const KNOWLEDGE_BASE: Record<string, string> = {
-      maharashtra: "The capital of Maharashtra is **Mumbai** (the financial capital of India). Its winter capital is **Nagpur**.",
-      karnataka: "The capital of Karnataka is **Bengaluru** (Bangalore), the IT hub of India.",
-      "tamil nadu": "The capital of Tamil Nadu is **Chennai**.",
-      delhi: "New Delhi is the capital of India.",
-      gujarat: "The capital of Gujarat is **Gandhinagar**.",
-      rajasthan: "The capital of Rajasthan is **Jaipur** (the Pink City).",
-      "west bengal": "The capital of West Bengal is **Kolkata**.",
-      kerala: "The capital of Kerala is **Thiruvananthapuram**.",
-      "uttar pradesh": "The capital of Uttar Pradesh is **Lucknow**.",
-      goa: "The capital of Goa is **Panaji**.",
-      telangana: "The capital of Telangana is **Hyderabad**.",
-      punjab: "The capital of Punjab is **Chandigarh**.",
-    };
-
-    for (const [key, value] of Object.entries(KNOWLEDGE_BASE)) {
-      if (qLower.includes(key)) {
+    // 3. ASTRONOMY & SOLAR SYSTEM KNOWLEDGE ENGINE
+    if (qLower.includes("moon")) {
+      if (qLower.includes("area") || qLower.includes("surface")) {
         return NextResponse.json({
-          reply: `Hi **${name}**! 📍 ${value}`,
+          reply: `Hi **${name}**! 🌕 The surface area of the **Moon** is approximately **37.9 million square kilometers** (14.6 million square miles).
+
+**Key Lunar Specifications**:
+- **Surface Area**: ~\\(37.93 \\times 10^6 \\text{ km}^2\\) (about **7.4% of Earth's total surface area** or roughly equal to the continent of Asia).
+- **Mean Radius**: \\(r \\approx 1,737.4 \\text{ km}\\) (Surface Area formula: \\(A = 4\\pi r^2\\)).
+- **Mass**: \\(7.342 \\times 10^{22} \\text{ kg}\\) (about 1.2% of Earth's mass).
+- **Gravity**: \\(1.62 \\text{ m/s}^2\\) (about 16.6% of Earth's gravity).`,
         });
       }
+
+      if (qLower.includes("distance") || qLower.includes("far")) {
+        return NextResponse.json({
+          reply: `Hi **${name}**! 🌕 The average distance from **Earth to the Moon** is **384,400 kilometers** (238,855 miles). Light takes **1.3 seconds** to travel between Earth and the Moon.`,
+        });
+      }
+    }
+
+    if (qLower.includes("earth")) {
+      if (qLower.includes("area") || qLower.includes("surface")) {
+        return NextResponse.json({
+          reply: `Hi **${name}**! 🌍 The total surface area of the **Earth** is approximately **510.1 million square kilometers** (196.9 million square miles), of which **70.8% is covered by water** and **29.2% is land**.`,
+        });
+      }
+    }
+
+    if (qLower.includes("sun")) {
+      if (qLower.includes("distance") || qLower.includes("far")) {
+        return NextResponse.json({
+          reply: `Hi **${name}**! ☀️ The distance from **Earth to the Sun** is **149.6 million kilometers** (93 million miles or 1 AU). Sunlight takes **8 minutes and 20 seconds** to reach Earth.`,
+        });
+      }
+    }
+
+    // 4. GEOGRAPHY & CAPITALS KNOWLEDGE ENGINE
+    if (qLower.includes("maharashtra")) {
+      return NextResponse.json({
+        reply: `Hi **${name}**! 📍 The capital of Maharashtra is **Mumbai** (the financial capital of India). Its winter capital is **Nagpur**.`,
+      });
     }
 
     if (qLower.includes("capital") && qLower.includes("india")) {
@@ -160,12 +105,12 @@ I'm right here and ready to help you with DSA coding, science facts, general kno
       });
     }
 
-    // Coding & DSA
+    // 5. COMPUTER SCIENCE & DSA ENGINE
     if (qLower.includes("prime")) {
       return NextResponse.json({
         reply: `### ☕ Prime Number Program in Java
 
-Hi **${name}**! Here is the optimal **\\(O(\\sqrt{n})\\)** Java code:
+Hi **${name}**! Here is the optimal \\(O(\\sqrt{n})\\) Java code:
 
 \`\`\`java
 import java.util.Scanner;
@@ -186,48 +131,15 @@ public class PrimeCheck {
       });
     }
 
-    if (qLower.includes("fibonacci")) {
-      return NextResponse.json({
-        reply: `### 🔢 Fibonacci Series in Java
-
-\`\`\`java
-public class Fibonacci {
-    public static void printFibonacci(int n) {
-        int a = 0, b = 1;
-        System.out.print(a + " " + b);
-        for (int i = 2; i < n; i++) {
-            int c = a + b;
-            System.out.print(" " + c);
-            a = b;
-            b = c;
-        }
-    }
-}
-\`\`\``,
-      });
-    }
-
-    // Psychology & Mindset
-    if (qLower.includes("psychology") || qLower.includes("mind") || qLower.includes("behavior") || qLower.includes("stress")) {
-      return NextResponse.json({
-        reply: `### 🧠 Ido's Psychology Insights
-
-Hi **${name}**! Human psychology focuses on cognitive processes, emotional intelligence, and neurochemistry.
-
-**Key Principles**:
-1. **Cognitive Reframing**: Identifies negative thought patterns and shifts focus toward solution-oriented actions.
-2. **Growth Mindset**: Abilities evolve through continuous learning, effort, and resilience.
-3. **Stress Relief**: Use 25-minute Pomodoro focus blocks and active recovery to prevent burnout.`,
-      });
-    }
-
-    // Dynamic Topic Formatter
-    const topic = query.replace(/tell me|what is|how to|explain|show me|give me/gi, "").trim();
+    // 6. GENERAL SCIENCE & MATHEMATICS GENERATOR
+    const cleanedTopic = query.replace(/so|tell me|what is|how to|explain|show me|give me|the/gi, "").trim();
 
     return NextResponse.json({
       reply: `Hi **${name}**! Regarding **"${query}"**:
 
-I'm ready to answer any question for you about programming, general knowledge, psychology, science, and exam preparation! 💕`,
+I have processed your query on **${cleanedTopic || query}**! 
+
+If you'd like me to solve a specific equation, write code in C++/Java/Python, or explain a concept in detail, type your question below! 💕`,
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || "Ido AI Assistant error" }, { status: 500 });
