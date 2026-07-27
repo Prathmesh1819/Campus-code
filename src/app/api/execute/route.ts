@@ -39,14 +39,18 @@ export async function POST(req: Request) {
         },
       });
 
-      // Update user XP & Level if Accepted
+      // Update user XP, Level, Coins & Streak if Accepted
       if (result.status === "ACCEPTED") {
+        const currentUser = await prisma.user.findUnique({ where: { id: userId } });
         const xpGain = problem.difficulty === "HARD" ? 150 : problem.difficulty === "MEDIUM" ? 100 : 50;
+        const newStreak = (currentUser?.streakDays || 0) === 0 ? 1 : (currentUser?.streakDays || 1) + 1;
+
         await prisma.user.update({
           where: { id: userId },
           data: {
             xp: { increment: xpGain },
             coins: { increment: 20 },
+            streakDays: newStreak,
           },
         });
       }
