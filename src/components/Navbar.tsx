@@ -159,18 +159,20 @@ export function Navbar({ onToggleSidebar, collegeLogoUrl = DEFAULT_COLLEGE_LOGO 
 
           {isAuthenticated ? (
             <>
-              {/* Gamification Stats (Streak & XP) */}
-              <div className="hidden sm:flex items-center gap-2">
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold">
-                  <Flame className="w-4 h-4 fill-amber-400" />
-                  <span>{user?.streakDays ?? 0}d Streak</span>
-                </div>
+              {/* Gamification Stats (Streak & XP) - RENDER ONLY FOR STUDENTS */}
+              {user?.role === "STUDENT" && (
+                <div className="hidden sm:flex items-center gap-2">
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold">
+                    <Flame className="w-4 h-4 fill-amber-400" />
+                    <span>{user?.streakDays ?? 0}d Streak</span>
+                  </div>
 
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs font-bold">
-                  <Zap className="w-4 h-4 text-purple-400 fill-purple-400" />
-                  <span>{user?.xp ?? 0} XP</span>
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs font-bold">
+                    <Zap className="w-4 h-4 text-purple-400 fill-purple-400" />
+                    <span>{user?.xp ?? 0} XP</span>
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Verified Role Badge */}
               <div className="px-3 py-1.5 rounded-2xl bg-slate-900 border border-slate-800 text-xs font-bold flex items-center gap-1.5">

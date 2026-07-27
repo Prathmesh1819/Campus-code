@@ -39,46 +39,55 @@ const presetAvatars = [
   "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&auto=format&fit=crop&q=80",
 ];
 
-export default function ProfilePage() {
-  const { user, updateUserAvatar } = useAuth();
+export default function ProfilePage({ params }: { params: Promise<{ username: string }> }) {
+  const { user: currentUser, updateUserAvatar } = useAuth();
+  const [profileUser, setProfileUser] = useState<any>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showQrModal, setShowQrModal] = useState(false);
   const [showAvatarModal, setShowAvatarModal] = useState(false);
-  const [customAvatarUrl, setCustomAvatarUrl] = useState(user?.avatar || "");
+  const [customAvatarUrl, setCustomAvatarUrl] = useState("");
   const [submissions, setSubmissions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchUserSubmissions();
+    fetchProfileData();
   }, []);
 
-  const fetchUserSubmissions = async () => {
+  const fetchProfileData = async () => {
+    setLoading(true);
     try {
-      const res = await fetch(`/api/submissions?userId=${user?.id}`);
+      const resolvedParams = await params;
+      const targetParam = resolvedParams.username;
+
+      const res = await fetch(`/api/auth?username=${encodeURIComponent(targetParam)}`);
+      const data = await res.json();
+      if (data.user) {
+        setProfileUser(data.user);
+        setCustomAvatarUrl(data.user.avatar || "");
+        fetchUserSubmissions(data.user.id);
+      } else {
+        setProfileUser(currentUser);
+        if (currentUser?.id) fetchUserSubmissions(currentUser.id);
+      }
+    } catch {
+      setProfileUser(currentUser);
+      if (currentUser?.id) fetchUserSubmissions(currentUser.id);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchUserSubmissions = async (userId: string) => {
+    try {
+      const res = await fetch(`/api/submissions?userId=${userId}`);
       const data = await res.json();
       if (data.submissions) setSubmissions(data.submissions);
     } catch {
-      setSubmissions([
-        {
-          id: "sub-1",
-          status: "ACCEPTED",
-          language: "javascript",
-          executionTimeMs: 24,
-          memoryUsageKb: 14200,
-          createdAt: new Date().toISOString(),
-          problem: { title: "Two Sum Target Pair", difficulty: "EASY", category: "Arrays" },
-        },
-        {
-          id: "sub-2",
-          status: "ACCEPTED",
-          language: "python",
-          executionTimeMs: 18,
-          memoryUsageKb: 15400,
-          createdAt: new Date(Date.now() - 86400000).toISOString(),
-          problem: { title: "Longest Substring Without Repeating Characters", difficulty: "MEDIUM", category: "Strings" },
-        },
-      ]);
+      setSubmissions([]);
     }
   };
+
+  const isSelfProfile = currentUser?.id === profileUser?.id;
 
   const handleDeviceFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -87,6 +96,7 @@ export default function ProfilePage() {
       reader.onloadend = () => {
         if (typeof reader.result === "string") {
           updateUserAvatar(reader.result);
+          setProfileUser((prev: any) => ({ ...prev, avatar: reader.result }));
           setShowAvatarModal(false);
         }
       };
@@ -96,6 +106,7 @@ export default function ProfilePage() {
 
   const handleSaveAvatar = (newUrl: string) => {
     updateUserAvatar(newUrl);
+    setProfileUser((prev: any) => ({ ...prev, avatar: newUrl }));
     setShowAvatarModal(false);
   };
 
@@ -114,7 +125,7 @@ export default function ProfilePage() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `CampusCode_History_${user?.name || "Student"}.csv`);
+    link.setAttribute("download", `CampusCode_History_${profileUser?.name || "Student"}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -124,6 +135,8 @@ export default function ProfilePage() {
     const count = (i * 7 + 3) % 5;
     return { day: i, count };
   });
+
+  const displayUser = profileUser || currentUser;
 
   return (
     <div className="min-h-screen flex flex-col bg-[#070913]">
@@ -141,40 +154,49 @@ export default function ProfilePage() {
 
             <div className="px-6 sm:px-8 pb-6 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 -mt-16 sm:-mt-12 relative z-10">
               <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4">
-                {/* Clickable Profile Picture for Quick Avatar Update */}
+                {/* Profile Picture */}
                 <div
-                  onClick={() => setShowAvatarModal(true)}
-                  className="relative group cursor-pointer"
-                  title="Click to update profile photo from device"
+                  onClick={() => isSelfProfile && setShowAvatarModal(true)}
+                  className={`relative group ${isSelfProfile ? "cursor-pointer" : ""}`}
+                  title={isSelfProfile ? "Click to update profile photo" : displayUser?.name}
                 >
                   <img
-                    src={user?.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80"}
-                    alt={user?.name}
-                    className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl object-cover ring-4 ring-slate-950 shadow-2xl bg-slate-900 group-hover:opacity-90 transition-opacity"
+                    src={displayUser?.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80"}
+                    alt={displayUser?.name}
+                    className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl object-cover ring-4 ring-slate-950 shadow-2xl bg-slate-900"
                   />
-                  <div className="absolute inset-0 rounded-3xl bg-black/50 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-opacity text-white text-[10px] font-bold">
-                    <Camera className="w-6 h-6 mb-0.5" />
-                    <span>Upload</span>
-                  </div>
+                  {isSelfProfile && (
+                    <div className="absolute inset-0 rounded-3xl bg-black/50 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-opacity text-white text-[10px] font-bold">
+                      <Camera className="w-6 h-6 mb-0.5" />
+                      <span>Upload</span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-1">
-                  <h1 className="text-2xl font-black text-white">{user?.name || "Aarav Sharma"}</h1>
+                  <div className="flex items-center gap-2">
+                    <h1 className="text-2xl font-black text-white">{displayUser?.name || "Student Profile"}</h1>
+                    <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 uppercase">
+                      {displayUser?.role || "STUDENT"}
+                    </span>
+                  </div>
                   <p className="text-xs font-semibold text-purple-400">
-                    @{user?.name?.toLowerCase().replace(/\s+/g, "") || "aaravsharma"} • {user?.className || "Final Year CSE"}
+                    @{displayUser?.name?.toLowerCase().replace(/\s+/g, "")} • {displayUser?.className || "TY BSc CS"}
                   </p>
-                  <p className="text-xs text-gray-400 max-w-md">{user?.bio || "Competitive programmer | Full-stack & AI Enthusiast"}</p>
+                  <p className="text-xs text-gray-400 max-w-md">{displayUser?.bio || "Student Programmer at CampusCode"}</p>
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setShowAvatarModal(true)}
-                  className="px-4 py-2 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-bold hover:bg-purple-500/20 flex items-center gap-1.5 transition-all"
-                >
-                  <Upload className="w-4 h-4" />
-                  <span>Upload Photo</span>
-                </button>
+                {isSelfProfile && (
+                  <button
+                    onClick={() => setShowAvatarModal(true)}
+                    className="px-4 py-2 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-bold hover:bg-purple-500/20 flex items-center gap-1.5 transition-all"
+                  >
+                    <Upload className="w-4 h-4" />
+                    <span>Upload Photo</span>
+                  </button>
+                )}
                 <button
                   onClick={() => setShowQrModal(true)}
                   className="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-gray-200 text-xs font-bold hover:text-white flex items-center gap-1.5 transition-all"
@@ -197,7 +219,7 @@ export default function ProfilePage() {
           <div className="rounded-3xl glass-card border border-slate-800 p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-purple-400" /> {submissions.length || 142} Submissions Activity Heatmap
+                <Calendar className="w-4 h-4 text-purple-400" /> {submissions.length} Submissions Activity Heatmap
               </h3>
               <div className="flex items-center gap-1.5 text-[10px] font-semibold text-gray-400">
                 <span>Less</span>
@@ -244,60 +266,66 @@ export default function ProfilePage() {
               </button>
             </div>
 
-            <table className="w-full text-left text-xs">
-              <thead className="bg-slate-950/80 text-gray-400 border-b border-slate-800 uppercase tracking-wider font-bold">
-                <tr>
-                  <th className="px-6 py-4">Problem</th>
-                  <th className="px-6 py-4">Difficulty</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4">Language</th>
-                  <th className="px-6 py-4">Runtime</th>
-                  <th className="px-6 py-4 text-right">Date</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800/60">
-                {submissions.map((sub) => (
-                  <tr key={sub.id} className="hover:bg-slate-800/40 transition-colors">
-                    <td className="px-6 py-4 font-bold text-white">
-                      <Link href="/problems" className="hover:text-purple-300">
-                        {sub.problem?.title || "Two Sum Target Pair"}
-                      </Link>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${
-                          sub.problem?.difficulty === "EASY"
-                            ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                            : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
-                        }`}
-                      >
-                        {sub.problem?.difficulty || "EASY"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      {sub.status === "ACCEPTED" ? (
-                        <span className="text-emerald-400 font-bold flex items-center gap-1">
-                          <CheckCircle2 className="w-3.5 h-3.5" /> ACCEPTED
-                        </span>
-                      ) : (
-                        <span className="text-rose-400 font-bold flex items-center gap-1">
-                          <XCircle className="w-3.5 h-3.5" /> {sub.status}
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 font-mono text-purple-300 uppercase text-[11px]">
-                      {sub.language}
-                    </td>
-                    <td className="px-6 py-4 font-mono text-gray-300">
-                      {sub.executionTimeMs} ms
-                    </td>
-                    <td className="px-6 py-4 text-right text-gray-400 font-mono text-[11px]">
-                      {new Date(sub.createdAt).toLocaleDateString()}
-                    </td>
+            {submissions.length === 0 ? (
+              <div className="p-8 text-center text-xs text-gray-500 font-medium">
+                No public submission history recorded for {displayUser?.name} yet.
+              </div>
+            ) : (
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-950/80 text-gray-400 border-b border-slate-800 uppercase tracking-wider font-bold">
+                  <tr>
+                    <th className="px-6 py-4">Problem</th>
+                    <th className="px-6 py-4">Difficulty</th>
+                    <th className="px-6 py-4">Status</th>
+                    <th className="px-6 py-4">Language</th>
+                    <th className="px-6 py-4">Runtime</th>
+                    <th className="px-6 py-4 text-right">Date</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60">
+                  {submissions.map((sub) => (
+                    <tr key={sub.id} className="hover:bg-slate-800/40 transition-colors">
+                      <td className="px-6 py-4 font-bold text-white">
+                        <Link href="/problems" className="hover:text-purple-300">
+                          {sub.problem?.title || "Coding Challenge"}
+                        </Link>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span
+                          className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${
+                            sub.problem?.difficulty === "EASY"
+                              ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                              : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                          }`}
+                        >
+                          {sub.problem?.difficulty || "EASY"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        {sub.status === "ACCEPTED" ? (
+                          <span className="text-emerald-400 font-bold flex items-center gap-1">
+                            <CheckCircle2 className="w-3.5 h-3.5" /> ACCEPTED
+                          </span>
+                        ) : (
+                          <span className="text-rose-400 font-bold flex items-center gap-1">
+                            <XCircle className="w-3.5 h-3.5" /> {sub.status}
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 font-mono text-purple-300 uppercase text-[11px]">
+                        {sub.language}
+                      </td>
+                      <td className="px-6 py-4 font-mono text-gray-300">
+                        {sub.executionTimeMs} ms
+                      </td>
+                      <td className="px-6 py-4 text-right text-gray-400 font-mono text-[11px]">
+                        {new Date(sub.createdAt).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </main>
       </div>
@@ -318,7 +346,6 @@ export default function ProfilePage() {
             </h3>
 
             <div className="space-y-4 text-xs">
-              {/* Direct Device Upload Button */}
               <div>
                 <label className="font-bold text-gray-200 block mb-1">Upload Photo From Device</label>
                 <label
@@ -380,7 +407,7 @@ export default function ProfilePage() {
             <div className="p-4 bg-white rounded-2xl w-48 h-48 mx-auto flex items-center justify-center shadow-2xl">
               <div className="w-40 h-40 bg-slate-950 rounded-xl p-2 font-mono text-[8px] text-purple-400 break-all overflow-hidden flex flex-col justify-center items-center">
                 <QrCode className="w-28 h-28 text-slate-950 bg-white p-2 rounded-lg" />
-                <span className="mt-1 text-slate-950 font-bold text-[10px]">@{user?.name}</span>
+                <span className="mt-1 text-slate-950 font-bold text-[10px]">@{displayUser?.name}</span>
               </div>
             </div>
             <p className="text-xs text-gray-400">Scan to view GitHub stats & project portfolio</p>

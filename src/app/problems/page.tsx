@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Sidebar } from "@/components/Sidebar";
+import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import {
   Code2,
@@ -14,9 +15,13 @@ import {
   Building2,
   Sparkles,
   TrendingUp,
+  Plus,
+  X,
+  FileCode,
 } from "lucide-react";
 
 export default function ProblemsPage() {
+  const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [problems, setProblems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -24,6 +29,20 @@ export default function ProblemsPage() {
   const [selectedDifficulty, setSelectedDifficulty] = useState("ALL");
   const [selectedCategory, setSelectedCategory] = useState("ALL");
   const [selectedCompany, setSelectedCompany] = useState("ALL");
+
+  // Teacher / Admin Problem Creator Modal state
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [newTitle, setNewTitle] = useState("");
+  const [newDifficulty, setNewDifficulty] = useState("EASY");
+  const [newCategory, setNewCategory] = useState("Arrays");
+  const [newDescription, setNewDescription] = useState("");
+  const [newConstraints, setNewConstraints] = useState("1 <= N <= 10^5");
+  const [sampleInput, setSampleInput] = useState("[2, 7, 11, 15], 9");
+  const [sampleOutput, setSampleOutput] = useState("[0, 1]");
+  const [sampleExplanation, setSampleExplanation] = useState("Because nums[0] + nums[1] == 9, we return [0, 1].");
+  const [targetCompaniesStr, setTargetCompaniesStr] = useState("Google, Meta, Amazon");
+
+  const isTeacherOrAdmin = user?.role === "TEACHER" || user?.role === "ADMIN";
 
   useEffect(() => {
     fetchProblems();
@@ -47,6 +66,55 @@ export default function ProblemsPage() {
       console.error("Failed to fetch problems:", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCreateProblem = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTitle.trim() || !newDescription.trim()) return;
+
+    try {
+      const companies = targetCompaniesStr.split(",").map((c) => c.trim()).filter(Boolean);
+      const examplesArr = [
+        {
+          input: sampleInput,
+          output: sampleOutput,
+          explanation: sampleExplanation,
+        },
+      ];
+
+      const testCasesArr = [
+        {
+          input: sampleInput,
+          expectedOutput: sampleOutput,
+          isHidden: false,
+        },
+      ];
+
+      const res = await fetch("/api/problems", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: newTitle,
+          difficulty: newDifficulty,
+          category: newCategory,
+          description: newDescription,
+          constraints: newConstraints,
+          examples: JSON.stringify(examplesArr),
+          companyTags: JSON.stringify(companies),
+          testCases: testCasesArr,
+        }),
+      });
+
+      if (res.ok) {
+        setShowCreateModal(false);
+        setNewTitle("");
+        setNewDescription("");
+        fetchProblems();
+        alert("New Coding Challenge created and published successfully!");
+      }
+    } catch (err: any) {
+      alert("Error creating problem: " + err.message);
     }
   };
 
@@ -85,17 +153,30 @@ export default function ProblemsPage() {
 
         <main className="flex-1 p-4 lg:p-8 space-y-6 overflow-y-auto">
           {/* Header Banner */}
-          <div className="rounded-3xl glass-card border border-purple-500/30 p-6 sm:p-8 relative overflow-hidden">
-            <div className="flex items-center gap-2 text-xs font-bold text-purple-400 mb-2">
-              <Building2 className="w-4 h-4" />
-              <span>COMPANY PAST INTERVIEW QUESTIONS & DSA MODULE</span>
+          <div className="rounded-3xl glass-card border border-purple-500/30 p-6 sm:p-8 relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 text-xs font-bold text-purple-400 mb-2">
+                <Building2 className="w-4 h-4" />
+                <span>COMPANY PAST INTERVIEW QUESTIONS & DSA MODULE</span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                Company-Wise LeetCode Interview Questions ({problems.length} Problems Available)
+              </h1>
+              <p className="text-xs sm:text-sm text-gray-400 mt-1 max-w-2xl">
+                Practice real technical interview questions asked at Google, Meta, Amazon, Microsoft, Apple, Netflix, Uber, and Adobe sorted by interview frequency.
+              </p>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-              Company-Wise LeetCode Interview Questions ({problems.length} Problems Available)
-            </h1>
-            <p className="text-xs sm:text-sm text-gray-400 mt-1 max-w-2xl">
-              Practice real technical interview questions asked at Google, Meta, Amazon, Microsoft, Apple, Netflix, Uber, and Adobe sorted by interview frequency.
-            </p>
+
+            {/* Teacher / Admin Action Button */}
+            {isTeacherOrAdmin && (
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="px-5 py-3 rounded-2xl gradient-bg text-white text-xs font-bold shadow-glow hover:opacity-95 transition-all flex items-center gap-2 shrink-0"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Add New Coding Problem</span>
+              </button>
+            )}
           </div>
 
           {/* Filter Bar */}
@@ -259,6 +340,157 @@ export default function ProblemsPage() {
           </div>
         </main>
       </div>
+
+      {/* Teacher / Admin Problem Creator Modal */}
+      {showCreateModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="relative w-full max-w-2xl glass-card border border-purple-500/40 rounded-3xl p-6 sm:p-8 space-y-4 max-h-[90vh] overflow-y-auto">
+            <button
+              onClick={() => setShowCreateModal(false)}
+              className="absolute top-4 right-4 p-2 rounded-xl text-gray-400 hover:text-white"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <h3 className="text-xl font-black text-white flex items-center gap-2">
+              <FileCode className="w-6 h-6 text-purple-400" /> Post New Coding Problem
+            </h3>
+            <p className="text-xs text-gray-400">Add custom DSA or SQL questions with starter templates & test cases for students.</p>
+
+            <form onSubmit={handleCreateProblem} className="space-y-4 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="sm:col-span-2">
+                  <label className="font-bold text-gray-300 block mb-1">Problem Title</label>
+                  <input
+                    type="text"
+                    required
+                    value={newTitle}
+                    onChange={(e) => setNewTitle(e.target.value)}
+                    placeholder="e.g. Reverse Words in String"
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl py-2.5 px-3 text-white focus:outline-none focus:border-purple-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="font-bold text-gray-300 block mb-1">Difficulty</label>
+                  <select
+                    value={newDifficulty}
+                    onChange={(e) => setNewDifficulty(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl py-2.5 px-3 text-white focus:outline-none"
+                  >
+                    <option value="EASY">EASY (+50 XP)</option>
+                    <option value="MEDIUM">MEDIUM (+100 XP)</option>
+                    <option value="HARD">HARD (+150 XP)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold text-gray-300 block mb-1">Category / Topic</label>
+                  <select
+                    value={newCategory}
+                    onChange={(e) => setNewCategory(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl py-2.5 px-3 text-white focus:outline-none"
+                  >
+                    {categories.filter((c) => c !== "ALL").map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="font-bold text-gray-300 block mb-1">Target Companies (Comma-separated)</label>
+                  <input
+                    type="text"
+                    value={targetCompaniesStr}
+                    onChange={(e) => setTargetCompaniesStr(e.target.value)}
+                    placeholder="Google, Meta, Amazon"
+                    className="w-full bg-slate-900 border border-slate-800 rounded-xl py-2.5 px-3 text-white focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="font-bold text-gray-300 block mb-1">Problem Description / Statement</label>
+                <textarea
+                  rows={4}
+                  required
+                  value={newDescription}
+                  onChange={(e) => setNewDescription(e.target.value)}
+                  placeholder="Given an array of integers..."
+                  className="w-full bg-slate-900 border border-slate-800 rounded-xl py-2.5 px-3 text-white focus:outline-none focus:border-purple-500"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-gray-300 block mb-1">Constraints</label>
+                <input
+                  type="text"
+                  value={newConstraints}
+                  onChange={(e) => setNewConstraints(e.target.value)}
+                  placeholder="1 <= N <= 10^5"
+                  className="w-full bg-slate-900 border border-slate-800 rounded-xl py-2.5 px-3 text-white focus:outline-none"
+                />
+              </div>
+
+              {/* Sample Test Case Inputs/Outputs */}
+              <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
+                <span className="font-bold text-purple-300 uppercase tracking-wider block">Sample Test Case #1</span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-gray-400 block mb-1">Sample Input</label>
+                    <input
+                      type="text"
+                      required
+                      value={sampleInput}
+                      onChange={(e) => setSampleInput(e.target.value)}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2 px-3 text-white font-mono"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-gray-400 block mb-1">Expected Output</label>
+                    <input
+                      type="text"
+                      required
+                      value={sampleOutput}
+                      onChange={(e) => setSampleOutput(e.target.value)}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2 px-3 text-white font-mono"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-gray-400 block mb-1">Explanation</label>
+                  <input
+                    type="text"
+                    value={sampleExplanation}
+                    onChange={(e) => setSampleExplanation(e.target.value)}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2 px-3 text-white"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateModal(false)}
+                  className="flex-1 py-3 rounded-xl bg-slate-900 border border-slate-800 text-gray-300 font-bold hover:bg-slate-800"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-3 rounded-xl gradient-bg text-white font-bold shadow-glow hover:opacity-95"
+                >
+                  Publish Problem
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
