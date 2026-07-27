@@ -239,25 +239,25 @@ async function main() {
     });
   }
 
-  // 5. Initial Sample Submissions
-  const prob1 = await prisma.problem.findFirst({ where: { title: "Two Sum Target Pair" } });
-  if (prob1) {
-    await prisma.submission.create({
-      data: {
-        userId: student1.id,
-        problemId: prob1.id,
-        code: "function solve(nums, target) { return [0, 1]; }",
-        language: "javascript",
-        status: "ACCEPTED",
-        executionTimeMs: 24,
-        memoryUsageKb: 14200,
-        testCasesPassed: 1,
-        totalTestCases: 1,
+  // 6. Direct Messages for Admin & Faculty
+  await prisma.message.createMany({
+    data: [
+      {
+        senderId: classTeacher.id,
+        receiverId: admin.id,
+        content: "Hello Super Admin! All TY BSc CS virtual classroom notes and assignments for 2025-26 have been published successfully.",
+        readStatus: false,
       },
-    });
-  }
+      {
+        senderId: student1.id,
+        receiverId: admin.id,
+        content: "Respected Admin, I have submitted the hackathon winning project link in the campus showcase. Please review when free!",
+        readStatus: false,
+      },
+    ],
+  });
 
-  console.log(`✅ Successfully Seeded Full Question Bank (${rawProblems.length} Problems), Users & TY BSc CS Classroom!`);
+  console.log(`✅ Successfully Seeded Full Question Bank (${rawProblems.length} Problems), Users, Admin Messages & TY BSc CS Classroom!`);
 }
 
 main()

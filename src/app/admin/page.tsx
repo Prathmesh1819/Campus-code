@@ -229,19 +229,19 @@ export default function AdminPage() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div className="p-4 rounded-3xl glass-card border border-slate-800 space-y-1">
               <span className="text-xs font-semibold text-gray-400">Total Users</span>
-              <span className="text-xl font-black text-white block">{adminData.stats.totalUsers || 4}</span>
+              <span className="text-xl font-black text-white block">{adminData.stats.totalUsers ?? 0}</span>
             </div>
             <div className="p-4 rounded-3xl glass-card border border-slate-800 space-y-1">
               <span className="text-xs font-semibold text-gray-400">Students</span>
-              <span className="text-xl font-black text-purple-300 block">{adminData.stats.totalStudents || 3}</span>
+              <span className="text-xl font-black text-purple-300 block">{adminData.stats.totalStudents ?? 0}</span>
             </div>
             <div className="p-4 rounded-3xl glass-card border border-slate-800 space-y-1">
               <span className="text-xs font-semibold text-gray-400">Faculty / Teachers</span>
-              <span className="text-xl font-black text-amber-300 block">{adminData.stats.totalTeachers || 1}</span>
+              <span className="text-xl font-black text-amber-300 block">{adminData.stats.totalTeachers ?? 0}</span>
             </div>
             <div className="p-4 rounded-3xl glass-card border border-slate-800 space-y-1">
               <span className="text-xs font-semibold text-gray-400">Community Posts</span>
-              <span className="text-xl font-black text-cyan-300 block">{adminData.stats.totalPosts || 0}</span>
+              <span className="text-xl font-black text-cyan-300 block">{adminData.stats.totalPosts ?? 0}</span>
             </div>
           </div>
 

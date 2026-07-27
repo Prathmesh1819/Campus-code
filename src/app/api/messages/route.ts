@@ -67,10 +67,19 @@ export async function GET(req: Request) {
           orderBy: { createdAt: "desc" },
         });
 
+        const unreadCount = await prisma.message.count({
+          where: {
+            senderId: u.id,
+            receiverId: userId,
+            readStatus: false,
+          },
+        });
+
         return {
           ...u,
           lastMessageAt: lastMsg ? lastMsg.createdAt : new Date(0).toISOString(),
           lastMessageText: lastMsg ? lastMsg.content : "",
+          unreadCount,
         };
       })
     );

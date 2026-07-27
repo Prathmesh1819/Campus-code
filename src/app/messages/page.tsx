@@ -190,7 +190,14 @@ export default function MessagesPage() {
                       />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-0.5">
-                          <h4 className="text-xs font-bold text-white truncate">{c.name}</h4>
+                          <h4 className="text-xs font-bold text-white truncate flex items-center gap-1.5">
+                            <span>{c.name}</span>
+                            {c.unreadCount > 0 && (
+                              <span className="px-1.5 py-0.2 rounded-full bg-emerald-500 text-slate-950 text-[9px] font-black animate-pulse">
+                                {c.unreadCount} NEW
+                              </span>
+                            )}
+                          </h4>
                           <span
                             className={`text-[9px] font-black uppercase px-1.5 py-0.5 rounded ${
                               c.role === "ADMIN"
