@@ -102,7 +102,7 @@ export default function MessagesPage() {
 
       if (res.ok) {
         fetchConversation(user.id, activePeer.id);
-        fetchContacts(); // Update latest message snippet & contact order
+        fetchContacts();
       }
     } catch (err: any) {
       alert("Failed to send message: " + err.message);
@@ -265,47 +265,10 @@ export default function MessagesPage() {
                         return (
                           <div
                             key={m.id}
-                            className={`flex items-center gap-2 group ${
-                              isMe ? "justify-end flex-row" : "justify-start flex-row-reverse"
+                            className={`flex items-center gap-2 group relative ${
+                              isMe ? "justify-end" : "justify-start"
                             }`}
                           >
-                            {/* Message Context Menu Button & Popover */}
-                            <div className="relative shrink-0">
-                              <button
-                                onClick={() => setActiveMenuMsgId(isMenuOpen ? null : m.id)}
-                                className="p-1 text-gray-400 hover:text-white opacity-80 hover:opacity-100 transition-all rounded-lg hover:bg-slate-800"
-                                title="Message options"
-                              >
-                                <MoreVertical className="w-3.5 h-3.5" />
-                              </button>
-
-                              {isMenuOpen && (
-                                <div
-                                  className={`absolute top-6 z-50 w-44 bg-slate-900 border border-slate-800 rounded-2xl p-1.5 shadow-2xl space-y-1 animate-in fade-in ${
-                                    isMe ? "right-0" : "left-0"
-                                  }`}
-                                >
-                                  {isMe && (
-                                    <button
-                                      onClick={() => handleDeleteMessage(m.id, "everyone")}
-                                      className="w-full px-3 py-1.5 text-[11px] font-bold text-rose-400 hover:bg-rose-500/10 rounded-xl flex items-center gap-2 transition-colors text-left"
-                                    >
-                                      <Trash2 className="w-3.5 h-3.5 text-rose-400" />
-                                      <span>Unsend for Everyone</span>
-                                    </button>
-                                  )}
-
-                                  <button
-                                    onClick={() => handleDeleteMessage(m.id, "me")}
-                                    className="w-full px-3 py-1.5 text-[11px] font-semibold text-gray-300 hover:bg-slate-800 rounded-xl flex items-center gap-2 transition-colors text-left"
-                                  >
-                                    <Trash2 className="w-3.5 h-3.5 text-gray-400" />
-                                    <span>Delete for Me</span>
-                                  </button>
-                                </div>
-                              )}
-                            </div>
-
                             {/* Message Bubble */}
                             <div
                               className={`max-w-sm px-4 py-2.5 rounded-2xl text-xs space-y-1.5 shadow-md relative ${
@@ -340,6 +303,43 @@ export default function MessagesPage() {
                                   </div>
                                 )}
                               </div>
+                            </div>
+
+                            {/* 3-Dot Options Action Button */}
+                            <div className="relative shrink-0">
+                              <button
+                                onClick={() => setActiveMenuMsgId(isMenuOpen ? null : m.id)}
+                                className="p-1 text-gray-400 hover:text-white transition-opacity rounded-lg hover:bg-slate-800"
+                                title="Message options"
+                              >
+                                <MoreVertical className="w-3.5 h-3.5" />
+                              </button>
+
+                              {isMenuOpen && (
+                                <div
+                                  className={`absolute top-6 z-50 w-44 bg-slate-900 border border-slate-800 rounded-2xl p-1.5 shadow-2xl space-y-1 animate-in fade-in ${
+                                    isMe ? "right-0" : "left-0"
+                                  }`}
+                                >
+                                  {isMe && (
+                                    <button
+                                      onClick={() => handleDeleteMessage(m.id, "everyone")}
+                                      className="w-full px-3 py-1.5 text-[11px] font-bold text-rose-400 hover:bg-rose-500/10 rounded-xl flex items-center gap-2 transition-colors text-left"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5 text-rose-400" />
+                                      <span>Unsend for Everyone</span>
+                                    </button>
+                                  )}
+
+                                  <button
+                                    onClick={() => handleDeleteMessage(m.id, "me")}
+                                    className="w-full px-3 py-1.5 text-[11px] font-semibold text-gray-300 hover:bg-slate-800 rounded-xl flex items-center gap-2 transition-colors text-left"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5 text-gray-400" />
+                                    <span>Delete for Me</span>
+                                  </button>
+                                </div>
+                              )}
                             </div>
                           </div>
                         );
