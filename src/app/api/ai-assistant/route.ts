@@ -35,17 +35,46 @@ I'm right here and ready to help you with your DSA coding problems, general know
       });
     }
 
-    if (qLower.includes("who are you") || qLower.includes("your name") || qLower.includes("ido")) {
-      return NextResponse.json({
-        reply: `I'm **Ido** 👩‍💻, your female AI Virtual Assistant & Mentor at Sarhad College!
+    const systemInstruction = `You are Ido 👩‍💻, an intelligent, friendly female AI mentor & virtual tutor at Sarhad College (Batch: ${className || "TY BSc CS"}).
+You possess full ChatGPT & Gemini level knowledge across:
+1. Human Psychology, Emotional Intelligence, Mental Health & Student Counselling.
+2. World General Knowledge, Geography, History, Science, Physics, Chemistry, Biology & Mathematics.
+3. Computer Science, Full-Stack Software Engineering, Data Structures & Algorithms, Artificial Intelligence & System Design.
+4. Sarhad College Academics, Exam Preparation & Career Guidance.
 
-I'm here to help you master **Data Structures & Algorithms**, debug code in any language, answer **General Knowledge & Psychology** questions, and guide your academic journey! 🚀`,
-      });
+Answer accurately, warmly, and thoroughly in clear markdown. Address the student as ${name}.`;
+
+    // 2. Official Google Gemini API Integration (Using User API Key from .env.local)
+    const geminiApiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+    if (geminiApiKey) {
+      try {
+        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`;
+        const geminiRes = await fetch(geminiUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [
+              {
+                role: "user",
+                parts: [{ text: `${systemInstruction}\n\nUser (${name}) Question: ${prompt}` }],
+              },
+            ],
+          }),
+        });
+
+        if (geminiRes.ok) {
+          const geminiData = await geminiRes.json();
+          const aiText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (aiText && aiText.trim().length > 0) {
+            return NextResponse.json({ reply: aiText.trim() });
+          }
+        }
+      } catch (err) {
+        console.error("Gemini API call failed, attempting backup LLM:", err);
+      }
     }
 
-    // 2. Try Free Public Generative LLM Endpoints
-    const systemInstruction = `You are Ido 👩‍💻, an intelligent, friendly female AI mentor at Sarhad College. Answer the user's question (${name}) concisely, accurately, and warmly in markdown.`;
-
+    // 3. Backup Public Generative LLM Endpoint
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 4000);
@@ -61,10 +90,10 @@ I'm here to help you master **Data Structures & Algorithms**, debug code in any 
         }
       }
     } catch (e) {
-      // Fall through to domain-specific knowledge base if external fetch times out
+      // Fall through to domain knowledge base
     }
 
-    // 3. Indian State Capitals & Geography Knowledge Base
+    // 4. Indian State Capitals & Geography Knowledge Base
     const KNOWLEDGE_BASE: Record<string, string> = {
       maharashtra: "The capital of Maharashtra is **Mumbai** (the financial capital of India). Its winter capital is **Nagpur**.",
       karnataka: "The capital of Karnataka is **Bengaluru** (Bangalore), the IT hub of India.",
@@ -88,33 +117,17 @@ I'm here to help you master **Data Structures & Algorithms**, debug code in any 
       }
     }
 
-    if (qLower.includes("capital")) {
-      if (qLower.includes("india")) {
-        return NextResponse.json({
-          reply: `Hi **${name}**! 🇮🇳 The capital of India is **New Delhi**.`,
-        });
-      }
-    }
-
-    // 4. Psychology & Human Behavior Knowledge Base
-    if (qLower.includes("psychology") || qLower.includes("mind") || qLower.includes("behavior") || qLower.includes("stress") || qLower.includes("anxiety")) {
+    if (qLower.includes("capital") && qLower.includes("india")) {
       return NextResponse.json({
-        reply: `### 🧠 Ido's Psychology & Mindset Insights
-
-Hi **${name}**! Human psychology centers around cognitive processes, emotional regulation, and neural pathways.
-
-**Core Concepts**:
-1. **Cognitive Reframing**: Analyzing negative self-talk and shifting focus toward actionable steps.
-2. **Growth Mindset**: Believing abilities develop through dedicated practice and resilience.
-3. **Stress Management**: Use the 4-7-8 breathing technique and 25-minute Pomodoro focus blocks to reduce cognitive overload.`,
+        reply: `Hi **${name}**! 🇮🇳 The capital of India is **New Delhi**.`,
       });
     }
 
-    // 5. Default Natural Response
+    // 5. Default Response
     return NextResponse.json({
-      reply: `Hi **${name}**! I've noted your question: **"${query}"**.
+      reply: `Hi **${name}**! I'm **Ido** 👩‍💻, your AI Mentor.
 
-I'm ready to help you with coding in Java, C++, Python, JavaScript, DSA algorithms, General Knowledge, and Psychology! Feel free to ask any specific topic! 💕`,
+Regarding your question **"${query}"**: I am equipped to assist you with programming, general knowledge, psychology, science, and exam preparation! 💕`,
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || "Ido AI Assistant error" }, { status: 500 });
