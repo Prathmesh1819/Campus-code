@@ -113,7 +113,7 @@ class Solution {
 };
 
 export default function SingleProblemPage({ params }: { params: Promise<{ id: string }> }) {
-  const { user } = useAuth();
+  const { user, updateUserProfile } = useAuth();
   const [problem, setProblem] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"description" | "editorial" | "submissions" | "notes">("description");
@@ -129,7 +129,7 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
   useEffect(() => {
     fetchProblemDetail();
     fetchSubmissionsHistory();
-  }, []);
+  }, [user?.id]);
 
   const fetchProblemDetail = async () => {
     try {
@@ -167,22 +167,11 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
   const fetchSubmissionsHistory = async () => {
     try {
       const resolvedParams = await params;
-      const res = await fetch(`/api/submissions?problemId=${resolvedParams.id}&userId=${user?.id}`);
+      const res = await fetch(`/api/submissions?problemId=${resolvedParams.id}&userId=${user?.id || ""}`);
       const data = await res.json();
       if (data.submissions) setSubmissionsHistory(data.submissions);
     } catch {
-      setSubmissionsHistory([
-        {
-          id: "sub-1",
-          status: "ACCEPTED",
-          language: "javascript",
-          executionTimeMs: 24,
-          memoryUsageKb: 14200,
-          testCasesPassed: 3,
-          totalTestCases: 3,
-          createdAt: new Date().toISOString(),
-        },
-      ]);
+      setSubmissionsHistory([]);
     }
   };
 
@@ -198,11 +187,12 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
     setShowSuccessBanner(false);
 
     try {
+      const resolvedParams = await params;
       const res = await fetch("/api/execute", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          problemId: problem?.id || "two-sum-target-pair",
+          problemId: problem?.id || resolvedParams.id || "two-sum-target-pair",
           userId: user?.id,
           code,
           language,
@@ -214,9 +204,24 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
       if (data.result) {
         setExecutionResult(data.result);
         if (isSubmit) {
-          fetchSubmissionsHistory();
+          // Prepend new submission record instantly into history
+          const newSubmission = {
+            id: data.submission?.id || `sub-${Date.now()}`,
+            status: data.result.status,
+            language,
+            executionTimeMs: data.result.executionTimeMs,
+            memoryUsageKb: data.result.memoryUsageKb,
+            createdAt: new Date().toISOString(),
+          };
+          setSubmissionsHistory((prev) => [newSubmission, ...prev]);
+
           if (data.result.status === "ACCEPTED") {
             setShowSuccessBanner(true);
+            // Real-time XP & Streak Update for Navbar & Dashboard
+            const updatedXp = (user?.xp || 0) + 50;
+            const updatedCoins = (user?.coins || 0) + 20;
+            const updatedStreak = (user?.streakDays || 0) === 0 ? 1 : user?.streakDays || 1;
+            updateUserProfile({ xp: updatedXp, coins: updatedCoins, streakDays: updatedStreak });
           }
         }
       }
@@ -228,7 +233,6 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
   };
 
   const parsedExamples = problem?.examples ? JSON.parse(problem.examples) : [];
-  const parsedHints = problem?.hints ? JSON.parse(problem.hints) : [];
 
   return (
     <div className="min-h-screen flex flex-col bg-[#070913] text-white">
@@ -269,7 +273,7 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
             className="px-4 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-gray-200 text-xs font-bold transition-all flex items-center gap-1.5 border border-slate-700"
           >
             <Play className="w-3.5 h-3.5 text-emerald-400 fill-emerald-400" />
-            <span>{executing ? "Executing SQL Query..." : "Run Test Cases"}</span>
+            <span>{executing ? "Executing Query..." : "Run Test Cases"}</span>
           </button>
           <button
             onClick={() => handleRunCode(true)}
@@ -369,39 +373,45 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
                   <span className="text-xs text-purple-400 font-normal">{submissionsHistory.length} total attempts</span>
                 </h3>
 
-                {submissionsHistory.map((sub: any) => (
-                  <div key={sub.id} className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-between text-xs font-mono">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        {sub.status === "ACCEPTED" ? (
-                          <span className="text-emerald-400 font-black flex items-center gap-1">
-                            <CheckCircle2 className="w-3.5 h-3.5" /> ACCEPTED
-                          </span>
-                        ) : (
-                          <span className="text-rose-400 font-black flex items-center gap-1">
-                            <XCircle className="w-3.5 h-3.5" /> {sub.status}
-                          </span>
-                        )}
-                        <span className="text-purple-300 font-bold uppercase text-[10px] bg-purple-500/10 px-2 py-0.5 rounded">
-                          {sub.language}
-                        </span>
-                      </div>
-                      <p className="text-[10px] text-gray-400">{new Date(sub.createdAt).toLocaleString()}</p>
-                    </div>
-
-                    <div className="text-right text-[11px] text-gray-400">
-                      <div>⏱️ {sub.executionTimeMs} ms</div>
-                      <div>💾 {(sub.memoryUsageKb / 1024).toFixed(1)} MB</div>
-                    </div>
+                {submissionsHistory.length === 0 ? (
+                  <div className="p-8 text-center text-xs text-gray-500 font-medium">
+                    No submission history found for this problem yet. Submit your code to build your attempt history!
                   </div>
-                ))}
+                ) : (
+                  submissionsHistory.map((sub: any, idx: number) => (
+                    <div key={sub.id || idx} className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-between text-xs font-mono">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          {sub.status === "ACCEPTED" ? (
+                            <span className="text-emerald-400 font-black flex items-center gap-1">
+                              <CheckCircle2 className="w-3.5 h-3.5" /> ACCEPTED
+                            </span>
+                          ) : (
+                            <span className="text-rose-400 font-black flex items-center gap-1">
+                              <XCircle className="w-3.5 h-3.5" /> {sub.status}
+                            </span>
+                          )}
+                          <span className="text-purple-300 font-bold uppercase text-[10px] bg-purple-500/10 px-2 py-0.5 rounded">
+                            {sub.language}
+                          </span>
+                        </div>
+                        <p className="text-[10px] text-gray-400">{new Date(sub.createdAt).toLocaleString()}</p>
+                      </div>
+
+                      <div className="text-right text-[11px] text-gray-400">
+                        <div>⏱️ {sub.executionTimeMs} ms</div>
+                        <div>💾 {(sub.memoryUsageKb / 1024).toFixed(1)} MB</div>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             )}
 
             {activeTab === "editorial" && (
               <div className="prose prose-invert max-w-none text-xs text-gray-300 leading-relaxed space-y-3">
                 <h3 className="text-sm font-bold text-white">Editorial Solution</h3>
-                <p className="whitespace-pre-line">{problem?.editorial || "Optimal solution uses SQL JOIN and Subqueries."}</p>
+                <p className="whitespace-pre-line">{problem?.editorial || "Optimal solution uses Hash Map / SQL JOIN strategy."}</p>
               </div>
             )}
           </div>
@@ -461,7 +471,7 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Terminal className="w-4 h-4 text-purple-400" />
-                  <h4 className="text-xs font-bold text-white uppercase tracking-wider">Debugger & SQL Execution Output</h4>
+                  <h4 className="text-xs font-bold text-white uppercase tracking-wider">Debugger Execution Output</h4>
                   {executionResult.status === "ACCEPTED" ? (
                     <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-black">
                       <CheckCircle2 className="w-3.5 h-3.5" /> ACCEPTED
@@ -505,7 +515,7 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
                     </div>
                     <div className="text-gray-300">Input: <span className="text-white">{tc.input}</span></div>
                     <div className="text-gray-300">Expected Output: <span className="text-emerald-400">{tc.expected}</span></div>
-                    <div className="text-gray-300">Your SQL Result: <span className={tc.passed ? "text-emerald-300" : "text-rose-400"}>{tc.actual}</span></div>
+                    <div className="text-gray-300">Your Code Output: <span className={tc.passed ? "text-emerald-300" : "text-rose-400"}>{tc.actual}</span></div>
                   </div>
                 ))}
               </div>
