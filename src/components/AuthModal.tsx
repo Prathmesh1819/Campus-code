@@ -72,6 +72,7 @@ export function AuthModal({ isOpen, onClose, defaultMode = "login" }: AuthModalP
         }
 
         login(data.user, data.token);
+        alert(`Welcome back, ${data.user.name}! You have logged in successfully 🎉`);
         onClose();
       } else if (mode === "register") {
         const res = await fetch("/api/auth", {
@@ -96,6 +97,7 @@ export function AuthModal({ isOpen, onClose, defaultMode = "login" }: AuthModalP
         }
 
         login(data.user, data.token);
+        alert(`Welcome to CampusCode, ${data.user.name}! Your account has been registered successfully 🎉`);
         onClose();
       } else if (mode === "forgot") {
         setMode("otp");

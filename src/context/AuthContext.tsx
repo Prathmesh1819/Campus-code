@@ -94,6 +94,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const logout = () => {
+    alert("You have signed out of your account successfully. Goodbye!");
     setUser(null);
     setToken(null);
     localStorage.removeItem("campuscode_user");
