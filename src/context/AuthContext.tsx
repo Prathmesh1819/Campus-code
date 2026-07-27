@@ -21,6 +21,7 @@ export interface User {
 interface AuthContextType {
   user: User | null;
   token: string | null;
+  isAuthenticated: boolean;
   login: (userData: User, token: string) => void;
   logout: () => void;
   switchRole: (role: "STUDENT" | "TEACHER" | "ADMIN") => Promise<void>;
@@ -38,31 +39,35 @@ const DEFAULT_USER: User = {
   email: "aarav@campus.edu",
   role: "STUDENT",
   rollNumber: "2024-CSE-001",
-  className: "Final Year CSE",
-  branch: "Computer Science & Engineering",
+  className: "TY BSc CS",
+  branch: "Computer Science",
   avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80",
-  xp: 2850,
-  level: 12,
-  streakDays: 14,
-  coins: 450,
-  bio: "Competitive programmer | Full-stack & AI Enthusiast",
+  xp: 0,
+  level: 1,
+  streakDays: 0,
+  coins: 0,
+  bio: "Student at CampusCode",
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(DEFAULT_USER);
-  const [token, setToken] = useState<string | null>("demo-token-active");
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
 
   useEffect(() => {
     const savedUser = localStorage.getItem("campuscode_user");
-    if (savedUser) {
+    const savedToken = localStorage.getItem("campuscode_token");
+
+    if (savedUser && savedToken) {
       try {
         setUser(JSON.parse(savedUser));
+        setToken(savedToken);
       } catch {
-        setUser(DEFAULT_USER);
+        setUser(null);
+        setToken(null);
       }
     }
   }, []);
@@ -71,12 +76,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUser(userData);
     setToken(authToken);
     localStorage.setItem("campuscode_user", JSON.stringify(userData));
+    localStorage.setItem("campuscode_token", authToken);
   };
 
   const logout = () => {
     setUser(null);
     setToken(null);
     localStorage.removeItem("campuscode_user");
+    localStorage.removeItem("campuscode_token");
   };
 
   const updateUserAvatar = (newAvatarUrl: string) => {
@@ -103,43 +110,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const data = await res.json();
       if (data.user) {
         setUser(data.user);
+        setToken(data.token || "token");
         localStorage.setItem("campuscode_user", JSON.stringify(data.user));
+        localStorage.setItem("campuscode_token", data.token || "token");
       }
     } catch {
-      if (role === "TEACHER") {
-        const teacherUser: User = {
-          id: "teacher-1",
-          name: "Dr. Vikramaditya Gupta",
-          email: "teacher@campus.edu",
-          role: "TEACHER",
-          className: "Faculty of CSE & IT",
-          branch: "Computer Science",
-          avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&auto=format&fit=crop&q=80",
-          xp: 8500,
-          level: 25,
-          streakDays: 45,
-          coins: 1200,
-        };
-        setUser(teacherUser);
-        localStorage.setItem("campuscode_user", JSON.stringify(teacherUser));
-      } else if (role === "ADMIN") {
-        const adminUser: User = {
-          id: "admin-1",
-          name: "CampusCode Super Admin",
-          email: "admin@campus.edu",
-          role: "ADMIN",
-          avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&auto=format&fit=crop&q=80",
-          xp: 15000,
-          level: 50,
-          streakDays: 100,
-          coins: 5000,
-        };
-        setUser(adminUser);
-        localStorage.setItem("campuscode_user", JSON.stringify(adminUser));
-      } else {
-        setUser(DEFAULT_USER);
-        localStorage.setItem("campuscode_user", JSON.stringify(DEFAULT_USER));
-      }
+      // fallback
     }
   };
 
@@ -150,11 +126,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const closeAuthModal = () => setIsAuthModalOpen(false);
 
+  const isAuthenticated = Boolean(user && token);
+
   return (
     <AuthContext.Provider
       value={{
         user,
         token,
+        isAuthenticated,
         login,
         logout,
         switchRole,

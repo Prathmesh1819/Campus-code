@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Sidebar } from "@/components/Sidebar";
 import { useAuth } from "@/context/AuthContext";
@@ -28,12 +28,75 @@ import {
 export default function DashboardPage() {
   const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [solvedCount, setSolvedCount] = useState(0);
+  const [projectsCount, setProjectsCount] = useState(0);
+
+  useEffect(() => {
+    if (user?.id) {
+      fetchUserDashboardStats();
+    }
+  }, [user?.id]);
+
+  const fetchUserDashboardStats = async () => {
+    try {
+      const res = await fetch(`/api/submissions?userId=${user?.id}`);
+      const data = await res.json();
+      if (data.submissions) {
+        const accepted = data.submissions.filter((s: any) => s.status === "ACCEPTED");
+        setSolvedCount(accepted.length);
+      }
+    } catch {
+      setSolvedCount(user?.xp ? Math.floor(user.xp / 50) : 0);
+    }
+
+    try {
+      const pRes = await fetch("/api/projects");
+      const pData = await pRes.json();
+      if (pData.projects) {
+        const myProjects = pData.projects.filter((p: any) => p.userId === user?.id);
+        setProjectsCount(myProjects.length);
+      }
+    } catch {
+      setProjectsCount(0);
+    }
+  };
+
+  const currentXp = user?.xp || 0;
+  const currentLevel = user?.level || 1;
+  const currentStreak = user?.streakDays || 0;
+  const targetXpForNextLevel = currentLevel * 1000;
+  const currentLevelXpProgress = currentXp % 1000;
+  const xpPercentage = Math.min(100, Math.round((currentLevelXpProgress / 1000) * 100));
 
   const stats = [
-    { label: "Solved Problems", value: "48 / 150", sub: "12 Easy • 26 Medium • 10 Hard", icon: Code2, color: "from-purple-500 to-indigo-600" },
-    { label: "College Rank", value: "#3 in CSE", sub: "Top 1.5% percentile", icon: Trophy, color: "from-amber-400 to-orange-500" },
-    { label: "Coding Streak", value: `${user?.streakDays || 14} Days`, sub: "Personal Best: 21 Days", icon: Flame, color: "from-rose-500 to-amber-500" },
-    { label: "Projects Uploaded", value: "4 Projects", sub: "1 Hackathon Winner 🏆", icon: FolderGit2, color: "from-cyan-500 to-blue-600" },
+    {
+      label: "Solved Problems",
+      value: `${solvedCount} / 35`,
+      sub: solvedCount > 0 ? `${solvedCount} Problems Mastered` : "No problems solved yet",
+      icon: Code2,
+      color: "from-purple-500 to-indigo-600",
+    },
+    {
+      label: "College Rank",
+      value: solvedCount > 0 ? "#12 in Class" : "Unranked",
+      sub: solvedCount > 0 ? "Active Competitor" : "Solve 1 problem to rank",
+      icon: Trophy,
+      color: "from-amber-400 to-orange-500",
+    },
+    {
+      label: "Coding Streak",
+      value: `${currentStreak} Days`,
+      sub: currentStreak > 0 ? `Active ${currentStreak}d Streak` : "Start coding today!",
+      icon: Flame,
+      color: "from-rose-500 to-amber-500",
+    },
+    {
+      label: "Projects Uploaded",
+      value: `${projectsCount} Projects`,
+      sub: projectsCount > 0 ? `${projectsCount} Live Applications` : "Upload your first project",
+      icon: FolderGit2,
+      color: "from-cyan-500 to-blue-600",
+    },
   ];
 
   const dailyChallenges = [
@@ -72,16 +135,16 @@ export default function DashboardPage() {
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                      LEVEL {user?.level || 12} CODER
+                      LEVEL {currentLevel} CODER
                     </span>
-                    <span className="text-xs font-medium text-gray-400">• {user?.className || "Final Year CSE"}</span>
+                    <span className="text-xs font-medium text-gray-400">• {user?.className || "TY BSc CS"}</span>
                   </div>
                   <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight mt-1">
-                    Welcome back, <span className="gradient-text">{user?.name || "Aarav Sharma"}</span>! 👋
+                    Welcome back, <span className="gradient-text">{user?.name || "Student"}</span>! 👋
                   </h1>
                   <p className="text-xs sm:text-sm text-gray-400 mt-1">
                     {user?.role === "STUDENT"
-                      ? "You have 2 pending daily challenges and 1 upcoming assignment due."
+                      ? "Complete daily coding challenges to earn XP and level up your ranking."
                       : user?.role === "TEACHER"
                       ? "Teacher Portal active. Review student submissions and post assignments."
                       : "Admin Control Center active. Platform metrics operating normally."}
@@ -89,7 +152,7 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              {/* Quick Action Button */}
+              {/* Quick Action Buttons */}
               <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
                 <Link
                   href="/problems"
@@ -108,21 +171,24 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* XP & Level Progress Bar */}
+            {/* Real XP & Level Progress Bar */}
             <div className="mt-6 pt-6 border-t border-slate-800/80">
               <div className="flex items-center justify-between text-xs font-semibold mb-2">
                 <span className="text-gray-300 flex items-center gap-1.5">
-                  <Zap className="w-4 h-4 text-purple-400 fill-purple-400" /> XP Progress: 2,850 / 3,000 XP
+                  <Zap className="w-4 h-4 text-purple-400 fill-purple-400" /> XP Progress: {currentXp} / {targetXpForNextLevel} XP
                 </span>
-                <span className="text-purple-400 font-bold">95% to Level 13</span>
+                <span className="text-purple-400 font-bold">{xpPercentage}% to Level {currentLevel + 1}</span>
               </div>
               <div className="w-full bg-slate-950 h-3 rounded-full overflow-hidden p-0.5 border border-slate-800">
-                <div className="bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-400 h-full rounded-full w-[95%] transition-all duration-1000 shadow-glow" />
+                <div
+                  style={{ width: `${Math.max(5, xpPercentage)}%` }}
+                  className="bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-400 h-full rounded-full transition-all duration-1000 shadow-glow"
+                />
               </div>
             </div>
           </div>
 
-          {/* Quick Metrics Grid */}
+          {/* Real Quick Metrics Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {stats.map((item, idx) => {
               const Icon = item.icon;
@@ -210,17 +276,21 @@ export default function DashboardPage() {
                 </h3>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   {[
-                    { name: "100 Problems", icon: "🏆", desc: "Mastered 100 coding challenges", unlocked: true },
-                    { name: "7-Day Streak", icon: "🔥", desc: "Coded 7 days in a row", unlocked: true },
-                    { name: "Top Ranker", icon: "⚡", desc: "Top 3 Leaderboard Position", unlocked: true },
-                    { name: "Project Creator", icon: "🚀", desc: "Published featured showcase project", unlocked: true },
+                    { name: "First Code", icon: "🏆", desc: "Registered on CampusCode", unlocked: true },
+                    { name: "Streak Starter", icon: "🔥", desc: "Solve daily coding problems", unlocked: currentStreak > 0 },
+                    { name: "Top Ranker", icon: "⚡", desc: "Climb college leaderboard", unlocked: solvedCount > 0 },
+                    { name: "Project Creator", icon: "🚀", desc: "Publish featured showcase project", unlocked: projectsCount > 0 },
                   ].map((badge, idx) => (
                     <div
                       key={idx}
-                      className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 text-center hover:border-amber-500/30 transition-all group"
+                      className={`p-4 rounded-2xl border text-center transition-all ${
+                        badge.unlocked
+                          ? "bg-slate-900/80 border-amber-500/30 text-white"
+                          : "bg-slate-950/60 border-slate-800 opacity-50 text-gray-500"
+                      }`}
                     >
-                      <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">{badge.icon}</div>
-                      <h4 className="text-xs font-bold text-white">{badge.name}</h4>
+                      <div className="text-3xl mb-2">{badge.icon}</div>
+                      <h4 className="text-xs font-bold">{badge.name}</h4>
                       <p className="text-[10px] text-gray-400 mt-1">{badge.desc}</p>
                     </div>
                   ))}
