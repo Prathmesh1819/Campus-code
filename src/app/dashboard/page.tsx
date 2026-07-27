@@ -23,6 +23,8 @@ import {
   ChevronRight,
   Shield,
   BookOpen,
+  GraduationCap,
+  FileText,
 } from "lucide-react";
 
 export default function DashboardPage() {
@@ -31,14 +33,35 @@ export default function DashboardPage() {
   const [solvedCount, setSolvedCount] = useState(0);
   const [projectsCount, setProjectsCount] = useState(0);
   const [userRank, setUserRank] = useState<number | null>(null);
+  const [teacherStats, setTeacherStats] = useState({ students: 1, assignments: 0, notes: 0, projects: 0 });
+
+  const isTeacherOrAdmin = user?.role === "TEACHER" || user?.role === "ADMIN";
 
   useEffect(() => {
     if (user?.id) {
       fetchUserDashboardStats();
     }
-  }, [user?.id]);
+  }, [user?.id, user?.role]);
 
   const fetchUserDashboardStats = async () => {
+    if (isTeacherOrAdmin) {
+      try {
+        const tRes = await fetch("/api/teacher");
+        const tData = await tRes.json();
+        if (tData.stats) {
+          setTeacherStats({
+            students: tData.stats.enrolledStudents || 1,
+            assignments: tData.stats.assignmentsPosted || 0,
+            notes: tData.stats.notesUploaded || 0,
+            projects: tData.stats.classProjects || 0,
+          });
+        }
+      } catch {
+        setTeacherStats({ students: 1, assignments: 0, notes: 0, projects: 0 });
+      }
+      return;
+    }
+
     try {
       const res = await fetch(`/api/submissions?userId=${user?.id}`);
       const data = await res.json();
@@ -82,36 +105,68 @@ export default function DashboardPage() {
   const currentLevelXpProgress = currentXp % 1000;
   const xpPercentage = Math.min(100, Math.round((currentLevelXpProgress / 1000) * 100));
 
-  const stats = [
-    {
-      label: "Solved Problems",
-      value: `${solvedCount} / 35`,
-      sub: solvedCount > 0 ? `${solvedCount} Problems Mastered` : "No problems solved yet",
-      icon: Code2,
-      color: "from-purple-500 to-indigo-600",
-    },
-    {
-      label: "College Rank",
-      value: userRank ? `#${userRank} in Class` : solvedCount > 0 ? "#1 in Class" : "Unranked",
-      sub: userRank === 1 ? "Top 1 Campus Ranker 🏆" : userRank ? `Rank #${userRank} Competitor` : "Solve 1 problem to rank",
-      icon: Trophy,
-      color: "from-amber-400 to-orange-500",
-    },
-    {
-      label: "Coding Streak",
-      value: `${currentStreak} Days`,
-      sub: currentStreak > 0 ? `Active ${currentStreak}d Streak` : "Start coding today!",
-      icon: Flame,
-      color: "from-rose-500 to-amber-500",
-    },
-    {
-      label: "Projects Uploaded",
-      value: `${projectsCount} Projects`,
-      sub: projectsCount > 0 ? `${projectsCount} Live Applications` : "Upload your first project",
-      icon: FolderGit2,
-      color: "from-cyan-500 to-blue-600",
-    },
-  ];
+  // Dynamic 4 Metrics Cards Grid depending on Student vs Teacher/Admin
+  const stats = isTeacherOrAdmin
+    ? [
+        {
+          label: "Enrolled Students",
+          value: `${teacherStats.students} Students`,
+          sub: `${teacherStats.students} Registered in ${user?.className || "TY BSc CS"}`,
+          icon: Users,
+          color: "from-purple-500 to-indigo-600",
+        },
+        {
+          label: "Assignments Posted",
+          value: `${teacherStats.assignments} Active`,
+          sub: teacherStats.assignments > 0 ? `${teacherStats.assignments} Course Assignments` : "No active assignments",
+          icon: FileText,
+          color: "from-amber-400 to-orange-500",
+        },
+        {
+          label: "Class Projects",
+          value: `${teacherStats.projects} Projects`,
+          sub: "Student showcase submissions",
+          icon: FolderGit2,
+          color: "from-cyan-500 to-blue-600",
+        },
+        {
+          label: "Shared Notes",
+          value: `${teacherStats.notes} Files`,
+          sub: "Lecture slides & lab notes",
+          icon: BookOpen,
+          color: "from-emerald-500 to-teal-600",
+        },
+      ]
+    : [
+        {
+          label: "Solved Problems",
+          value: `${solvedCount} / 35`,
+          sub: solvedCount > 0 ? `${solvedCount} Problems Mastered` : "No problems solved yet",
+          icon: Code2,
+          color: "from-purple-500 to-indigo-600",
+        },
+        {
+          label: "College Rank",
+          value: userRank ? `#${userRank} in Class` : solvedCount > 0 ? "#1 in Class" : "Unranked",
+          sub: userRank === 1 ? "Top 1 Campus Ranker 🏆" : userRank ? `Rank #${userRank} Competitor` : "Solve 1 problem to rank",
+          icon: Trophy,
+          color: "from-amber-400 to-orange-500",
+        },
+        {
+          label: "Coding Streak",
+          value: `${currentStreak} Days`,
+          sub: currentStreak > 0 ? `Active ${currentStreak}d Streak` : "Start coding today!",
+          icon: Flame,
+          color: "from-rose-500 to-amber-500",
+        },
+        {
+          label: "Projects Uploaded",
+          value: `${projectsCount} Projects`,
+          sub: projectsCount > 0 ? `${projectsCount} Live Applications` : "Upload your first project",
+          icon: FolderGit2,
+          color: "from-cyan-500 to-blue-600",
+        },
+      ];
 
   const dailyChallenges = [
     { title: "Longest Substring Without Repeating Characters", diff: "MEDIUM", cat: "Strings", xp: "+100 XP", id: "longest-substring-without-repeating-characters" },
@@ -143,18 +198,22 @@ export default function DashboardPage() {
               <div className="flex items-center gap-4">
                 <img
                   src={user?.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80"}
-                  alt={user?.name || "Student Avatar"}
+                  alt={user?.name || "Avatar"}
                   className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover ring-4 ring-purple-500/30 shadow-glow"
                 />
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                      LEVEL {currentLevel} CODER
+                    <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 uppercase">
+                      {user?.role === "TEACHER"
+                        ? "CLASS TEACHER"
+                        : user?.role === "ADMIN"
+                        ? "SUPER ADMIN"
+                        : `LEVEL ${currentLevel} CODER`}
                     </span>
                     <span className="text-xs font-medium text-gray-400">• {user?.className || "TY BSc CS"}</span>
                   </div>
                   <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight mt-1">
-                    Welcome back, <span className="gradient-text">{user?.name || "Student"}</span>! 👋
+                    Welcome back, <span className="gradient-text">{user?.name || "User"}</span>! 👋
                   </h1>
                   <p className="text-xs sm:text-sm text-gray-400 mt-1">
                     {user?.role === "STUDENT"
@@ -168,38 +227,61 @@ export default function DashboardPage() {
 
               {/* Quick Action Buttons */}
               <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-                <Link
-                  href="/problems"
-                  className="flex-1 md:flex-initial px-5 py-3 rounded-2xl gradient-bg text-white text-xs font-bold shadow-glow hover:opacity-95 transition-all flex items-center justify-center gap-2"
-                >
-                  <Code2 className="w-4 h-4" />
-                  <span>Start Coding</span>
-                </Link>
-                <Link
-                  href="/projects"
-                  className="flex-1 md:flex-initial px-5 py-3 rounded-2xl bg-slate-900 border border-slate-700 text-gray-200 hover:text-white text-xs font-bold transition-all flex items-center justify-center gap-2"
-                >
-                  <FolderGit2 className="w-4 h-4 text-cyan-400" />
-                  <span>Post Project</span>
-                </Link>
+                {isTeacherOrAdmin ? (
+                  <>
+                    <Link
+                      href="/classrooms"
+                      className="flex-1 md:flex-initial px-5 py-3 rounded-2xl gradient-bg text-white text-xs font-bold shadow-glow hover:opacity-95 transition-all flex items-center justify-center gap-2"
+                    >
+                      <BookOpen className="w-4 h-4" />
+                      <span>View Classrooms</span>
+                    </Link>
+                    <Link
+                      href="/teacher"
+                      className="flex-1 md:flex-initial px-5 py-3 rounded-2xl bg-slate-900 border border-slate-700 text-gray-200 hover:text-white text-xs font-bold transition-all flex items-center justify-center gap-2"
+                    >
+                      <GraduationCap className="w-4 h-4 text-cyan-400" />
+                      <span>Teacher Portal</span>
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href="/problems"
+                      className="flex-1 md:flex-initial px-5 py-3 rounded-2xl gradient-bg text-white text-xs font-bold shadow-glow hover:opacity-95 transition-all flex items-center justify-center gap-2"
+                    >
+                      <Code2 className="w-4 h-4" />
+                      <span>Start Coding</span>
+                    </Link>
+                    <Link
+                      href="/projects"
+                      className="flex-1 md:flex-initial px-5 py-3 rounded-2xl bg-slate-900 border border-slate-700 text-gray-200 hover:text-white text-xs font-bold transition-all flex items-center justify-center gap-2"
+                    >
+                      <FolderGit2 className="w-4 h-4 text-cyan-400" />
+                      <span>Post Project</span>
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
 
-            {/* Real XP & Level Progress Bar */}
-            <div className="mt-6 pt-6 border-t border-slate-800/80">
-              <div className="flex items-center justify-between text-xs font-semibold mb-2">
-                <span className="text-gray-300 flex items-center gap-1.5">
-                  <Zap className="w-4 h-4 text-purple-400 fill-purple-400" /> XP Progress: {currentXp} / {targetXpForNextLevel} XP
-                </span>
-                <span className="text-purple-400 font-bold">{xpPercentage}% to Level {currentLevel + 1}</span>
+            {/* Real XP & Level Progress Bar - RENDER ONLY FOR STUDENTS */}
+            {!isTeacherOrAdmin && (
+              <div className="mt-6 pt-6 border-t border-slate-800/80">
+                <div className="flex items-center justify-between text-xs font-semibold mb-2">
+                  <span className="text-gray-300 flex items-center gap-1.5">
+                    <Zap className="w-4 h-4 text-purple-400 fill-purple-400" /> XP Progress: {currentXp} / {targetXpForNextLevel} XP
+                  </span>
+                  <span className="text-purple-400 font-bold">{xpPercentage}% to Level {currentLevel + 1}</span>
+                </div>
+                <div className="w-full bg-slate-950 h-3 rounded-full overflow-hidden p-0.5 border border-slate-800">
+                  <div
+                    style={{ width: `${Math.max(5, xpPercentage)}%` }}
+                    className="bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-400 h-full rounded-full transition-all duration-1000 shadow-glow"
+                  />
+                </div>
               </div>
-              <div className="w-full bg-slate-950 h-3 rounded-full overflow-hidden p-0.5 border border-slate-800">
-                <div
-                  style={{ width: `${Math.max(5, xpPercentage)}%` }}
-                  className="bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-400 h-full rounded-full transition-all duration-1000 shadow-glow"
-                />
-              </div>
-            </div>
+            )}
           </div>
 
           {/* Real Quick Metrics Grid */}

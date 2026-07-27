@@ -207,9 +207,9 @@ export function Navbar({ onToggleSidebar, collegeLogoUrl = DEFAULT_COLLEGE_LOGO 
                 </button>
 
                 {profileDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-64 glass-card border border-purple-500/30 rounded-3xl p-2.5 shadow-2xl space-y-1.5 z-50 animate-in fade-in slide-in-from-top-2">
+                  <div className="absolute right-0 mt-2 w-64 bg-[#0a0c1a] border border-purple-500/40 rounded-3xl p-2.5 shadow-2xl space-y-1.5 z-[100] animate-in fade-in slide-in-from-top-2 ring-1 ring-black/50">
                     {/* User Info Header */}
-                    <div className="p-3 bg-slate-950/80 rounded-2xl border border-slate-800 space-y-1">
+                    <div className="p-3 bg-slate-950 rounded-2xl border border-slate-800 space-y-1">
                       <p className="text-xs font-black text-white truncate">{user?.name}</p>
                       <p className="text-[10px] text-purple-400 truncate font-mono">{user?.email}</p>
                       <div className="flex items-center justify-between text-[10px] text-gray-400 uppercase font-semibold pt-1 border-t border-slate-800/80">
