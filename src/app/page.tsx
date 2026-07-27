@@ -117,9 +117,9 @@ export default function HomePage() {
               </button>
 
               {profileDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-64 glass-card border border-purple-500/30 rounded-3xl p-2.5 shadow-2xl space-y-1.5 z-50 animate-in fade-in slide-in-from-top-2 text-left">
+                <div className="absolute right-0 mt-2 w-64 bg-[#0a0c1a] border border-purple-500/40 rounded-3xl p-2.5 shadow-2xl space-y-1.5 z-[100] animate-in fade-in slide-in-from-top-2 text-left">
                   {/* User Info Header */}
-                  <div className="p-3 bg-slate-950/80 rounded-2xl border border-slate-800 space-y-1">
+                  <div className="p-3 bg-slate-950 rounded-2xl border border-slate-800 space-y-1">
                     <p className="text-xs font-black text-white truncate">{user?.name}</p>
                     <p className="text-[10px] text-purple-400 truncate font-mono">{user?.email}</p>
                     <div className="flex items-center justify-between text-[10px] text-gray-400 uppercase font-semibold pt-1 border-t border-slate-800/80">
@@ -219,8 +219,8 @@ export default function HomePage() {
         {/* Glow Spheres Background */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-600/20 rounded-full blur-[140px] pointer-events-none -z-10" />
 
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-950/80 border border-purple-500/30 text-purple-300 text-xs font-semibold mb-6 animate-pulse">
-          <Sparkles className="w-4 h-4 text-purple-400" />
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-700 dark:text-purple-300 text-xs font-black mb-6 shadow-sm">
+          <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400" />
           <span>Official Sarhad College Platform for Student Programmers</span>
         </div>
 
@@ -259,102 +259,50 @@ export default function HomePage() {
             <span>Explore Demo Dashboard</span>
           </Link>
         </div>
-
-        {/* Floating Feature Preview Mockup */}
-        <div className="mt-16 w-full max-w-5xl rounded-3xl glass-card p-3 border border-purple-500/30 shadow-2xl overflow-hidden">
-          <div className="rounded-2xl bg-slate-950 border border-slate-800/80 p-6 flex flex-col md:flex-row items-center gap-6">
-            <div className="text-left space-y-4 md:w-1/2">
-              <div className="flex items-center gap-2 text-xs font-bold text-purple-400">
-                <Cpu className="w-4 h-4" /> MONACO MULTI-LANGUAGE CODE ENGINE
-              </div>
-              <h3 className="text-2xl font-extrabold text-white">Full In-Browser Execution Sandbox</h3>
-              <p className="text-xs text-gray-400 leading-relaxed">
-                Supports Java, Python, JavaScript, C++, C, Go, Rust, Kotlin, and SQL with automated test-case evaluation, runtime execution charts, and editorial walkthroughs.
-              </p>
-              <div className="flex items-center gap-4 pt-2">
-                <span className="text-xs font-bold text-emerald-400 flex items-center gap-1">
-                  <CheckCircle2 className="w-4 h-4" /> 100% Test Accuracy
-                </span>
-                <span className="text-xs font-bold text-cyan-400 flex items-center gap-1">
-                  <Zap className="w-4 h-4" /> Real-time Feedback
-                </span>
-              </div>
-            </div>
-            <div className="md:w-1/2 w-full rounded-2xl bg-slate-900 border border-slate-800 p-4 font-mono text-xs text-purple-300 text-left overflow-x-auto shadow-inner">
-              <span className="text-gray-500">// CampusCode Code Execution Sandbox</span>
-              <br />
-              <span className="text-purple-400">function</span> <span className="text-blue-400">solve</span>(nums, target) &#123;
-              <br />
-              &nbsp;&nbsp;<span className="text-purple-400">const</span> map = <span className="text-purple-400">new</span> Map();
-              <br />
-              &nbsp;&nbsp;<span className="text-purple-400">for</span> (<span className="text-purple-400">let</span> i = 0; i &lt; nums.length; i++) &#123;
-              <br />
-              &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-purple-400">if</span> (map.has(target - nums[i])) return [map.get(target - nums[i]), i];
-              <br />
-              &nbsp;&nbsp;&nbsp;&nbsp;map.set(nums[i], i);
-              <br />
-              &nbsp;&nbsp;&#125;
-              <br />
-              &#125;
-              <br />
-              <span className="text-emerald-400 mt-2 block">✓ Output: [0, 1] | Runtime: 14ms | Memory: 14.2MB</span>
-            </div>
-          </div>
-        </div>
       </section>
 
       {/* Feature Highlights Grid */}
       <section className="py-16 px-6 lg:px-12 max-w-7xl mx-auto w-full">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-extrabold text-white">Built for Every Aspect of Campus Tech Life</h2>
-          <p className="text-sm text-gray-400 mt-2">Designed specifically for Sarhad College students, teachers, and university administrators</p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="rounded-3xl glass-card p-6 border border-slate-800 hover:border-purple-500/40 transition-all space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="p-8 rounded-3xl glass-card border border-slate-800 hover:border-purple-500/40 transition-all space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400">
               <Trophy className="w-6 h-6" />
             </div>
-            <h3 className="text-lg font-bold text-white">Multi-Tier Leaderboards</h3>
-            <p className="text-xs text-gray-400 leading-relaxed">
-              Compare your rankings across Global, College, Department, and Class levels with weekly, monthly, and all-time filters.
+            <h3 className="text-xl font-bold text-white">Live College Leaderboards</h3>
+            <p className="text-sm text-gray-400 leading-relaxed">
+              Compete with classmates in real time. Climb batch ranks, earn XP, and showcase your coding consistency.
             </p>
           </div>
 
-          <div className="rounded-3xl glass-card p-6 border border-slate-800 hover:border-purple-500/40 transition-all space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
-              <FolderGit2 className="w-6 h-6" />
+          <div className="p-8 rounded-3xl glass-card border border-slate-800 hover:border-purple-500/40 transition-all space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+              <Code2 className="w-6 h-6" />
             </div>
-            <h3 className="text-lg font-bold text-white">Project Showcase</h3>
-            <p className="text-xs text-gray-400 leading-relaxed">
-              Upload hackathon wins, web apps, AI models, and research papers with live demos, video previews, and GitHub links.
+            <h3 className="text-xl font-bold text-white">Monaco In-Browser IDE</h3>
+            <p className="text-sm text-gray-400 leading-relaxed">
+              Solve LeetCode-style interview problems across 8 programming languages directly inside VS Code's editor engine.
             </p>
           </div>
 
-          <div className="rounded-3xl glass-card p-6 border border-slate-800 hover:border-purple-500/40 transition-all space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+          <div className="p-8 rounded-3xl glass-card border border-slate-800 hover:border-purple-500/40 transition-all space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
               <Users className="w-6 h-6" />
             </div>
-            <h3 className="text-lg font-bold text-white">Teacher & Admin Panels</h3>
-            <p className="text-xs text-gray-400 leading-relaxed">
-              Teachers can publish assignments, upload course notes, and broadcast announcements, while admins monitor campus metrics.
+            <h3 className="text-xl font-bold text-white">Virtual Classrooms & Peer Messaging</h3>
+            <p className="text-sm text-gray-400 leading-relaxed">
+              Access lecture notes, submit course projects, and direct message faculty or classmates with WhatsApp-style read receipts.
             </p>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="mt-auto border-t border-slate-800 py-8 px-6 text-center text-xs text-gray-500 space-y-1">
-        <p>© 2026 CampusCode Platform • Sarhad College Portal. All rights reserved.</p>
-        <p>Designed and developed by Team 18</p>
+      <footer className="mt-auto border-t border-slate-800/80 py-8 px-6 text-center text-xs text-gray-500">
+        <p>© 2026 Sarhad College of Arts, Commerce and Science • CampusCode Platform • Designed by Team 18</p>
       </footer>
 
-      {/* Auth Modal Render */}
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={closeAuthModal}
-        defaultMode={authMode}
-      />
+      {/* Auth Modal */}
+      <AuthModal isOpen={isAuthModalOpen} onClose={closeAuthModal} defaultMode={authMode} />
     </div>
   );
 }

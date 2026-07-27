@@ -99,6 +99,15 @@ html.light .bg-slate-800\/40 {
   border-color: #e2e8f0 !important;
 }
 
+/* Light Mode Overrides for Dark Purple Containers & Badges */
+html.light .bg-purple-950,
+html.light .bg-purple-950\/80,
+html.light .bg-purple-900,
+html.light .bg-purple-900\/80 {
+  background-color: #f3e8ff !important;
+  border-color: #d8b4fe !important;
+}
+
 /* Light Theme Typography Contrast */
 html.light .text-white {
   color: #0f172a !important;
@@ -134,7 +143,7 @@ html.light .bg-purple-500\/10 {
 
 html.light .text-purple-300,
 html.light .text-purple-400 {
-  color: #7e22ce !important;
+  color: #6b21a8 !important;
 }
 
 html.light .bg-amber-500\/10 {
