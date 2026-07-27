@@ -2,6 +2,44 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { hashPassword, comparePassword, generateAccessToken, generateRefreshToken } from "@/lib/auth";
 
+export async function GET(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const userId = searchParams.get("userId");
+
+    if (!userId) {
+      return NextResponse.json({ error: "User ID required" }, { status: 400 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        avatar: true,
+        rollNumber: true,
+        className: true,
+        branch: true,
+        xp: true,
+        level: true,
+        streakDays: true,
+        coins: true,
+        bio: true,
+      },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ user });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message || "Auth GET error" }, { status: 500 });
+  }
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -46,8 +84,11 @@ export async function POST(req: Request) {
           avatar: user.avatar,
           rollNumber: user.rollNumber,
           branch: user.branch,
+          className: user.className,
           xp: user.xp,
           level: user.level,
+          streakDays: user.streakDays,
+          coins: user.coins,
         },
         token,
       });
@@ -90,6 +131,7 @@ export async function POST(req: Request) {
           xp: user.xp,
           level: user.level,
           streakDays: user.streakDays,
+          coins: user.coins,
         },
         token,
       });
@@ -122,6 +164,7 @@ export async function POST(req: Request) {
           xp: user.xp,
           level: user.level,
           streakDays: user.streakDays,
+          coins: user.coins,
         },
         token,
       });

@@ -113,7 +113,7 @@ class Solution {
 };
 
 export default function SingleProblemPage({ params }: { params: Promise<{ id: string }> }) {
-  const { user, updateUserProfile } = useAuth();
+  const { user, updateUserProfile, refreshUserData } = useAuth();
   const [problem, setProblem] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"description" | "editorial" | "submissions" | "notes">("description");
@@ -217,11 +217,8 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
 
           if (data.result.status === "ACCEPTED") {
             setShowSuccessBanner(true);
-            // Real-time XP & Streak Update for Navbar & Dashboard
-            const updatedXp = (user?.xp || 0) + 50;
-            const updatedCoins = (user?.coins || 0) + 20;
-            const updatedStreak = (user?.streakDays || 0) === 0 ? 1 : user?.streakDays || 1;
-            updateUserProfile({ xp: updatedXp, coins: updatedCoins, streakDays: updatedStreak });
+            // Sync with DB
+            await refreshUserData();
           }
         }
       }

@@ -26,6 +26,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (userData: User, token: string) => void;
   logout: () => void;
+  refreshUserData: () => Promise<void>;
   switchRole: (role: "STUDENT" | "TEACHER" | "ADMIN") => Promise<void>;
   updateUserAvatar: (newAvatarUrl: string) => void;
   updateUserProfile: (updatedFields: Partial<User>) => void;
@@ -49,14 +50,41 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (savedUser && savedToken) {
       try {
-        setUser(JSON.parse(savedUser));
+        const parsed = JSON.parse(savedUser);
+        setUser(parsed);
         setToken(savedToken);
+        // Refresh live stats from database
+        if (parsed.id) {
+          fetchLatestUserStats(parsed.id);
+        }
       } catch {
         setUser(null);
         setToken(null);
       }
     }
   }, []);
+
+  const fetchLatestUserStats = async (userId: string) => {
+    try {
+      const res = await fetch(`/api/auth?userId=${userId}`);
+      const data = await res.json();
+      if (data.user) {
+        setUser((prev) => {
+          const updated = { ...prev, ...data.user };
+          localStorage.setItem("campuscode_user", JSON.stringify(updated));
+          return updated;
+        });
+      }
+    } catch (err) {
+      console.error("Error fetching latest user stats:", err);
+    }
+  };
+
+  const refreshUserData = async () => {
+    if (user?.id) {
+      await fetchLatestUserStats(user.id);
+    }
+  };
 
   const login = (userData: User, authToken: string) => {
     setUser(userData);
@@ -122,6 +150,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         isAuthenticated,
         login,
         logout,
+        refreshUserData,
         switchRole,
         updateUserAvatar,
         updateUserProfile,
