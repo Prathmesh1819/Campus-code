@@ -25,6 +25,8 @@ import {
   BookOpen,
   GraduationCap,
   FileText,
+  Plus,
+  ExternalLink,
 } from "lucide-react";
 
 export default function DashboardPage() {
@@ -33,6 +35,8 @@ export default function DashboardPage() {
   const [solvedCount, setSolvedCount] = useState(0);
   const [projectsCount, setProjectsCount] = useState(0);
   const [userRank, setUserRank] = useState<number | null>(null);
+  const [topRankers, setTopRankers] = useState<any[]>([]);
+  const [announcements, setAnnouncements] = useState<any[]>([]);
   const [teacherStats, setTeacherStats] = useState({ students: 1, assignments: 0, notes: 0, projects: 0 });
 
   const isTeacherOrAdmin = user?.role === "TEACHER" || user?.role === "ADMIN";
@@ -41,7 +45,9 @@ export default function DashboardPage() {
     if (user?.id) {
       fetchUserDashboardStats();
     }
-  }, [user?.id, user?.role]);
+    fetchLeaderboardPreview();
+    fetchRealAnnouncements();
+  }, [user?.id, user?.role, user?.className]);
 
   const fetchUserDashboardStats = async () => {
     if (isTeacherOrAdmin) {
@@ -83,18 +89,30 @@ export default function DashboardPage() {
     } catch {
       setProjectsCount(0);
     }
+  };
 
+  const fetchLeaderboardPreview = async () => {
     try {
-      const lRes = await fetch("/api/leaderboard");
-      const lData = await lRes.json();
-      if (lData.rankings) {
-        const myEntry = lData.rankings.find((r: any) => r.id === user?.id);
-        if (myEntry) {
-          setUserRank(myEntry.rank);
-        }
+      const res = await fetch("/api/leaderboard");
+      const data = await res.json();
+      if (data.rankings) {
+        setTopRankers(data.rankings.slice(0, 3));
+        const myEntry = data.rankings.find((r: any) => r.id === user?.id);
+        if (myEntry) setUserRank(myEntry.rank);
       }
     } catch {
-      setUserRank(1);
+      setTopRankers([]);
+    }
+  };
+
+  const fetchRealAnnouncements = async () => {
+    try {
+      const cName = user?.className || "TY BSc CS";
+      const res = await fetch(`/api/classrooms?className=${encodeURIComponent(cName)}`);
+      const data = await res.json();
+      if (data.announcements) setAnnouncements(data.announcements);
+    } catch {
+      setAnnouncements([]);
     }
   };
 
@@ -171,16 +189,6 @@ export default function DashboardPage() {
   const dailyChallenges = [
     { title: "Longest Substring Without Repeating Characters", diff: "MEDIUM", cat: "Strings", xp: "+100 XP", id: "longest-substring-without-repeating-characters" },
     { title: "Two Sum Target Pair", diff: "EASY", cat: "Arrays", xp: "+50 XP", id: "two-sum-target-pair" },
-  ];
-
-  const upcomingEvents = [
-    { title: "National Inter-College Hackathon 2026", date: "Aug 02, 2026", type: "Hackathon", prizes: "$5,000" },
-    { title: "Google Cloud & Rust Systems Workshop", date: "Aug 05, 2026", type: "Workshop", host: "CodingClub" },
-  ];
-
-  const announcements = [
-    { title: "📢 Mid-Term DSA Coding Practical Examination", author: "Dr. Vikramaditya Gupta", date: "Today at 10:00 AM", urgent: true },
-    { title: "🎉 CampusCode Hackathon Registrations Now Live!", author: "Admin", date: "Yesterday", urgent: false },
   ];
 
   return (
@@ -308,9 +316,9 @@ export default function DashboardPage() {
             })}
           </div>
 
-          {/* Main Dashboard Grid: Daily Challenges & Announcements */}
+          {/* Main Dashboard Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Daily Challenges Column (2 Cols) */}
+            {/* Daily Challenges & Top Leaderboard Preview Column (2 Cols) */}
             <div className="lg:col-span-2 space-y-6">
               {/* Daily Challenges */}
               <div className="rounded-3xl glass-card p-6 border border-slate-800">
@@ -365,72 +373,124 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              {/* Badges Grid Showcase */}
-              <div className="rounded-3xl glass-card p-6 border border-slate-800">
-                <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                  <Award className="w-5 h-5 text-amber-400" /> Unlocked Badges & Achievements
-                </h3>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                  {[
-                    { name: "First Code", icon: "🏆", desc: "Registered on CampusCode", unlocked: true },
-                    { name: "Streak Starter", icon: "🔥", desc: "Solve daily coding problems", unlocked: currentStreak > 0 },
-                    { name: "Top Ranker", icon: "⚡", desc: "Climb college leaderboard", unlocked: solvedCount > 0 },
-                    { name: "Project Creator", icon: "🚀", desc: "Publish featured showcase project", unlocked: projectsCount > 0 },
-                  ].map((badge, idx) => (
-                    <div
-                      key={idx}
-                      className={`p-4 rounded-2xl border text-center transition-all ${
-                        badge.unlocked
-                          ? "bg-slate-900/80 border-amber-500/30 text-white"
-                          : "bg-slate-950/60 border-slate-800 opacity-50 text-gray-500"
-                      }`}
-                    >
-                      <div className="text-3xl mb-2">{badge.icon}</div>
-                      <h4 className="text-xs font-bold">{badge.name}</h4>
-                      <p className="text-[10px] text-gray-400 mt-1">{badge.desc}</p>
+              {/* REPLACED BADGES WITH: Top Campus Leaderboard Roster */}
+              <div className="rounded-3xl glass-card p-6 border border-slate-800 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                      <Trophy className="w-5 h-5 text-amber-400" /> Top Campus Coders Leaderboard
+                    </h3>
+                    <p className="text-xs text-gray-400">Live student rankings based on solved problems & XP</p>
+                  </div>
+                  <Link
+                    href="/leaderboard"
+                    className="text-xs font-bold text-purple-400 hover:underline flex items-center gap-1"
+                  >
+                    Full Leaderboard <ChevronRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {topRankers.length === 0 ? (
+                    <div className="col-span-full py-6 text-center text-xs text-gray-500">
+                      No active rankers yet. Be the first to solve a problem!
                     </div>
-                  ))}
+                  ) : (
+                    topRankers.map((ranker, i) => (
+                      <div
+                        key={ranker.id}
+                        className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 flex items-center gap-3 relative overflow-hidden group hover:border-purple-500/40 transition-all"
+                      >
+                        <span
+                          className={`w-7 h-7 rounded-xl flex items-center justify-center font-black text-xs shrink-0 ${
+                            i === 0
+                              ? "bg-amber-500 text-slate-950 shadow-glow"
+                              : i === 1
+                              ? "bg-slate-300 text-slate-950"
+                              : "bg-amber-700/60 text-amber-200"
+                          }`}
+                        >
+                          #{i + 1}
+                        </span>
+
+                        <img
+                          src={ranker.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80"}
+                          alt={ranker.name}
+                          className="w-10 h-10 rounded-xl object-cover ring-2 ring-purple-500/30"
+                        />
+
+                        <div className="space-y-0.5 overflow-hidden">
+                          <h4 className="text-xs font-bold text-white truncate group-hover:text-purple-300 transition-colors">
+                            {ranker.name}
+                          </h4>
+                          <p className="text-[10px] font-mono text-emerald-400 font-bold">⚡ {ranker.xp} XP</p>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
             </div>
 
-            {/* Sidebar Column: Announcements & Campus Events */}
+            {/* Sidebar Column: Real Announcements & Class Operations */}
             <div className="space-y-6">
-              {/* Teacher Announcements */}
-              <div className="rounded-3xl glass-card p-6 border border-slate-800">
-                <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-                  <Megaphone className="w-4 h-4 text-purple-400" /> Teacher Announcements
-                </h3>
+              {/* Class Announcements */}
+              <div className="rounded-3xl glass-card p-6 border border-slate-800 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                    <Megaphone className="w-4 h-4 text-purple-400" /> Class Announcements
+                  </h3>
+                  {isTeacherOrAdmin && (
+                    <Link
+                      href="/classrooms"
+                      className="text-[10px] font-bold text-purple-400 hover:underline flex items-center gap-1"
+                    >
+                      <Plus className="w-3 h-3" /> Post Notice
+                    </Link>
+                  )}
+                </div>
+
                 <div className="space-y-3">
-                  {announcements.map((anc, i) => (
-                    <div key={i} className="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800/80 space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-semibold text-purple-400">{anc.author}</span>
-                        <span className="text-[10px] text-gray-500">{anc.date}</span>
-                      </div>
-                      <p className="text-xs font-bold text-gray-200 leading-snug">{anc.title}</p>
+                  {announcements.length === 0 ? (
+                    <div className="p-6 text-center text-xs text-gray-500 font-medium bg-slate-950/60 rounded-2xl border border-slate-800/80">
+                      No announcements posted for {user?.className || "TY BSc CS"} yet.
                     </div>
-                  ))}
+                  ) : (
+                    announcements.map((anc, i) => (
+                      <div key={i} className="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800/80 space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-semibold text-purple-400">Class Announcement</span>
+                          <span className="text-[10px] text-gray-500">{new Date(anc.createdAt).toLocaleDateString()}</span>
+                        </div>
+                        <p className="text-xs font-bold text-gray-200 leading-snug">{anc.title}</p>
+                        <p className="text-[11px] text-gray-400 leading-relaxed line-clamp-2">{anc.content}</p>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
 
-              {/* Upcoming Events */}
-              <div className="rounded-3xl glass-card p-6 border border-slate-800">
-                <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-cyan-400" /> Upcoming Campus Events
+              {/* Upcoming Events / Classroom Quick Access */}
+              <div className="rounded-3xl glass-card p-6 border border-slate-800 space-y-4">
+                <h3 className="text-base font-bold text-white flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-cyan-400" /> Campus Schedule & Events
                 </h3>
-                <div className="space-y-3">
-                  {upcomingEvents.map((ev, i) => (
-                    <div key={i} className="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800/80 space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300">
-                          {ev.type}
-                        </span>
-                        <span className="text-[10px] font-medium text-gray-400">{ev.date}</span>
-                      </div>
-                      <p className="text-xs font-bold text-white">{ev.title}</p>
-                    </div>
-                  ))}
+
+                <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-2 text-xs">
+                  <span className="px-2.5 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 text-[10px] font-bold uppercase">
+                    Academic Term
+                  </span>
+                  <h4 className="font-bold text-white">Academic Term 2024-2025 Active</h4>
+                  <p className="text-gray-400 text-[11px] leading-relaxed">
+                    Check your virtual classroom for lecture notes, practical code submissions, and class projects.
+                  </p>
+                  <Link
+                    href="/classrooms"
+                    className="inline-flex items-center gap-1.5 text-purple-400 font-bold text-xs hover:underline pt-1"
+                  >
+                    <span>Go to Virtual Classroom</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </Link>
                 </div>
               </div>
             </div>
