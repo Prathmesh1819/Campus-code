@@ -3,6 +3,7 @@ import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { ToastProvider } from "@/context/ToastContext";
 import { AuthModal } from "@/components/AuthModal";
+import { AIAssistantWidget } from "@/components/AIAssistantWidget";
 
 export const metadata: Metadata = {
   title: "CampusCode - Enterprise College Coding & Social Platform",
@@ -29,6 +30,7 @@ export default function RootLayout({
           <AuthProvider>
             {children}
             <AuthModal />
+            <AIAssistantWidget />
           </AuthProvider>
         </ToastProvider>
       </body>

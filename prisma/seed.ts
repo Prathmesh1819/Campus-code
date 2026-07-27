@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("🚀 Seeding Complete CampusCode Question Bank (70+ LeetCode & Company Questions)...");
+  console.log("🚀 Seeding Clean Production Question Bank & Real Accounts...");
 
   await prisma.submission.deleteMany();
   await prisma.testCase.deleteMany();
@@ -29,7 +29,26 @@ async function main() {
 
   const hashedPassword = await bcrypt.hash("password123", 10);
 
-  // 1. Create Users for all 3 Roles
+  // 1. Create Real Official Accounts Only (Student, Teacher, Admin)
+  const student = await prisma.user.create({
+    data: {
+      name: "Prathmesh Dharashivkar",
+      email: "prathmeshdharashivkar18@gmail.com",
+      password: hashedPassword,
+      role: "STUDENT",
+      rollNumber: "2025-BSC-001",
+      className: "TY BSc CS",
+      branch: "Computer Science",
+      academicYear: "2025-26",
+      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80",
+      bio: "Full-Stack Developer & Student Lead @ Sarhad College",
+      xp: 1550,
+      level: 2,
+      streakDays: 5,
+      coins: 200,
+    },
+  });
+
   const classTeacher = await prisma.user.create({
     data: {
       name: "Dr. Vikramaditya Gupta",
@@ -55,83 +74,37 @@ async function main() {
     },
   });
 
-  const student1 = await prisma.user.create({
-    data: {
-      name: "Aarav Sharma",
-      email: "aarav@campus.edu",
-      password: hashedPassword,
-      role: "STUDENT",
-      rollNumber: "2024-BSC-001",
-      className: "TY BSc CS",
-      branch: "Computer Science",
-      academicYear: "2025-26",
-      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80",
-      bio: "Competitive programmer | Full-stack & AI Enthusiast | Tech Lead @ TY BSc CS",
-      xp: 4850,
-      level: 18,
-      streakDays: 14,
-      coins: 850,
-    },
-  });
-
-  const student2 = await prisma.user.create({
-    data: {
-      name: "Ananya Roy",
-      email: "ananya@campus.edu",
-      password: hashedPassword,
-      role: "STUDENT",
-      rollNumber: "2024-BSC-042",
-      className: "TY BSc CS",
-      branch: "Computer Science",
-      academicYear: "2025-26",
-      avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&auto=format&fit=crop&q=80",
-      bio: "Passionate about React 19, Rust, & Cloud Native Architectures.",
-      xp: 3210,
-      level: 12,
-      streakDays: 9,
-      coins: 410,
-    },
-  });
-
-  const student3 = await prisma.user.create({
-    data: {
-      name: "Rohan Kulkarni",
-      email: "rohan@campus.edu",
-      password: hashedPassword,
-      role: "STUDENT",
-      rollNumber: "2024-BSC-015",
-      className: "TY BSc CS",
-      branch: "Computer Science",
-      academicYear: "2025-26",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80",
-      bio: "Backend developer in Node.js & Go | TY BSc CS",
-      xp: 2950,
-      level: 11,
-      streakDays: 7,
-      coins: 300,
-    },
-  });
-
   // 2. Classrooms
   await prisma.classroom.create({
     data: {
       name: "TY BSc CS",
-      code: "TY-BSC-CS-2024",
+      code: "TY-BSC-CS-2025",
       branch: "Computer Science",
       academicYear: "2025-26",
       teacherId: classTeacher.id,
-      description: "Official Classroom for Third Year B.Sc Computer Science (Batch 2024-2025). Class Teacher: Dr. Vikramaditya Gupta.",
+      description: "Official Classroom for Third Year B.Sc Computer Science (Batch 2025-26). Class Teacher: Dr. Vikramaditya Gupta.",
     },
   });
 
   await prisma.classroom.create({
     data: {
       name: "SY BSc CS",
-      code: "SY-BSC-CS-2024",
+      code: "SY-BSC-CS-2025",
       branch: "Computer Science",
       academicYear: "2025-26",
       teacherId: classTeacher.id,
       description: "Classroom for Second Year B.Sc Computer Science.",
+    },
+  });
+
+  await prisma.classroom.create({
+    data: {
+      name: "FY BSc CS",
+      code: "FY-BSC-CS-2025",
+      branch: "Computer Science",
+      academicYear: "2025-26",
+      teacherId: classTeacher.id,
+      description: "Classroom for First Year B.Sc Computer Science.",
     },
   });
 
@@ -159,7 +132,7 @@ async function main() {
     ],
   });
 
-  // 4. Massive 70+ LeetCode Questions Dataset
+  // 4. Massive 35 LeetCode & Company Questions Dataset
   const rawProblems = [
     // Arrays & Hashing
     { title: "Contains Duplicate", diff: "EASY", cat: "Arrays", desc: "Given an integer array nums, return true if any value appears at least twice in the array, and return false if every element is distinct.", input: "[1,2,3,1]", out: "true", comps: ["Google", "Meta"], freq: 95 },
@@ -239,7 +212,25 @@ async function main() {
     });
   }
 
-  // 6. Direct Messages for Admin & Faculty
+  // 5. Initial Sample Submissions for Prathmesh
+  const prob1 = await prisma.problem.findFirst({ where: { title: "Two Sum Target Pair" } });
+  if (prob1) {
+    await prisma.submission.create({
+      data: {
+        userId: student.id,
+        problemId: prob1.id,
+        code: "function solve(nums, target) { return [0, 1]; }",
+        language: "javascript",
+        status: "ACCEPTED",
+        executionTimeMs: 24,
+        memoryUsageKb: 14200,
+        testCasesPassed: 1,
+        totalTestCases: 1,
+      },
+    });
+  }
+
+  // 6. Direct Messages between Teacher, Admin, and Prathmesh
   await prisma.message.createMany({
     data: [
       {
@@ -249,7 +240,7 @@ async function main() {
         readStatus: false,
       },
       {
-        senderId: student1.id,
+        senderId: student.id,
         receiverId: admin.id,
         content: "Respected Admin, I have submitted the hackathon winning project link in the campus showcase. Please review when free!",
         readStatus: false,
@@ -257,7 +248,7 @@ async function main() {
     ],
   });
 
-  console.log(`✅ Successfully Seeded Full Question Bank (${rawProblems.length} Problems), Users, Admin Messages & TY BSc CS Classroom!`);
+  console.log("✅ Successfully Seeded Clean Real Accounts (Prathmesh, Dr. Vikramaditya, Admin), Messages & Question Bank!");
 }
 
 main()
