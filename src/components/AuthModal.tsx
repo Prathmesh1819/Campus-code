@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/context/ToastContext";
-import { X, Lock, Mail, User, KeyRound, GraduationCap, Building2, ChevronDown } from "lucide-react";
+import { X, Lock, Mail, User, KeyRound, GraduationCap, Building2, ChevronDown, Send } from "lucide-react";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -49,8 +49,9 @@ export function AuthModal({ isOpen, onClose, defaultMode = "login" }: AuthModalP
   const [branch, setBranch] = useState(availableStreams[0]);
   const [academicYear, setAcademicYear] = useState("2025-26");
 
-  // OTP State
-  const [otp, setOtp] = useState(["1", "2", "3", "4"]);
+  // OTP Inputs start completely empty for manual user entry
+  const [otp, setOtp] = useState(["", "", "", ""]);
+  const [generatedOtpDisplay, setGeneratedOtpDisplay] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -114,12 +115,21 @@ export function AuthModal({ isOpen, onClose, defaultMode = "login" }: AuthModalP
           throw new Error(data.error || "Email not registered.");
         }
 
-        const otpArray = (data.otp || "1234").split("");
-        setOtp(otpArray);
-        showToast("OTP Generated! 🔑", `Your 4-digit OTP is: ${data.otp}. Code entered on screen.`, "info");
+        // Keep OTP inputs empty for manual entry
+        setOtp(["", "", "", ""]);
+        setGeneratedOtpDisplay(data.otp);
+        showToast(
+          "Email Sent! 📧",
+          `OTP Code [ ${data.otp} ] sent to ${data.email}. Check email & enter code below.`,
+          "info"
+        );
         setMode("otp");
       } else if (mode === "otp") {
         const otpCodeStr = otp.join("");
+        if (otpCodeStr.length < 4) {
+          throw new Error("Please enter all 4 digits of the OTP code.");
+        }
+
         const res = await fetch("/api/auth", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -153,6 +163,12 @@ export function AuthModal({ isOpen, onClose, defaultMode = "login" }: AuthModalP
     const newOtp = [...otp];
     newOtp[index] = val;
     setOtp(newOtp);
+
+    // Auto focus next input
+    if (val && index < 3) {
+      const nextInput = document.getElementById(`otp-input-${index + 1}`);
+      nextInput?.focus();
+    }
   };
 
   return (
@@ -190,10 +206,28 @@ export function AuthModal({ isOpen, onClose, defaultMode = "login" }: AuthModalP
           <p className="text-xs text-gray-400">
             {mode === "login" && "Sign in to access your coding dashboard, leaderboards & projects"}
             {mode === "register" && "Select your Stream & Virtual Classroom for batch registration"}
-            {mode === "forgot" && "Enter your registered college email to generate OTP code"}
-            {mode === "otp" && "Verification code generated! Confirm OTP and set your new password"}
+            {mode === "forgot" && "Enter your registered college email to receive password reset OTP"}
+            {mode === "otp" && `Verification code sent to ${email || "your email"}. Check code below & enter manually.`}
           </p>
         </div>
+
+        {/* Simulated Email Inbox Notification Banner */}
+        {mode === "otp" && generatedOtpDisplay && (
+          <div className="p-3.5 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs space-y-1 animate-in fade-in">
+            <div className="flex items-center justify-between font-bold">
+              <span className="flex items-center gap-1.5 text-cyan-400">
+                <Mail className="w-4 h-4" /> Incoming Mail Notification
+              </span>
+              <span className="text-[10px] text-gray-400 font-mono">Just Now</span>
+            </div>
+            <p className="text-[11px] text-gray-200">
+              <b>Subject:</b> CampusCode Security — Your Password Reset Verification Code is:{" "}
+              <span className="font-mono text-emerald-400 font-black px-2 py-0.5 rounded bg-slate-900 border border-emerald-500/40 text-xs">
+                {generatedOtpDisplay}
+              </span>
+            </p>
+          </div>
+        )}
 
         {errorMsg && (
           <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-semibold text-center">
@@ -362,19 +396,24 @@ export function AuthModal({ isOpen, onClose, defaultMode = "login" }: AuthModalP
             </div>
           )}
 
+          {/* OTP Mode Input Fields */}
           {mode === "otp" && (
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div>
-                <label className="font-bold text-gray-300 block mb-1 text-center">Enter 4-Digit OTP Code</label>
+                <label className="font-bold text-gray-300 block mb-1 text-center">
+                  Type 4-Digit OTP Code Sent To Email
+                </label>
                 <div className="flex items-center justify-center gap-3 py-1">
                   {otp.map((digit, i) => (
                     <input
                       key={i}
+                      id={`otp-input-${i}`}
                       type="text"
                       maxLength={1}
                       value={digit}
                       onChange={(e) => handleOtpChange(i, e.target.value)}
-                      className="w-12 h-12 text-center text-lg font-black bg-slate-900 border border-purple-500/50 rounded-xl text-white focus:outline-none shadow-glow"
+                      placeholder="•"
+                      className="w-12 h-12 text-center text-xl font-black bg-slate-900 border border-slate-700 focus:border-purple-500 rounded-xl text-white focus:outline-none transition-all"
                     />
                   ))}
                 </div>
@@ -419,7 +458,7 @@ export function AuthModal({ isOpen, onClose, defaultMode = "login" }: AuthModalP
               ) : mode === "register" ? (
                 "Complete Registration"
               ) : mode === "forgot" ? (
-                "Generate & Send OTP"
+                "Send OTP to Email"
               ) : (
                 "Verify OTP & Update Password"
               )}
