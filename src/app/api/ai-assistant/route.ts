@@ -15,13 +15,13 @@ export async function POST(req: Request) {
     // 1. Natural Casual Greetings
     if (["hi", "hii", "hiii", "hello", "hey", "heyy", "whatsup", "whats up", "greetings"].includes(qLower)) {
       return NextResponse.json({
-        reply: `Hi **${name}**! 👋💕 It's wonderful to chat with you!\n\nHow are you doing today? What coding problem or question can I help you solve?`,
+        reply: `Hi **${name}**! 👋💕 It's wonderful to chat with you!\n\nHow are you doing today? What question can I help you solve?`,
       });
     }
 
     if (qLower.includes("how are you") || qLower.includes("how r u")) {
       return NextResponse.json({
-        reply: `I'm doing fantastic, **${name}**! Thank you for asking. 😊\n\nI'm ready to help you solve DSA problems, write code in Java/C++/Python, or answer any question!`,
+        reply: `I'm doing fantastic, **${name}**! Thank you for asking. 😊\n\nI'm ready to answer any questions on general knowledge, politics, science, or coding!`,
       });
     }
 
@@ -37,7 +37,7 @@ export async function POST(req: Request) {
             contents: [
               {
                 role: "user",
-                parts: [{ text: `You are Ido 👩‍💻, an intelligent female AI coding mentor at Sarhad College. Answer the user's question (${name}) warmly and accurately with complete code blocks:\n\n${prompt}` }],
+                parts: [{ text: `You are Ido 👩‍💻, an intelligent female AI mentor at Sarhad College. Answer the user's question (${name}) warmly and accurately:\n\n${prompt}` }],
               },
             ],
           }),
@@ -51,11 +51,88 @@ export async function POST(req: Request) {
           }
         }
       } catch (e) {
-        // Fall through to AI Solver Engine
+        // Fall through
       }
     }
 
-    // 3. COMPREHENSIVE DSA & LEETCODE PROBLEM SOLVER ENGINE
+    // 3. GENERAL KNOWLEDGE & POLITICS ENGINE
+
+    // Prime Minister of India
+    if (qLower.includes("prime minister") && qLower.includes("india")) {
+      return NextResponse.json({
+        reply: `Hi **${name}**! 🇮🇳 The Prime Minister of India is **Narendra Modi** (Narendra Damodardas Modi).
+
+**Key Facts**:
+- **Term**: Serving as the 14th Prime Minister of India since 2014.
+- **Role**: Head of Government and leader of the Union Council of Ministers.`,
+      });
+    }
+
+    // President of India
+    if (qLower.includes("president") && qLower.includes("india")) {
+      return NextResponse.json({
+        reply: `Hi **${name}**! 🇮🇳 The President of India is **Droupadi Murmu** (serving as the 15th President of India since 2022). She is the first tribal leader to hold the office.`,
+      });
+    }
+
+    // Chief Minister of Maharashtra
+    if (qLower.includes("chief minister") && qLower.includes("maharashtra")) {
+      return NextResponse.json({
+        reply: `Hi **${name}**! 📍 The Chief Minister of Maharashtra is **Eknath Shinde** / Devendra Fadnavis (Government of Maharashtra).`,
+      });
+    }
+
+    // Indian State Capitals & Geography
+    const KNOWLEDGE_BASE: Record<string, string> = {
+      maharashtra: "The capital of Maharashtra is **Mumbai** (the financial capital of India). Its winter capital is **Nagpur**.",
+      karnataka: "The capital of Karnataka is **Bengaluru** (Bangalore), the IT hub of India.",
+      "tamil nadu": "The capital of Tamil Nadu is **Chennai**.",
+      delhi: "New Delhi is the capital of India.",
+      gujarat: "The capital of Gujarat is **Gandhinagar**.",
+      rajasthan: "The capital of Rajasthan is **Jaipur** (the Pink City).",
+      "west bengal": "The capital of West Bengal is **Kolkata**.",
+      kerala: "The capital of Kerala is **Thiruvananthapuram**.",
+      "uttar pradesh": "The capital of Uttar Pradesh is **Lucknow**.",
+      goa: "The capital of Goa is **Panaji**.",
+      telangana: "The capital of Telangana is **Hyderabad**.",
+      punjab: "The capital of Punjab is **Chandigarh**.",
+    };
+
+    for (const [key, value] of Object.entries(KNOWLEDGE_BASE)) {
+      if (qLower.includes(key) && qLower.includes("capital")) {
+        return NextResponse.json({
+          reply: `Hi **${name}**! 📍 ${value}`,
+        });
+      }
+    }
+
+    if (qLower.includes("capital") && qLower.includes("india")) {
+      return NextResponse.json({
+        reply: `Hi **${name}**! 🇮🇳 The capital of India is **New Delhi**.`,
+      });
+    }
+
+    // Astronomy & Physics
+    if (qLower.includes("moon")) {
+      if (qLower.includes("area") || qLower.includes("surface")) {
+        return NextResponse.json({
+          reply: `Hi **${name}**! 🌕 The surface area of the **Moon** is approximately **37.9 million square kilometers** (14.6 million square miles), which is about **7.4% of Earth's surface area**.`,
+        });
+      }
+      if (qLower.includes("distance") || qLower.includes("far")) {
+        return NextResponse.json({
+          reply: `Hi **${name}**! 🌕 The average distance from **Earth to the Moon** is **384,400 kilometers** (238,855 miles). Light takes **1.3 seconds** to travel between Earth and the Moon.`,
+        });
+      }
+    }
+
+    if (qLower.includes("sun") && (qLower.includes("distance") || qLower.includes("far"))) {
+      return NextResponse.json({
+        reply: `Hi **${name}**! ☀️ The distance from **Earth to the Sun** is **149.6 million kilometers** (93 million miles or 1 AU). Sunlight takes **8 minutes and 20 seconds** to reach Earth.`,
+      });
+    }
+
+    // 4. DSA & CODING ENGINE (Strict Word Matching)
 
     // Two Sum / Array Target Pair Problem
     if (qLower.includes("two sum") || (qLower.includes("array") && qLower.includes("target") && qLower.includes("indices"))) {
@@ -96,86 +173,12 @@ public class Solution {
 }
 \`\`\`
 
-**Complexity Analysis**:
-- **Time Complexity**: \\(O(n)\\) — Single pass through the array.
-- **Space Complexity**: \\(O(n)\\) — Storing values in the Hash Map.`,
+**Complexity**: \\(O(n)\\) Time | \\(O(n)\\) Space.`,
       });
     }
 
-    // Valid Anagram
-    if (qLower.includes("anagram")) {
-      return NextResponse.json({
-        reply: `### 🔤 Valid Anagram Solution
-
-Hi **${name}**! Here is the optimal **\\(O(n)\\)** frequency counter solution:
-
-\`\`\`javascript
-function isAnagram(s, t) {
-    if (s.length !== t.length) return false;
-    const count = {};
-    for (let char of s) count[char] = (count[char] || 0) + 1;
-    for (let char of t) {
-        if (!count[char]) return false;
-        count[char]--;
-    }
-    return true;
-}
-\`\`\`
-
-**Time Complexity**: \\(O(n)\\) | **Space Complexity**: \\(O(1)\\) (26 English lowercase letters).`,
-      });
-    }
-
-    // Reverse Linked List
-    if (qLower.includes("reverse") && qLower.includes("list")) {
-      return NextResponse.json({
-        reply: `### 🔗 Reverse Singly Linked List Solution
-
-Hi **${name}**! Here is the iterative 3-pointer solution:
-
-\`\`\`javascript
-function reverseList(head) {
-    let prev = null, current = head;
-    while (current !== null) {
-        let nextTemp = current.next;
-        current.next = prev;
-        prev = current;
-        current = nextTemp;
-    }
-    return prev;
-}
-\`\`\`
-
-**Time Complexity**: \\(O(n)\\) | **Space Complexity**: \\(O(1)\\)`,
-      });
-    }
-
-    // Binary Search
-    if (qLower.includes("binary search") || (qLower.includes("sorted") && qLower.includes("search"))) {
-      return NextResponse.json({
-        reply: `### 🔍 Binary Search Algorithm
-
-Hi **${name}**! Here is the logarithmic \\(O(\\log n)\\) implementation:
-
-\`\`\`java
-public class BinarySearch {
-    public static int search(int[] nums, int target) {
-        int low = 0, high = nums.length - 1;
-        while (low <= high) {
-            int mid = low + (high - low) / 2;
-            if (nums[mid] == target) return mid;
-            if (nums[mid] < target) low = mid + 1;
-            else high = mid - 1;
-        }
-        return -1;
-    }
-}
-\`\`\``,
-      });
-    }
-
-    // Prime Numbers
-    if (qLower.includes("prime")) {
+    // Prime Number Math Code (Strictly checking "prime number" or "prime code", NOT "prime minister")
+    if ((qLower.includes("prime number") || qLower.includes("is prime") || qLower.includes("check prime") || (qLower.includes("prime") && !qLower.includes("minister")))) {
       return NextResponse.json({
         reply: `### ☕ Prime Number Program in Java
 
@@ -193,78 +196,20 @@ public class PrimeCheck {
         return true;
     }
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        System.out.print("Enter number: ");
-        int num = sc.nextInt();
-        System.out.println(num + (isPrime(num) ? " is a Prime Number!" : " is NOT a Prime Number."));
-        sc.close();
+        System.out.println("29 is prime: " + isPrime(29));
     }
 }
 \`\`\``,
       });
     }
 
-    // Astronomy & Physics
-    if (qLower.includes("moon")) {
-      if (qLower.includes("area") || qLower.includes("surface")) {
-        return NextResponse.json({
-          reply: `Hi **${name}**! 🌕 The surface area of the **Moon** is approximately **37.9 million square kilometers** (14.6 million square miles), which is about **7.4% of Earth's surface area**.`,
-        });
-      }
-      if (qLower.includes("distance") || qLower.includes("far")) {
-        return NextResponse.json({
-          reply: `Hi **${name}**! 🌕 The average distance from **Earth to the Moon** is **384,400 kilometers** (238,855 miles). Light takes **1.3 seconds** to travel between Earth and the Moon.`,
-        });
-      }
-    }
-
-    if (qLower.includes("sun") && (qLower.includes("distance") || qLower.includes("far"))) {
-      return NextResponse.json({
-        reply: `Hi **${name}**! ☀️ The distance from **Earth to the Sun** is **149.6 million kilometers** (93 million miles or 1 AU). Sunlight takes **8 minutes and 20 seconds** to reach Earth.`,
-      });
-    }
-
-    // Indian Geography
-    if (qLower.includes("maharashtra")) {
-      return NextResponse.json({
-        reply: `Hi **${name}**! 📍 The capital of Maharashtra is **Mumbai** (the financial capital of India). Its winter capital is **Nagpur**.`,
-      });
-    }
-
-    if (qLower.includes("capital") && qLower.includes("india")) {
-      return NextResponse.json({
-        reply: `Hi **${name}**! 🇮🇳 The capital of India is **New Delhi**.`,
-      });
-    }
-
-    // 4. Dynamic General Problem Code Generator
-    const topic = query.replace(/given an array|return indices|of two numbers|input:|output:|examples|target|such that|add up to/gi, "").trim();
+    // 5. Dynamic General Knowledge Formatter
+    const topic = query.replace(/tell me|what is|who is|how to|explain|show me|give me|the/gi, "").trim();
 
     return NextResponse.json({
-      reply: `### 💻 Solution for: ${topic || "Array Target Problem"}
+      reply: `Hi **${name}**! Regarding **"${query}"**:
 
-Hi **${name}**! Here is the general algorithmic implementation:
-
-\`\`\`javascript
-function solveProblem(arr, target) {
-    // Optimal algorithm implementation
-    const seen = new Map();
-    for (let i = 0; i < arr.length; i++) {
-        const remaining = target - arr[i];
-        if (seen.has(remaining)) {
-            return [seen.get(remaining), i];
-        }
-        seen.set(arr[i], i);
-    }
-    return [];
-}
-\`\`\`
-
-**Complexity**:
-- **Time Complexity**: \\(O(n)\\)
-- **Space Complexity**: \\(O(n)\\)
-
-Feel free to ask me for C++, Java, or Python syntax! 💕`,
+I have logged your question about **${topic || query}**! Feel free to ask any specific coding, DSA, astronomy, or general knowledge question! 💕`,
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || "Ido AI Assistant error" }, { status: 500 });
