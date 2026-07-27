@@ -1,28 +1,28 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@layer base {
-  :root {
-    --bg-primary: #070913;
-    --text-primary: #ffffff;
-    --card-bg: rgba(15, 23, 42, 0.75);
-    --card-border: rgba(51, 65, 85, 0.6);
-    --header-bg: rgba(7, 9, 19, 0.85);
-  }
+:root {
+  --bg-primary: #070913;
+  --text-primary: #ffffff;
+  --card-bg: rgba(15, 23, 42, 0.75);
+  --card-border: rgba(51, 65, 85, 0.6);
+  --header-bg: rgba(7, 9, 19, 0.85);
+}
 
-  html.light {
-    --bg-primary: #f8fafc;
-    --text-primary: #0f172a;
-    --card-bg: rgba(255, 255, 255, 0.9);
-    --card-border: rgba(226, 232, 240, 0.9);
-    --header-bg: rgba(255, 255, 255, 0.85);
-  }
+html.light {
+  --bg-primary: #f8fafc;
+  --text-primary: #0f172a;
+  --card-bg: rgba(255, 255, 255, 0.9);
+  --card-border: rgba(226, 232, 240, 0.9);
+  --header-bg: rgba(255, 255, 255, 0.85);
+}
 
-  body {
-    background-color: var(--bg-primary);
-    color: var(--text-primary);
-    font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
-    transition: background-color 0.3s ease, color 0.3s ease;
-  }
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Glassmorphism Cards for Dark & Light Mode */
