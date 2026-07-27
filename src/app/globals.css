@@ -54,7 +54,8 @@ html.light body,
 html.light .bg-\[\#070913\],
 html.light .bg-\[\#0b0f19\],
 html.light .bg-\[\#0a0c1a\],
-html.light .bg-\[\#0c0a1a\] {
+html.light .bg-\[\#0c0a1a\],
+html.light .bg-\[\#080b18\] {
   background-color: #f8fafc !important;
   color: #0f172a !important;
 }
@@ -63,6 +64,35 @@ html.light .profile-popover {
   background-color: #ffffff !important;
   border-color: #cbd5e1 !important;
   box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Ido AI Widget Light Mode Overrides */
+html.light .ido-chat-drawer {
+  background-color: #ffffff !important;
+  border-color: #f472b6 !important;
+  box-shadow: 0 25px 50px -12px rgba(236, 72, 153, 0.25) !important;
+}
+
+html.light .ido-chat-header {
+  background-color: #fdf2f8 !important;
+  border-bottom-color: #fbcfe8 !important;
+}
+
+html.light .ido-chat-bubble {
+  background-color: #fdf2f8 !important;
+  border-color: #fbcfe8 !important;
+  color: #1e293b !important;
+}
+
+html.light .ido-chat-footer {
+  background-color: #ffffff !important;
+  border-top-color: #e2e8f0 !important;
+}
+
+html.light .ido-chat-input {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
 }
 
 html.light main {
@@ -87,16 +117,19 @@ html.light .glass-sidebar {
 
 html.light .bg-slate-950,
 html.light .bg-slate-950\/60,
-html.light .bg-slate-950\/80 {
+html.light .bg-slate-950\/80,
+html.light .bg-slate-950\/90 {
   background-color: #f1f5f9 !important;
   border-color: #cbd5e1 !important;
 }
 
 html.light .bg-slate-900,
+html.light .bg-slate-900\/90,
 html.light .bg-slate-900\/80,
 html.light .bg-slate-900\/60 {
   background-color: #ffffff !important;
   border-color: #e2e8f0 !important;
+  color: #0f172a !important;
 }
 
 html.light .bg-slate-800,
@@ -113,8 +146,8 @@ html.light .bg-purple-950\/80,
 html.light .bg-purple-900,
 html.light .bg-purple-900\/80,
 html.light .bg-purple-500\/10 {
-  background-color: #eff6ff !important; /* Soft Electric Blue Tint */
-  border-color: #93c5fd !important; /* Electric Blue Border */
+  background-color: #eff6ff !important;
+  border-color: #93c5fd !important;
 }
 
 /* Light Theme Typography Contrast */
@@ -154,7 +187,7 @@ html.light .text-purple-300,
 html.light .text-purple-400,
 html.light .text-purple-600,
 html.light .text-purple-700 {
-  color: #1d4ed8 !important; /* Vibrant Electric Royal Blue */
+  color: #1d4ed8 !important;
 }
 
 html.light .bg-amber-500\/10 {

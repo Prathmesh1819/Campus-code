@@ -186,9 +186,9 @@ export function AIAssistantWidget() {
 
       {/* Floating Chat Modal Box */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 z-[999] w-full max-w-md h-[580px] glass-card border border-pink-500/40 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-6 duration-300 bg-[#0c0a1a]">
+        <div className="fixed bottom-6 right-6 z-[999] w-full max-w-md h-[580px] ido-chat-drawer glass-card border border-pink-500/40 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-6 duration-300 bg-[#0c0a1a]">
           {/* Top Header */}
-          <div className="p-4 bg-slate-950/90 border-b border-slate-800 flex items-center justify-between">
+          <div className="p-4 ido-chat-header bg-slate-950/90 border-b border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="relative">
                 <img
@@ -237,7 +237,7 @@ export function AIAssistantWidget() {
                   className={`max-w-[88%] p-3.5 rounded-2xl relative shadow-md ${
                     m.sender === "user"
                       ? "gradient-bg text-white rounded-br-none shadow-glow"
-                      : "bg-slate-900/90 border border-pink-500/30 text-gray-200 rounded-bl-none"
+                      : "ido-chat-bubble bg-slate-900/90 border border-pink-500/30 text-gray-200 rounded-bl-none"
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1 text-[10px] text-gray-400 font-semibold border-b border-white/10 pb-1">
@@ -271,7 +271,7 @@ export function AIAssistantWidget() {
 
             {loading && (
               <div className="flex items-start gap-2">
-                <div className="p-3.5 rounded-2xl bg-slate-900 border border-pink-500/30 text-xs text-pink-300 flex items-center gap-2 animate-pulse">
+                <div className="p-3.5 rounded-2xl ido-chat-bubble bg-slate-900 border border-pink-500/30 text-xs text-pink-300 flex items-center gap-2 animate-pulse">
                   <Sparkles className="w-4 h-4 text-pink-400 animate-spin" />
                   <span>Ido is typing a response...</span>
                 </div>
@@ -281,7 +281,7 @@ export function AIAssistantWidget() {
           </div>
 
           {/* Quick Suggestion Pills */}
-          <div className="px-3 py-2 border-t border-slate-800/80 bg-slate-950/60 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+          <div className="px-3 py-2 border-t border-slate-800/80 bg-slate-950/60 ido-chat-footer flex items-center gap-1.5 overflow-x-auto no-scrollbar">
             {quickPrompts.map((qp, idx) => (
               <button
                 key={idx}
@@ -299,14 +299,14 @@ export function AIAssistantWidget() {
               e.preventDefault();
               handleSend();
             }}
-            className="p-3 bg-slate-950 border-t border-slate-800 flex items-center gap-2"
+            className="p-3 bg-slate-950 border-t border-slate-800 ido-chat-footer flex items-center gap-2"
           >
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask Ido 👩‍💻 about DSA, code bugs, exams..."
-              className="flex-1 bg-slate-900 border border-slate-800 rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-pink-500"
+              className="flex-1 bg-slate-900 border border-slate-800 ido-chat-input rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-pink-500"
             />
             <button
               type="submit"
