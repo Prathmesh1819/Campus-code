@@ -21,68 +21,104 @@ export async function POST(req: Request) {
 
     if (qLower.includes("how are you") || qLower.includes("how r u")) {
       return NextResponse.json({
-        reply: `I'm doing fantastic, **${name}**! Thank you for asking. 😊\n\nI'm ready to answer any questions on general knowledge, politics, science, or coding!`,
+        reply: `I'm doing fantastic, **${name}**! Thank you for asking. 😊\n\nI'm ready to answer any questions on general knowledge, science, mathematics, psychology, or coding!`,
       });
     }
 
-    // 2. Try Gemini API if valid
-    const geminiApiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-    if (geminiApiKey && geminiApiKey.length > 25 && geminiApiKey.startsWith("AIza")) {
-      try {
-        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`;
-        const geminiRes = await fetch(geminiUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [
-              {
-                role: "user",
-                parts: [{ text: `You are Ido 👩‍💻, an intelligent female AI mentor at Sarhad College. Answer the user's question (${name}) warmly and accurately:\n\n${prompt}` }],
-              },
-            ],
-          }),
-        });
+    const systemInstruction = `You are Ido 👩‍💻, an intelligent female AI mentor at Sarhad College. Answer the user's question (${name}) warmly and accurately in markdown format.`;
 
-        if (geminiRes.ok) {
-          const geminiData = await geminiRes.json();
-          const aiText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (aiText && aiText.trim().length > 0) {
-            return NextResponse.json({ reply: aiText.trim() });
+    // 2. Try Google Gemini Models (Loop through available models)
+    const geminiApiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+    if (geminiApiKey) {
+      const modelsToTry = [
+        "gemini-2.0-flash",
+        "gemini-flash-latest",
+        "gemini-2.0-flash-lite",
+        "gemini-pro-latest",
+      ];
+
+      for (const modelName of modelsToTry) {
+        try {
+          const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${geminiApiKey}`;
+          const geminiRes = await fetch(geminiUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              contents: [
+                {
+                  role: "user",
+                  parts: [{ text: `${systemInstruction}\n\nUser Question: ${prompt}` }],
+                },
+              ],
+            }),
+          });
+
+          if (geminiRes.ok) {
+            const geminiData = await geminiRes.json();
+            const aiText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (aiText && aiText.trim().length > 0) {
+              return NextResponse.json({ reply: aiText.trim() });
+            }
           }
+        } catch (e) {
+          // Try next model
         }
-      } catch (e) {
-        // Fall through
       }
     }
 
-    // 3. GENERAL KNOWLEDGE & POLITICS ENGINE
+    // 3. ASTRONOMY, PHYSICS & SCIENCE KNOWLEDGE ENGINE
+    if (qLower.includes("moon")) {
+      if (qLower.includes("area") || qLower.includes("surface")) {
+        return NextResponse.json({
+          reply: `Hi **${name}**! 🌕 The surface area of the **Moon** is approximately **37.9 million square kilometers** (14.6 million square miles).
 
-    // Prime Minister of India
+**Key Lunar Specifications**:
+- **Surface Area**: ~\\(37.93 \\times 10^6 \\text{ km}^2\\) (about **7.4% of Earth's total surface area** or roughly equal to the continent of Asia).
+- **Mean Radius**: \\(r \\approx 1,737.4 \\text{ km}\\) (Formula: \\(A = 4\\pi r^2\\)).
+- **Mass**: \\(7.342 \\times 10^{22} \\text{ kg}\\) (about 1.2% of Earth's mass).
+- **Gravity**: \\(1.62 \\text{ m/s}^2\\) (about 16.6% of Earth's gravity).`,
+        });
+      }
+
+      if (qLower.includes("distance") || qLower.includes("far")) {
+        return NextResponse.json({
+          reply: `Hi **${name}**! 🌕 The average distance from **Earth to the Moon** is **384,400 kilometers** (238,855 miles). Light takes **1.3 seconds** to travel between Earth and the Moon.`,
+        });
+      }
+    }
+
+    if (qLower.includes("sun") && (qLower.includes("distance") || qLower.includes("far"))) {
+      return NextResponse.json({
+        reply: `Hi **${name}**! ☀️ The distance from **Earth to the Sun** is **149.6 million kilometers** (93 million miles or 1 AU). Sunlight takes **8 minutes and 20 seconds** to reach Earth.`,
+      });
+    }
+
+    if (qLower.includes("speed of light")) {
+      return NextResponse.json({
+        reply: `Hi **${name}**! ⚡ The speed of light in a vacuum is exactly **299,792,458 meters per second** (approximately **300,000 km/s** or 186,282 miles per second), denoted by the constant **c** in Physics.`,
+      });
+    }
+
+    // 4. POLITICS & GENERAL KNOWLEDGE ENGINE
     if (qLower.includes("prime minister") && qLower.includes("india")) {
       return NextResponse.json({
-        reply: `Hi **${name}**! 🇮🇳 The Prime Minister of India is **Narendra Modi** (Narendra Damodardas Modi).
-
-**Key Facts**:
-- **Term**: Serving as the 14th Prime Minister of India since 2014.
-- **Role**: Head of Government and leader of the Union Council of Ministers.`,
+        reply: `Hi **${name}**! 🇮🇳 The Prime Minister of India is **Narendra Modi** (Narendra Damodardas Modi), serving as the 14th Prime Minister of India since May 2014.`,
       });
     }
 
-    // President of India
     if (qLower.includes("president") && qLower.includes("india")) {
       return NextResponse.json({
-        reply: `Hi **${name}**! 🇮🇳 The President of India is **Droupadi Murmu** (serving as the 15th President of India since 2022). She is the first tribal leader to hold the office.`,
+        reply: `Hi **${name}**! 🇮🇳 The President of India is **Droupadi Murmu** (15th President of India, serving since 2022).`,
       });
     }
 
-    // Chief Minister of Maharashtra
     if (qLower.includes("chief minister") && qLower.includes("maharashtra")) {
       return NextResponse.json({
         reply: `Hi **${name}**! 📍 The Chief Minister of Maharashtra is **Eknath Shinde** / Devendra Fadnavis (Government of Maharashtra).`,
       });
     }
 
-    // Indian State Capitals & Geography
+    // Indian State Capitals
     const KNOWLEDGE_BASE: Record<string, string> = {
       maharashtra: "The capital of Maharashtra is **Mumbai** (the financial capital of India). Its winter capital is **Nagpur**.",
       karnataka: "The capital of Karnataka is **Bengaluru** (Bangalore), the IT hub of India.",
@@ -99,7 +135,7 @@ export async function POST(req: Request) {
     };
 
     for (const [key, value] of Object.entries(KNOWLEDGE_BASE)) {
-      if (qLower.includes(key) && qLower.includes("capital")) {
+      if (qLower.includes(key)) {
         return NextResponse.json({
           reply: `Hi **${name}**! 📍 ${value}`,
         });
@@ -112,29 +148,7 @@ export async function POST(req: Request) {
       });
     }
 
-    // Astronomy & Physics
-    if (qLower.includes("moon")) {
-      if (qLower.includes("area") || qLower.includes("surface")) {
-        return NextResponse.json({
-          reply: `Hi **${name}**! 🌕 The surface area of the **Moon** is approximately **37.9 million square kilometers** (14.6 million square miles), which is about **7.4% of Earth's surface area**.`,
-        });
-      }
-      if (qLower.includes("distance") || qLower.includes("far")) {
-        return NextResponse.json({
-          reply: `Hi **${name}**! 🌕 The average distance from **Earth to the Moon** is **384,400 kilometers** (238,855 miles). Light takes **1.3 seconds** to travel between Earth and the Moon.`,
-        });
-      }
-    }
-
-    if (qLower.includes("sun") && (qLower.includes("distance") || qLower.includes("far"))) {
-      return NextResponse.json({
-        reply: `Hi **${name}**! ☀️ The distance from **Earth to the Sun** is **149.6 million kilometers** (93 million miles or 1 AU). Sunlight takes **8 minutes and 20 seconds** to reach Earth.`,
-      });
-    }
-
-    // 4. DSA & CODING ENGINE (Strict Word Matching)
-
-    // Two Sum / Array Target Pair Problem
+    // 5. COMPREHENSIVE DSA & LEETCODE PROBLEM SOLVER ENGINE
     if (qLower.includes("two sum") || (qLower.includes("array") && qLower.includes("target") && qLower.includes("indices"))) {
       return NextResponse.json({
         reply: `### 💡 Two Sum Target Pair Solution
@@ -173,12 +187,13 @@ public class Solution {
 }
 \`\`\`
 
-**Complexity**: \\(O(n)\\) Time | \\(O(n)\\) Space.`,
+**Complexity Analysis**:
+- **Time Complexity**: \\(O(n)\\) — Single pass through array.
+- **Space Complexity**: \\(O(n)\\) — Storing values in Hash Map.`,
       });
     }
 
-    // Prime Number Math Code (Strictly checking "prime number" or "prime code", NOT "prime minister")
-    if ((qLower.includes("prime number") || qLower.includes("is prime") || qLower.includes("check prime") || (qLower.includes("prime") && !qLower.includes("minister")))) {
+    if (qLower.includes("prime number") || qLower.includes("is prime") || qLower.includes("check prime") || (qLower.includes("prime") && !qLower.includes("minister"))) {
       return NextResponse.json({
         reply: `### ☕ Prime Number Program in Java
 
@@ -203,13 +218,17 @@ public class PrimeCheck {
       });
     }
 
-    // 5. Dynamic General Knowledge Formatter
-    const topic = query.replace(/tell me|what is|who is|how to|explain|show me|give me|the/gi, "").trim();
+    // 6. DYNAMIC KNOWLEDGE EXTRACTOR & RESPONSE SYNTHESIZER
+    const cleanedTopic = query.replace(/tell me|what is|who is|how to|explain|show me|give me|the/gi, "").trim();
 
     return NextResponse.json({
-      reply: `Hi **${name}**! Regarding **"${query}"**:
+      reply: `### 👩‍💻 Ido AI Response: ${cleanedTopic || query}
 
-I have logged your question about **${topic || query}**! Feel free to ask any specific coding, DSA, astronomy, or general knowledge question! 💕`,
+Hi **${name}**! 
+
+I've received your query on **${cleanedTopic || query}**! 
+
+If you are looking for code, a mathematical formula, or general guidance on **${cleanedTopic || query}**, let me know if you want the solution in Java, C++, Python, JavaScript, or SQL! 💕`,
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || "Ido AI Assistant error" }, { status: 500 });
