@@ -81,6 +81,7 @@ export function AIAssistantWidget() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           prompt: query,
+          history: messages.map((m) => ({ role: m.sender === "user" ? "user" : "assistant", content: m.text })),
           userRole: user?.role || "STUDENT",
           className: user?.className || "TY BSc CS",
           userName: user?.name || "Student",
