@@ -32,7 +32,16 @@ export async function GET(req: Request) {
       orderBy: { xp: "desc" },
     });
 
-    return NextResponse.json({ assignments, announcements, students });
+    const notesCount = await prisma.note.count();
+
+    return NextResponse.json({
+      assignments,
+      announcements,
+      students,
+      studentsCount: students.length,
+      assignmentsCount: assignments.length,
+      notesCount,
+    });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || "Failed to fetch teacher portal data" }, { status: 500 });
   }
@@ -49,7 +58,7 @@ export async function POST(req: Request) {
           teacherId,
           title,
           description,
-          className: className || "CSE Final Year",
+          className: className || "TY BSc CS",
           branch: branch || "Computer Science",
           deadline: deadline ? new Date(deadline) : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         },
