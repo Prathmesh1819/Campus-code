@@ -22,13 +22,26 @@ import {
   BookOpen,
   X,
   Upload,
+  Lock,
 } from "lucide-react";
 
 export default function ClassroomsPage() {
   const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [selectedClass, setSelectedClass] = useState("TY BSc CS");
+  const [selectedClass, setSelectedClass] = useState(user?.className || "TY BSc CS");
   const [activeTab, setActiveTab] = useState<"classmates" | "projects" | "notes" | "announcements">("classmates");
+
+  const isTeacherOrAdmin = user?.role === "TEACHER" || user?.role === "ADMIN";
+
+  useEffect(() => {
+    // If student, force selectedClass to user's registered classroom
+    if (user?.className && user?.role === "STUDENT") {
+      setSelectedClass(user.className);
+      fetchClassroomData(user.className);
+    } else {
+      fetchClassroomData(selectedClass);
+    }
+  }, [user?.className, user?.role, selectedClass]);
 
   const [classroomData, setClassroomData] = useState<any>({
     classroom: null,
@@ -47,10 +60,6 @@ export default function ClassroomsPage() {
   const [noteFileUrl, setNoteFileUrl] = useState("");
   const [noteFileType, setNoteFileType] = useState("PDF");
 
-  useEffect(() => {
-    fetchClassroomData(selectedClass);
-  }, [selectedClass]);
-
   const fetchClassroomData = async (className: string) => {
     setLoading(true);
     try {
@@ -60,7 +69,7 @@ export default function ClassroomsPage() {
     } catch {
       setClassroomData({
         classroom: {
-          name: "TY BSc CS",
+          name: className,
           branch: "Computer Science",
           academicYear: "2024-2025",
           teacher: { name: "Dr. Vikramaditya Gupta", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&auto=format&fit=crop&q=80" },
@@ -105,8 +114,6 @@ export default function ClassroomsPage() {
     }
   };
 
-  const isTeacher = user?.role === "TEACHER" || user?.role === "ADMIN";
-
   return (
     <div className="min-h-screen flex flex-col bg-[#070913]">
       <Navbar onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
@@ -115,28 +122,37 @@ export default function ClassroomsPage() {
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
         <main className="flex-1 p-4 lg:p-8 space-y-6 overflow-y-auto">
-          {/* Class Switcher Pills Header */}
+          {/* Header Bar */}
           <div className="flex items-center justify-between flex-wrap gap-3">
             <div className="flex items-center gap-2">
               <GraduationCap className="w-6 h-6 text-purple-400" />
               <h1 className="text-xl font-black text-white">Campus Virtual Classrooms</h1>
             </div>
 
-            <div className="flex items-center gap-2 bg-slate-950 p-1.5 rounded-2xl border border-slate-800">
-              {["TY BSc CS", "SY BSc CS", "FY BSc CS"].map((cName) => (
-                <button
-                  key={cName}
-                  onClick={() => setSelectedClass(cName)}
-                  className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                    selectedClass === cName
-                      ? "bg-purple-600 text-white shadow-glow"
-                      : "text-gray-400 hover:text-white"
-                  }`}
-                >
-                  {cName}
-                </button>
-              ))}
-            </div>
+            {/* Class Switcher Pills: Only visible for Faculty & Admin */}
+            {isTeacherOrAdmin ? (
+              <div className="flex items-center gap-2 bg-slate-950 p-1.5 rounded-2xl border border-slate-800">
+                <span className="text-[10px] font-extrabold uppercase text-purple-400 px-2">Select Batch:</span>
+                {["TY BSc CS", "SY BSc CS", "FY BSc CS"].map((cName) => (
+                  <button
+                    key={cName}
+                    onClick={() => setSelectedClass(cName)}
+                    className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
+                      selectedClass === cName
+                        ? "bg-purple-600 text-white shadow-glow"
+                        : "text-gray-400 hover:text-white"
+                    }`}
+                  >
+                    {cName}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="px-3.5 py-1.5 rounded-2xl bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-bold flex items-center gap-2">
+                <Lock className="w-3.5 h-3.5 text-purple-400" />
+                <span>Enrolled Batch: <b>{user?.className || "TY BSc CS"}</b></span>
+              </div>
+            )}
           </div>
 
           {/* Classroom Hero Card */}
@@ -178,15 +194,15 @@ export default function ClassroomsPage() {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
               <div className="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800">
                 <span className="text-xs font-semibold text-gray-400 block">Classmates</span>
-                <span className="text-lg font-black text-white">{classroomData.classmates?.length || 4} Students</span>
+                <span className="text-lg font-black text-white">{classroomData.classmates?.length || 0} Students</span>
               </div>
               <div className="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800">
                 <span className="text-xs font-semibold text-gray-400 block">Class Projects</span>
-                <span className="text-lg font-black text-purple-300">{classroomData.projects?.length || 3} Projects</span>
+                <span className="text-lg font-black text-purple-300">{classroomData.projects?.length || 0} Projects</span>
               </div>
               <div className="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800">
                 <span className="text-xs font-semibold text-gray-400 block">Shared Notes</span>
-                <span className="text-lg font-black text-cyan-300">{classroomData.notes?.length || 3} Files</span>
+                <span className="text-lg font-black text-cyan-300">{classroomData.notes?.length || 0} Files</span>
               </div>
               <div className="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800">
                 <span className="text-xs font-semibold text-gray-400 block">Academic Year</span>
@@ -248,7 +264,7 @@ export default function ClassroomsPage() {
             </div>
 
             {/* Teacher Upload Notes Action */}
-            {isTeacher && (
+            {isTeacherOrAdmin && (
               <button
                 onClick={() => setShowUploadModal(true)}
                 className="px-4 py-2 rounded-xl gradient-bg text-white text-xs font-bold shadow-glow hover:opacity-95 flex items-center gap-1.5 shrink-0"
@@ -262,97 +278,109 @@ export default function ClassroomsPage() {
           {/* TAB 1: CLASSMATES ROSTER */}
           {activeTab === "classmates" && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {classroomData.classmates?.map((mate: any) => (
-                <div
-                  key={mate.id}
-                  className="rounded-3xl glass-card border border-slate-800 p-5 flex flex-col justify-between space-y-4 hover:border-purple-500/40 transition-all group"
-                >
-                  <div className="flex items-start gap-4">
-                    <img
-                      src={mate.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80"}
-                      alt={mate.name}
-                      className="w-14 h-14 rounded-2xl object-cover ring-2 ring-purple-500/30 group-hover:scale-105 transition-transform"
-                    />
-                    <div className="space-y-1">
-                      <h4 className="text-sm font-bold text-white group-hover:text-purple-300 transition-colors">
-                        {mate.name}
-                      </h4>
-                      <p className="text-[11px] font-mono text-purple-400">{mate.rollNumber || "2024-BSC-001"}</p>
-                      <p className="text-xs text-gray-400 line-clamp-2">{mate.bio || "Student at CampusCode"}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-3 border-t border-slate-800/80">
-                    <div className="text-xs font-mono">
-                      <span className="text-emerald-400 font-bold">⚡ {mate.xp || 0} XP</span>
-                      <span className="text-gray-400 text-[10px] block">Level {mate.level || 1}</span>
-                    </div>
-
-                    <Link
-                      href={`/profile/${mate.name.toLowerCase().replace(/\s+/g, "")}`}
-                      className="px-3 py-1.5 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-bold hover:bg-purple-500/20 transition-all flex items-center gap-1"
-                    >
-                      <span>View Profile</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </Link>
-                  </div>
+              {classroomData.classmates?.length === 0 ? (
+                <div className="col-span-full text-center py-12 text-gray-500 glass-card rounded-3xl">
+                  No registered classmates found in {selectedClass} yet.
                 </div>
-              ))}
+              ) : (
+                classroomData.classmates?.map((mate: any) => (
+                  <div
+                    key={mate.id}
+                    className="rounded-3xl glass-card border border-slate-800 p-5 flex flex-col justify-between space-y-4 hover:border-purple-500/40 transition-all group"
+                  >
+                    <div className="flex items-start gap-4">
+                      <img
+                        src={mate.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80"}
+                        alt={mate.name}
+                        className="w-14 h-14 rounded-2xl object-cover ring-2 ring-purple-500/30 group-hover:scale-105 transition-transform"
+                      />
+                      <div className="space-y-1">
+                        <h4 className="text-sm font-bold text-white group-hover:text-purple-300 transition-colors">
+                          {mate.name}
+                        </h4>
+                        <p className="text-[11px] font-mono text-purple-400">{mate.rollNumber || "Registered Student"}</p>
+                        <p className="text-xs text-gray-400 line-clamp-2">{mate.bio || "Student at CampusCode"}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-3 border-t border-slate-800/80">
+                      <div className="text-xs font-mono">
+                        <span className="text-emerald-400 font-bold">⚡ {mate.xp || 0} XP</span>
+                        <span className="text-gray-400 text-[10px] block">Level {mate.level || 1}</span>
+                      </div>
+
+                      <Link
+                        href={`/profile/${mate.name.toLowerCase().replace(/\s+/g, "")}`}
+                        className="px-3 py-1.5 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-bold hover:bg-purple-500/20 transition-all flex items-center gap-1"
+                      >
+                        <span>View Profile</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </Link>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           )}
 
           {/* TAB 2: CLASS PROJECTS SHOWCASE */}
           {activeTab === "projects" && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {classroomData.projects?.map((proj: any) => {
-                const tags: string[] = typeof proj.tags === "string" ? JSON.parse(proj.tags) : proj.tags || [];
-                return (
-                  <div key={proj.id} className="rounded-3xl glass-card border border-slate-800 overflow-hidden flex flex-col justify-between">
-                    <div className="h-44 w-full bg-slate-900 relative">
-                      <img src={proj.imageUrl || "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&auto=format&fit=crop&q=80"} alt={proj.title} className="w-full h-full object-cover" />
-                      {proj.isHackathonWinner && (
-                        <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-amber-500 text-slate-950 text-[10px] font-black uppercase tracking-wider flex items-center gap-1 shadow-lg">
-                          <Award className="w-3 h-3" /> Hackathon Winner
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="p-6 space-y-4">
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <img src={proj.user?.avatar} alt={proj.user?.name} className="w-5 h-5 rounded-full object-cover" />
-                          <span className="text-xs text-purple-300 font-bold">{proj.user?.name}</span>
-                        </div>
-                        <h3 className="text-base font-bold text-white">{proj.title}</h3>
-                        <p className="text-xs text-gray-400 mt-1 line-clamp-2">{proj.description}</p>
-                      </div>
-
-                      <div className="flex flex-wrap gap-1.5">
-                        {tags.map((t, idx) => (
-                          <span key={idx} className="px-2.5 py-0.5 rounded-lg bg-slate-900 border border-slate-800 text-purple-300 text-[10px] font-semibold">
-                            {t}
+              {classroomData.projects?.length === 0 ? (
+                <div className="col-span-full text-center py-12 text-gray-500 glass-card rounded-3xl">
+                  No projects submitted by students in {selectedClass} yet.
+                </div>
+              ) : (
+                classroomData.projects?.map((proj: any) => {
+                  const tags: string[] = typeof proj.tags === "string" ? JSON.parse(proj.tags) : proj.tags || [];
+                  return (
+                    <div key={proj.id} className="rounded-3xl glass-card border border-slate-800 overflow-hidden flex flex-col justify-between">
+                      <div className="h-44 w-full bg-slate-900 relative">
+                        <img src={proj.imageUrl || "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&auto=format&fit=crop&q=80"} alt={proj.title} className="w-full h-full object-cover" />
+                        {proj.isHackathonWinner && (
+                          <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-amber-500 text-slate-950 text-[10px] font-black uppercase tracking-wider flex items-center gap-1 shadow-lg">
+                            <Award className="w-3 h-3" /> Hackathon Winner
                           </span>
-                        ))}
+                        )}
                       </div>
 
-                      <div className="flex items-center justify-between pt-3 border-t border-slate-800 text-xs">
-                        <div className="flex items-center gap-3">
-                          {proj.githubUrl && (
-                            <a href={proj.githubUrl} target="_blank" className="text-gray-400 hover:text-white flex items-center gap-1 font-bold">
-                              <Github className="w-3.5 h-3.5" /> Source Code
-                            </a>
-                          )}
-                          {proj.liveDemoUrl && (
-                            <a href={proj.liveDemoUrl} target="_blank" className="text-cyan-400 hover:underline flex items-center gap-1 font-bold">
-                              <ExternalLink className="w-3.5 h-3.5" /> Live Demo
-                            </a>
-                          )}
+                      <div className="p-6 space-y-4">
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <img src={proj.user?.avatar} alt={proj.user?.name} className="w-5 h-5 rounded-full object-cover" />
+                            <span className="text-xs text-purple-300 font-bold">{proj.user?.name}</span>
+                          </div>
+                          <h3 className="text-base font-bold text-white">{proj.title}</h3>
+                          <p className="text-xs text-gray-400 mt-1 line-clamp-2">{proj.description}</p>
+                        </div>
+
+                        <div className="flex flex-wrap gap-1.5">
+                          {tags.map((t, idx) => (
+                            <span key={idx} className="px-2.5 py-0.5 rounded-lg bg-slate-900 border border-slate-800 text-purple-300 text-[10px] font-semibold">
+                              {t}
+                            </span>
+                          ))}
+                        </div>
+
+                        <div className="flex items-center justify-between pt-3 border-t border-slate-800 text-xs">
+                          <div className="flex items-center gap-3">
+                            {proj.githubUrl && (
+                              <a href={proj.githubUrl} target="_blank" className="text-gray-400 hover:text-white flex items-center gap-1 font-bold">
+                                <Github className="w-3.5 h-3.5" /> Source Code
+                              </a>
+                            )}
+                            {proj.liveDemoUrl && (
+                              <a href={proj.liveDemoUrl} target="_blank" className="text-cyan-400 hover:underline flex items-center gap-1 font-bold">
+                                <ExternalLink className="w-3.5 h-3.5" /> Live Demo
+                              </a>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              )}
             </div>
           )}
 
@@ -367,35 +395,41 @@ export default function ClassroomsPage() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {classroomData.notes?.map((note: any) => (
-                  <div key={note.id} className="p-5 rounded-3xl glass-card border border-slate-800 flex items-start justify-between gap-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <span className="px-2.5 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 text-[10px] font-black uppercase">
-                          {note.fileType || "PDF"}
-                        </span>
-                        <span className="text-xs font-bold text-purple-400">{note.subject}</span>
+                {classroomData.notes?.length === 0 ? (
+                  <div className="col-span-full text-center py-12 text-gray-500 glass-card rounded-3xl">
+                    No notes uploaded for {selectedClass} yet.
+                  </div>
+                ) : (
+                  classroomData.notes?.map((note: any) => (
+                    <div key={note.id} className="p-5 rounded-3xl glass-card border border-slate-800 flex items-start justify-between gap-4">
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <span className="px-2.5 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 text-[10px] font-black uppercase">
+                            {note.fileType || "PDF"}
+                          </span>
+                          <span className="text-xs font-bold text-purple-400">{note.subject}</span>
+                        </div>
+
+                        <h4 className="text-sm font-bold text-white">{note.title}</h4>
+                        <p className="text-xs text-gray-400 leading-relaxed">{note.description}</p>
+
+                        <p className="text-[10px] text-gray-500">
+                          Uploaded by: <b>{note.teacher?.name || "Dr. Vikramaditya Gupta"}</b> • {new Date(note.createdAt).toLocaleDateString()}
+                        </p>
                       </div>
 
-                      <h4 className="text-sm font-bold text-white">{note.title}</h4>
-                      <p className="text-xs text-gray-400 leading-relaxed">{note.description}</p>
-
-                      <p className="text-[10px] text-gray-500">
-                        Uploaded by: <b>{note.teacher?.name || "Dr. Vikramaditya Gupta"}</b> • {new Date(note.createdAt).toLocaleDateString()}
-                      </p>
+                      <a
+                        href={note.fileUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="px-3.5 py-2 rounded-xl gradient-bg text-white text-xs font-bold shadow-glow hover:opacity-95 flex items-center gap-1.5 shrink-0"
+                      >
+                        <Download className="w-3.5 h-3.5" />
+                        <span>Download</span>
+                      </a>
                     </div>
-
-                    <a
-                      href={note.fileUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="px-3.5 py-2 rounded-xl gradient-bg text-white text-xs font-bold shadow-glow hover:opacity-95 flex items-center gap-1.5 shrink-0"
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                      <span>Download</span>
-                    </a>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
           )}
@@ -403,18 +437,24 @@ export default function ClassroomsPage() {
           {/* TAB 4: CLASS ANNOUNCEMENTS */}
           {activeTab === "announcements" && (
             <div className="space-y-4">
-              {classroomData.announcements?.map((anc: any) => (
-                <div key={anc.id} className="p-5 rounded-3xl glass-card border border-purple-500/30 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="px-2.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30 text-[10px] font-black uppercase">
-                      Class Announcement
-                    </span>
-                    <span className="text-xs text-gray-400">{new Date(anc.createdAt).toLocaleDateString()}</span>
-                  </div>
-                  <h3 className="text-base font-bold text-white">{anc.title}</h3>
-                  <p className="text-xs text-gray-300 leading-relaxed">{anc.content}</p>
+              {classroomData.announcements?.length === 0 ? (
+                <div className="text-center py-12 text-gray-500 glass-card rounded-3xl">
+                  No notices posted for {selectedClass} yet.
                 </div>
-              ))}
+              ) : (
+                classroomData.announcements?.map((anc: any) => (
+                  <div key={anc.id} className="p-5 rounded-3xl glass-card border border-purple-500/30 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="px-2.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30 text-[10px] font-black uppercase">
+                        Class Announcement
+                      </span>
+                      <span className="text-xs text-gray-400">{new Date(anc.createdAt).toLocaleDateString()}</span>
+                    </div>
+                    <h3 className="text-base font-bold text-white">{anc.title}</h3>
+                    <p className="text-xs text-gray-300 leading-relaxed">{anc.content}</p>
+                  </div>
+                ))
+              )}
             </div>
           )}
         </main>
