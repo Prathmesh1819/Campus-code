@@ -1,31 +1,5 @@
 import { NextResponse } from "next/server";
 
-// Comprehensive Natural Language Knowledge Base for instant responses
-const KNOWLEDGE_BASE: Record<string, string> = {
-  maharashtra: "The capital of Maharashtra is **Mumbai** (also known as the financial capital of India). Its winter capital is Nagpur.",
-  karnataka: "The capital of Karnataka is **Bengaluru** (Bangalore), famous as the Silicon Valley of India.",
-  "tamil nadu": "The capital of Tamil Nadu is **Chennai** (formerly Madras).",
-  delhi: "New Delhi is the official capital of India.",
-  punjab: "The capital of Punjab is **Chandigarh** (shared with Haryana).",
-  haryana: "The capital of Haryana is **Chandigarh**.",
-  gujarat: "The capital of Gujarat is **Gandhinagar** (and its largest city is Ahmedabad).",
-  rajasthan: "The capital of Rajasthan is **Jaipur** (known as the Pink City).",
-  "west bengal": "The capital of West Bengal is **Kolkata** (formerly Calcutta).",
-  kerala: "The capital of Kerala is **Thiruvananthapuram** (Trivandrum).",
-  "uttar pradesh": "The capital of Uttar Pradesh is **Lucknow**.",
-  "madhya pradesh": "The capital of Madhya Pradesh is **Bhopal**.",
-  goa: "The capital of Goa is **Panaji** (Panjim).",
-  telangana: "The capital of Telangana is **Hyderabad**.",
-  "andhra pradesh": "The executive capital of Andhra Pradesh is **Visakhapatnam** / Amaravati.",
-  bihar: "The capital of Bihar is **Patna**.",
-  assam: "The capital of Assam is **Dispur** (guwahati region).",
-  odisha: "The capital of Odisha is **Bhubaneswar**.",
-  jharkhand: "The capital of Jharkhand is **Ranchi**.",
-  chhattisgarh: "The capital of Chhattisgarh is **Raipur**.",
-  himachal: "The capital of Himachal Pradesh is **Shimla**.",
-  uttarakhand: "The capital of Uttarakhand is **Dehradun**.",
-};
-
 export async function POST(req: Request) {
   try {
     const { prompt, userRole, className, userName, history } = await req.json();
@@ -34,118 +8,181 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Prompt is required" }, { status: 400 });
     }
 
-    const query = prompt.trim();
-    const qLower = query.toLowerCase();
+    const systemInstruction = `You are Ido 👩‍💻, an ultra-intelligent, empathetic female AI Virtual Assistant & Mentor at Sarhad College.
+You possess full ChatGPT & Gemini level knowledge across:
+1. Human Psychology, Emotional Intelligence, Philosophy, Mental Health & Student Guidance.
+2. World General Knowledge, Geography, History, Science, Physics, Chemistry, Biology & Mathematics.
+3. Computer Science, Full-Stack Software Engineering, Data Structures & Algorithms, Artificial Intelligence & System Design.
+4. Sarhad College Academics (${className || "TY BSc CS"}), Exam Preparation & Career Mentorship.
 
-    // 1. Try Live Generative AI REST Endpoints with 3s Timeout
-    const systemInstruction = `You are Ido 👩‍💻, a brilliant, friendly female AI mentor & tutor at Sarhad College. Answer any student question concisely and accurately. Address the student as ${userName || "Student"}.`;
+Always answer accurately, warmly, and thoroughly. Format code blocks with syntax highlighting when code is requested. Address the student as ${userName || "Student"}.`;
 
+    // Construct conversation payload for multi-turn chat memory
+    const formattedHistory = Array.isArray(history)
+      ? history
+          .filter((m: any) => m.content && typeof m.content === "string")
+          .map((m: any) => ({
+            role: m.role === "user" ? "user" : "assistant",
+            content: m.content,
+          }))
+      : [];
+
+    const messagesPayload = [
+      { role: "system", content: systemInstruction },
+      ...formattedHistory.slice(-10), // Keep last 10 turns for memory efficiency
+      { role: "user", content: prompt },
+    ];
+
+    // 1. PRIMARY LLM PROVIDER: Pollinations AI Real-Time Generative LLM Engine (Free, Unlimited ChatGPT API)
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3500);
+      const timeoutId = setTimeout(() => controller.abort(), 6000);
 
-      const pollinationsUrl = `https://text.pollinations.ai/${encodeURIComponent(prompt)}?system=${encodeURIComponent(systemInstruction)}&model=openai`;
-      const res = await fetch(pollinationsUrl, { signal: controller.signal });
+      const response = await fetch("https://text.pollinations.ai/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: messagesPayload,
+          model: "openai",
+          jsonMode: false,
+        }),
+        signal: controller.signal,
+      });
+
       clearTimeout(timeoutId);
 
-      if (res.ok) {
-        const aiText = await res.text();
-        if (aiText && aiText.trim().length > 5 && !aiText.includes("Error")) {
-          return NextResponse.json({ reply: aiText.trim() });
+      if (response.ok) {
+        const replyText = await response.text();
+        if (replyText && replyText.trim().length > 0 && !replyText.includes("An error occurred")) {
+          return NextResponse.json({ reply: replyText.trim() });
+        }
+      }
+    } catch (llmErr) {
+      console.warn("Primary LLM Engine unavailable, trying secondary endpoint:", llmErr);
+    }
+
+    // 2. SECONDARY LLM PROVIDER: Pollinations GET REST Endpoint
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+      const encodedPrompt = encodeURIComponent(prompt);
+      const encodedSystem = encodeURIComponent(systemInstruction);
+      const getUrl = `https://text.pollinations.ai/${encodedPrompt}?system=${encodedSystem}&model=openai`;
+
+      const response = await fetch(getUrl, { signal: controller.signal });
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        const replyText = await response.text();
+        if (replyText && replyText.trim().length > 0) {
+          return NextResponse.json({ reply: replyText.trim() });
         }
       }
     } catch (e) {
-      // Fallback to local AI knowledge base if offline or network timeout
+      console.warn("Secondary LLM endpoint unavailable:", e);
     }
 
-    // 2. Knowledge Base Query Parser (Geography, General Knowledge & States)
-    for (const [key, value] of Object.entries(KNOWLEDGE_BASE)) {
-      if (qLower.includes(key)) {
-        return NextResponse.json({
-          reply: `Hi **${userName || "Prathmesh"}**! 📍 ${value}`,
-        });
+    // 3. TERTIARY LLM PROVIDER: Google Gemini 1.5 Flash API
+    const geminiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+    if (geminiKey) {
+      try {
+        const geminiRes = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              contents: [
+                {
+                  role: "user",
+                  parts: [{ text: `${systemInstruction}\n\nUser Question: ${prompt}` }],
+                },
+              ],
+            }),
+          }
+        );
+
+        if (geminiRes.ok) {
+          const geminiData = await geminiRes.json();
+          const candidateText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (candidateText) {
+            return NextResponse.json({ reply: candidateText });
+          }
+        }
+      } catch (err) {
+        console.error("Gemini API error:", err);
       }
     }
 
-    // Check if query is about capital of any state/country
+    // 4. QUATERNARY LLM PROVIDER: OpenAI Official API
+    const openAiKey = process.env.OPENAI_API_KEY;
+    if (openAiKey) {
+      try {
+        const openAiRes = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${openAiKey}`,
+          },
+          body: JSON.stringify({
+            model: "gpt-4o-mini",
+            messages: messagesPayload,
+          }),
+        });
+
+        if (openAiRes.ok) {
+          const openAiData = await openAiRes.json();
+          const replyText = openAiData.choices?.[0]?.message?.content;
+          if (replyText) {
+            return NextResponse.json({ reply: replyText });
+          }
+        }
+      } catch (err) {
+        console.error("OpenAI API error:", err);
+      }
+    }
+
+    // 5. LOCAL DEEP KNOWLEDGE INFERENCE ENGINE (For Offline / Sandboxed Environments)
+    const qLower = prompt.toLowerCase();
+
+    // Human Psychology & Mental Health Queries
+    if (qLower.includes("psychology") || qLower.includes("mind") || qLower.includes("behavior") || qLower.includes("emotion") || qLower.includes("anxiety") || qLower.includes("stress")) {
+      return NextResponse.json({
+        reply: `### 🧠 Ido's Psychology & Mental Well-being Insights
+
+Hi **${userName || "Prathmesh"}**! Human psychology is driven by cognitive patterns, emotional regulation, and neurochemistry (Dopamine, Serotonin, and Cortisol).
+
+**Key Psychological Principles**:
+1. **Cognitive Behavioral Perspective (CBT)**: Thoughts trigger feelings, which drive actions. Reframing negative thoughts alters emotional states.
+2. **Growth Mindset (Carol Dweck)**: Intelligence and skills evolve through effort and resilience rather than static talent.
+3. **Overcoming Academic Stress**: Break complex tasks into 25-minute **Pomodoro intervals**, prioritize sleep for memory consolidation, and practice active recall.
+
+I'm always here to listen and guide you through student life or career stress! 💕`,
+      });
+    }
+
+    // General Knowledge & World Geography / Capitals
     if (qLower.includes("capital")) {
+      if (qLower.includes("maharashtra")) {
+        return NextResponse.json({
+          reply: `Hi **${userName || "Prathmesh"}**! 📍 The capital of Maharashtra is **Mumbai** (the financial capital of India). Its winter legislative capital is **Nagpur**.`,
+        });
+      }
       if (qLower.includes("india")) {
         return NextResponse.json({
           reply: `Hi **${userName || "Prathmesh"}**! 🇮🇳 The capital of India is **New Delhi**.`,
         });
       }
-      if (qLower.includes("usa") || qLower.includes("america") || qLower.includes("united states")) {
-        return NextResponse.json({
-          reply: `Hi **${userName || "Prathmesh"}**! 🇺🇸 The capital of the United States is **Washington, D.C.**`,
-        });
-      }
-      if (qLower.includes("uk") || qLower.includes("england")) {
-        return NextResponse.json({
-          reply: `Hi **${userName || "Prathmesh"}**! 🇬🇧 The capital of the UK is **London**.`,
-        });
-      }
-      if (qLower.includes("japan")) {
-        return NextResponse.json({
-          reply: `Hi **${userName || "Prathmesh"}**! 🇯🇵 The capital of Japan is **Tokyo**.`,
-        });
-      }
-      if (qLower.includes("france")) {
-        return NextResponse.json({
-          reply: `Hi **${userName || "Prathmesh"}**! 🇫🇷 The capital of France is **Paris**.`,
-        });
-      }
     }
 
-    // 3. Coding & Computer Science Query Parser
-    if (qLower.includes("prime")) {
-      return NextResponse.json({
-        reply: `### ☕ Prime Number Program in Java
-
-Hi **${userName || "Prathmesh"}**! Here is the optimal Java code:
-
-\`\`\`java
-import java.util.Scanner;
-
-public class PrimeCheck {
-    public static boolean isPrime(int n) {
-        if (n <= 1) return false;
-        for (int i = 2; i * i <= n; i++) {
-            if (n % i == 0) return false;
-        }
-        return true;
-    }
-    public static void main(String[] args) {
-        System.out.println("29 is prime: " + isPrime(29));
-    }
-}
-\`\`\``,
-      });
-    }
-
-    if (qLower.includes("fibonacci")) {
-      return NextResponse.json({
-        reply: `### 🔢 Fibonacci Series in Java
-
-\`\`\`java
-public class Fibonacci {
-    public static void printFibonacci(int n) {
-        int a = 0, b = 1;
-        System.out.print(a + " " + b);
-        for (int i = 2; i < n; i++) {
-            int c = a + b;
-            System.out.print(" " + c);
-            a = b;
-            b = c;
-        }
-    }
-}
-\`\`\``,
-      });
-    }
-
-    // 4. Smart Natural Language Response
     return NextResponse.json({
-      reply: `Hi **${userName || "Prathmesh"}**! I'm **Ido** 👩‍💻, your AI Assistant.\n\nI have logged your question about **"${query}"**! How else can I assist you with your coding, DSA, or coursework today? 💕`,
+      reply: `Hi **${userName || "Prathmesh"}**! I am **Ido** 👩‍💻, your AI Mentor.
+
+Regarding your query **"${prompt}"**:
+I am equipped to answer questions across **General Knowledge, Human Psychology, Computer Science, DSA, Science & Engineering**.
+
+To enable 100% full un-sandboxed ChatGPT responses, add your free OpenAI or Gemini API key to \`.env.local\` as \`GEMINI_API_KEY=your_key\`! 💕`,
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || "Ido AI Assistant error" }, { status: 500 });
