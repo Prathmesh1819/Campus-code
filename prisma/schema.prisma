@@ -1,0 +1,292 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  password     String
+  role         String   @default("STUDENT") // STUDENT, TEACHER, ADMIN
+  rollNumber   String?
+  className    String?  // e.g. "TY BSc CS", "SY BSc CS", "Final Year CSE"
+  branch       String?
+  academicYear String?
+  avatar       String   @default("https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80")
+  bio          String?
+  githubUrl    String?
+  linkedinUrl  String?
+  portfolioUrl String?
+  resumeUrl    String?
+  xp           Int      @default(0)
+  level        Int      @default(1)
+  streakDays   Int      @default(0)
+  coins        Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  submissions      Submission[]
+  projects         Project[]
+  projectLikes     ProjectLike[]
+  projectComments  ProjectComment[]
+  posts            Post[]
+  postLikes        PostLike[]
+  postComments     PostComment[]
+  following        Follow[]         @relation("FollowerRelation")
+  followers        Follow[]         @relation("FollowingRelation")
+  badges           UserBadge[]
+  assignments      Assignment[]     @relation("TeacherAssignments")
+  announcements    Announcement[]   @relation("AuthorAnnouncements")
+  notes            Note[]           @relation("TeacherNotes")
+  sentMessages     Message[]        @relation("SentMessages")
+  receivedMessages Message[]        @relation("ReceivedMessages")
+  notifications    Notification[]
+  bookmarks        Bookmark[]
+  taughtClasses    Classroom[]      @relation("ClassTeacherRelation")
+}
+
+model Classroom {
+  id           String   @id @default(uuid())
+  name         String   // e.g. "TY BSc CS", "SY BSc CS", "Final Year CSE"
+  code         String   @unique // e.g. "TY-BSC-CS-2024"
+  branch       String   // e.g. "Computer Science & Engineering"
+  academicYear String   // e.g. "2024-2025"
+  teacherId    String
+  teacher      User     @relation("ClassTeacherRelation", fields: [teacherId], references: [id], onDelete: Cascade)
+  description  String?
+  createdAt    DateTime @default(now())
+}
+
+model Problem {
+  id                String   @id @default(uuid())
+  title             String
+  slug              String   @unique
+  difficulty        String   // EASY, MEDIUM, HARD
+  category          String   // Arrays, Strings, Linked List, Stack, Queue, Trees, Graphs, Dynamic Programming, Recursion, Sorting, Searching, Greedy, Math, SQL
+  description       String
+  examples          String   // JSON string of examples [{input, output, explanation}]
+  constraints       String   // Line separated constraints
+  hints             String?  // JSON string array of hints
+  editorial         String?
+  acceptedLanguages String   // JSON string array e.g. ["javascript", "python", "java", "cpp", "c", "go", "rust", "kotlin"]
+  companyTags       String   @default("[]") // JSON string array of top companies e.g. ["Google", "Meta", "Amazon", "Microsoft"]
+  frequency         Int      @default(85) // Interview frequency percentage e.g. 95%
+  createdAt         DateTime @default(now())
+
+  testCases   TestCase[]
+  submissions Submission[]
+  bookmarks   Bookmark[]
+}
+
+model TestCase {
+  id             String  @id @default(uuid())
+  problemId      String
+  problem        Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  input          String
+  expectedOutput String
+  isHidden       Boolean @default(false)
+}
+
+model Submission {
+  id                String   @id @default(uuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problemId         String
+  problem           Problem  @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  code              String
+  language          String
+  status            String   // ACCEPTED, WRONG_ANSWER, TIME_LIMIT_EXCEEDED, RUNTIME_ERROR, COMPILATION_ERROR
+  executionTimeMs   Int
+  memoryUsageKb     Int
+  testCasesPassed   Int
+  totalTestCases    Int
+  createdAt         DateTime @default(now())
+}
+
+model Project {
+  id                String   @id @default(uuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title             String
+  description       String
+  category          String   // Web App, Mobile App, AI/ML, Blockchain, Systems, Open Source
+  tags              String   // JSON string array of tech tags
+  githubUrl         String?
+  liveDemoUrl       String?
+  videoUrl          String?
+  imageUrl          String?
+  likesCount        Int      @default(0)
+  viewsCount        Int      @default(0)
+  isHackathonWinner Boolean  @default(false)
+  createdAt         DateTime @default(now())
+
+  likes    ProjectLike[]
+  comments ProjectComment[]
+}
+
+model ProjectLike {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, projectId])
+}
+
+model ProjectComment {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  content   String
+  createdAt DateTime @default(now())
+}
+
+model Post {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content       String
+  codeSnippet   String?
+  mediaUrl      String?
+  tags          String   // JSON array of tags
+  likesCount    Int      @default(0)
+  commentsCount Int      @default(0)
+  createdAt     DateTime @default(now())
+
+  likes    PostLike[]
+  comments PostComment[]
+}
+
+model PostLike {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, postId])
+}
+
+model PostComment {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  content   String
+  createdAt DateTime @default(now())
+}
+
+model Follow {
+  id          String   @id @default(uuid())
+  followerId  String
+  follower    User     @relation("FollowerRelation", fields: [followerId], references: [id], onDelete: Cascade)
+  followingId String
+  following   User     @relation("FollowingRelation", fields: [followingId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@unique([followerId, followingId])
+}
+
+model Badge {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String
+  icon        String
+  category    String   // PROBLEM, STREAK, PROJECT, RANK, EVENT
+  xpReward    Int      @default(100)
+
+  users UserBadge[]
+}
+
+model UserBadge {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badgeId    String
+  badge      Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  unlockedAt DateTime @default(now())
+
+  @@unique([userId, badgeId])
+}
+
+model Assignment {
+  id          String   @id @default(uuid())
+  teacherId   String
+  teacher     User     @relation("TeacherAssignments", fields: [teacherId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  className   String
+  branch      String
+  deadline    DateTime
+  createdAt   DateTime @default(now())
+}
+
+model Announcement {
+  id             String   @id @default(uuid())
+  authorId       String
+  author         User     @relation("AuthorAnnouncements", fields: [authorId], references: [id], onDelete: Cascade)
+  title          String
+  content        String
+  targetAudience String   @default("ALL") // ALL, TY BSc CS, CSE, IT
+  isImportant    Boolean  @default(false)
+  createdAt      DateTime @default(now())
+}
+
+model Note {
+  id          String   @id @default(uuid())
+  teacherId   String
+  teacher     User     @relation("TeacherNotes", fields: [teacherId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  fileUrl     String
+  fileType    String   // PDF, PPT, VIDEO, ZIP
+  subject     String
+  className   String   // e.g. "TY BSc CS", "SY BSc CS"
+  createdAt   DateTime @default(now())
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  senderId   String
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiverId String
+  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  content    String
+  mediaUrl   String?
+  readStatus Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  type      String   // LIKE, COMMENT, FOLLOW, ANNOUNCEMENT, ASSIGNMENT, RANK
+  link      String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Bookmark {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problemId String
+  problem   Problem  @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, problemId])
+}
