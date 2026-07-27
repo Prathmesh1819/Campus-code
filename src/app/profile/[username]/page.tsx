@@ -125,10 +125,17 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
     document.body.removeChild(link);
   };
 
-  // Real-Time 365 Days Date Matrix starting from January
+  // Filter submissions strictly for selected year
+  const selectedYearSubmissions = submissions.filter((sub) => {
+    if (!sub.createdAt) return false;
+    const subYear = new Date(sub.createdAt).getFullYear();
+    return subYear === selectedYear;
+  });
+
+  // Real-Time 365 Days Date Matrix starting from Jan 1st of selected year
   const generateRealCalendarData = () => {
     const countsByDate: Record<string, number> = {};
-    submissions.forEach((sub) => {
+    selectedYearSubmissions.forEach((sub) => {
       if (sub.createdAt) {
         const dStr = new Date(sub.createdAt).toISOString().split("T")[0];
         countsByDate[dStr] = (countsByDate[dStr] || 0) + 1;
@@ -165,7 +172,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
 
   const weeksMatrix = generateRealCalendarData();
   const displayUser = profileUser || currentUser;
-  const totalContributions = submissions.length;
+  const totalYearContributions = selectedYearSubmissions.length;
 
   return (
     <div className="min-h-screen flex flex-col bg-[#070913]">
@@ -249,7 +256,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <h3 className="text-lg font-black text-white tracking-tight flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-purple-400" />
-                <span>{totalContributions} {totalContributions === 1 ? "contribution" : "contributions"} in {selectedYear}</span>
+                <span>{totalYearContributions} {totalYearContributions === 1 ? "contribution" : "contributions"} in {selectedYear}</span>
               </h3>
 
               {/* Year Selectors */}
