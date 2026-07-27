@@ -487,7 +487,7 @@ export default function DashboardPage() {
                   <span className="px-2.5 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 text-[10px] font-bold uppercase">
                     Academic Term
                   </span>
-                  <h4 className="font-bold text-white">Academic Term 2024-2025 Active</h4>
+                  <h4 className="font-bold text-white">Academic Term 2025-26 Active</h4>
                   <p className="text-gray-400 text-[11px] leading-relaxed">
                     Check your virtual classroom for lecture notes, practical code submissions, and class projects.
                   </p>

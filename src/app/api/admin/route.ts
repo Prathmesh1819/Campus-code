@@ -77,7 +77,7 @@ export async function POST(req: Request) {
         rollNumber: rollNumber || null,
         className: className || "TY BSc CS",
         branch: branch || "Computer Science",
-        academicYear: academicYear || "2024-2025",
+        academicYear: academicYear || "2025-26",
         avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80",
       },
     });

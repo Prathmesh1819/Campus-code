@@ -46,7 +46,7 @@ export function AuthModal({ isOpen, onClose, defaultMode = "login" }: AuthModalP
   const [rollNumber, setRollNumber] = useState("");
   const [className, setClassName] = useState(availableClassrooms[0]);
   const [branch, setBranch] = useState(availableStreams[0]);
-  const [academicYear, setAcademicYear] = useState("2024-2025");
+  const [academicYear, setAcademicYear] = useState("2025-26");
 
   // OTP State
   const [otp, setOtp] = useState(["", "", "", ""]);
@@ -272,9 +272,9 @@ export function AuthModal({ isOpen, onClose, defaultMode = "login" }: AuthModalP
                     onChange={(e) => setAcademicYear(e.target.value)}
                     className="w-full bg-slate-900 border border-slate-800 focus:border-purple-500 rounded-xl py-2.5 px-3 text-white focus:outline-none"
                   >
-                    <option value="2024-2025">2024 - 2025</option>
-                    <option value="2025-2026">2025 - 2026</option>
-                    <option value="2026-2027">2026 - 2027</option>
+                    <option value="2025-26">2025 - 2026 (2025-26)</option>
+                    <option value="2026-27">2026 - 2027 (2026-27)</option>
+                    <option value="2027-28">2027 - 2028 (2027-28)</option>
                   </select>
                 </div>
               </div>

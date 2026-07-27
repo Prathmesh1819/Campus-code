@@ -74,7 +74,7 @@ export default function ClassroomsPage() {
         classroom: {
           name: className,
           branch: "Computer Science",
-          academicYear: "2024-2025",
+          academicYear: "2025-26",
           teacher: {
             name: "Dr. Vikramaditya Gupta",
             email: "teacher@campus.edu",
@@ -236,7 +236,7 @@ export default function ClassroomsPage() {
               </div>
               <div className="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800">
                 <span className="text-xs font-semibold text-gray-400 block">Academic Year</span>
-                <span className="text-lg font-black text-emerald-300">2024-2025</span>
+                <span className="text-lg font-black text-emerald-300">2025-26</span>
               </div>
             </div>
           </div>
