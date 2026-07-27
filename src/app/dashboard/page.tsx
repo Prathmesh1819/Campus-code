@@ -30,6 +30,7 @@ export default function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [solvedCount, setSolvedCount] = useState(0);
   const [projectsCount, setProjectsCount] = useState(0);
+  const [userRank, setUserRank] = useState<number | null>(null);
 
   useEffect(() => {
     if (user?.id) {
@@ -59,6 +60,19 @@ export default function DashboardPage() {
     } catch {
       setProjectsCount(0);
     }
+
+    try {
+      const lRes = await fetch("/api/leaderboard");
+      const lData = await lRes.json();
+      if (lData.rankings) {
+        const myEntry = lData.rankings.find((r: any) => r.id === user?.id);
+        if (myEntry) {
+          setUserRank(myEntry.rank);
+        }
+      }
+    } catch {
+      setUserRank(1);
+    }
   };
 
   const currentXp = user?.xp || 0;
@@ -78,8 +92,8 @@ export default function DashboardPage() {
     },
     {
       label: "College Rank",
-      value: solvedCount > 0 ? "#12 in Class" : "Unranked",
-      sub: solvedCount > 0 ? "Active Competitor" : "Solve 1 problem to rank",
+      value: userRank ? `#${userRank} in Class` : solvedCount > 0 ? "#1 in Class" : "Unranked",
+      sub: userRank === 1 ? "Top 1 Campus Ranker 🏆" : userRank ? `Rank #${userRank} Competitor` : "Solve 1 problem to rank",
       icon: Trophy,
       color: "from-amber-400 to-orange-500",
     },
