@@ -29,8 +29,8 @@ interface AuthContextType {
   logout: () => void;
   refreshUserData: () => Promise<void>;
   switchRole: (role: "STUDENT" | "TEACHER" | "ADMIN") => Promise<void>;
-  updateUserAvatar: (newAvatarUrl: string) => void;
-  updateUserProfile: (updatedFields: Partial<User>) => void;
+  updateUserAvatar: (newAvatarUrl: string) => Promise<void>;
+  updateUserProfile: (updatedFields: Partial<User>) => Promise<void>;
   isAuthModalOpen: boolean;
   openAuthModal: (mode?: "login" | "register") => void;
   closeAuthModal: () => void;
@@ -106,18 +106,43 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }, 1000);
   };
 
-  const updateUserAvatar = (newAvatarUrl: string) => {
-    if (!user) return;
+  const updateUserAvatar = async (newAvatarUrl: string) => {
+    if (!user?.id) return;
     const updated = { ...user, avatar: newAvatarUrl };
     setUser(updated);
     localStorage.setItem("campuscode_user", JSON.stringify(updated));
+
+    try {
+      await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "update_profile", userId: user.id, avatar: newAvatarUrl }),
+      });
+    } catch (err) {
+      console.error("Error persisting avatar update:", err);
+    }
   };
 
-  const updateUserProfile = (updatedFields: Partial<User>) => {
-    if (!user) return;
+  const updateUserProfile = async (updatedFields: Partial<User>) => {
+    if (!user?.id) return;
     const updated = { ...user, ...updatedFields };
     setUser(updated);
     localStorage.setItem("campuscode_user", JSON.stringify(updated));
+
+    try {
+      const res = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "update_profile", userId: user.id, ...updatedFields }),
+      });
+      const data = await res.json();
+      if (data.user) {
+        setUser(data.user);
+        localStorage.setItem("campuscode_user", JSON.stringify(data.user));
+      }
+    } catch (err) {
+      console.error("Error persisting profile update:", err);
+    }
   };
 
   const switchRole = async (role: "STUDENT" | "TEACHER" | "ADMIN") => {

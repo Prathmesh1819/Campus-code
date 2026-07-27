@@ -82,7 +82,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { action, email, password, name, role, rollNumber, className, branch, academicYear, avatar } = body;
+    const { action, email, password, name, role, rollNumber, className, branch, academicYear, avatar, userId, bio, githubUrl, linkedinUrl } = body;
 
     // 1. REGISTER
     if (action === "register") {
@@ -128,6 +128,9 @@ export async function POST(req: Request) {
           level: user.level,
           streakDays: user.streakDays,
           coins: user.coins,
+          bio: user.bio,
+          githubUrl: user.githubUrl,
+          linkedinUrl: user.linkedinUrl,
         },
         token,
       });
@@ -171,6 +174,9 @@ export async function POST(req: Request) {
           level: user.level,
           streakDays: user.streakDays,
           coins: user.coins,
+          bio: user.bio,
+          githubUrl: user.githubUrl,
+          linkedinUrl: user.linkedinUrl,
         },
         token,
       });
@@ -180,7 +186,48 @@ export async function POST(req: Request) {
       return response;
     }
 
-    // 3. SWITCH DEMO USER
+    // 3. UPDATE PROFILE PERSISTENCE
+    if (action === "update_profile") {
+      if (!userId) {
+        return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+      }
+
+      const updatedUser = await prisma.user.update({
+        where: { id: userId },
+        data: {
+          ...(name && { name }),
+          ...(email && { email }),
+          ...(avatar && { avatar }),
+          ...(bio !== undefined && { bio }),
+          ...(githubUrl !== undefined && { githubUrl }),
+          ...(linkedinUrl !== undefined && { linkedinUrl }),
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          avatar: true,
+          rollNumber: true,
+          className: true,
+          branch: true,
+          xp: true,
+          level: true,
+          streakDays: true,
+          coins: true,
+          bio: true,
+          githubUrl: true,
+          linkedinUrl: true,
+        },
+      });
+
+      return NextResponse.json({
+        message: "Profile updated successfully",
+        user: updatedUser,
+      });
+    }
+
+    // 4. SWITCH DEMO USER
     if (action === "demo_switch") {
       const targetRole = role || "STUDENT";
       const user = await prisma.user.findFirst({ where: { role: targetRole } });
@@ -204,6 +251,9 @@ export async function POST(req: Request) {
           level: user.level,
           streakDays: user.streakDays,
           coins: user.coins,
+          bio: user.bio,
+          githubUrl: user.githubUrl,
+          linkedinUrl: user.linkedinUrl,
         },
         token,
       });

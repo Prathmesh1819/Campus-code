@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Sidebar } from "@/components/Sidebar";
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
 import { Settings as SettingsIcon, User, Lock, Save, Camera, Upload, Check, Github, Linkedin } from "lucide-react";
 
 const presetAvatars = [
@@ -17,14 +18,28 @@ const presetAvatars = [
 
 export default function SettingsPage() {
   const { user, updateUserAvatar, updateUserProfile } = useAuth();
+  const { showToast } = useToast();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [name, setName] = useState(user?.name || "Student Name");
-  const [email, setEmail] = useState(user?.email || "student@campus.edu");
-  const [bio, setBio] = useState(user?.bio || "Student Programmer at CampusCode");
-  const [githubUrl, setGithubUrl] = useState(user?.githubUrl || "");
-  const [linkedinUrl, setLinkedinUrl] = useState(user?.linkedinUrl || "");
-  const [avatarUrl, setAvatarUrl] = useState(user?.avatar || presetAvatars[0]);
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [bio, setBio] = useState("");
+  const [githubUrl, setGithubUrl] = useState("");
+  const [linkedinUrl, setLinkedinUrl] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState(presetAvatars[0]);
   const [successMsg, setSuccessMsg] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      setName(user.name || "");
+      setEmail(user.email || "");
+      setBio(user.bio || "");
+      setGithubUrl(user.githubUrl || "");
+      setLinkedinUrl(user.linkedinUrl || "");
+      setAvatarUrl(user.avatar || presetAvatars[0]);
+    }
+  }, [user]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -39,12 +54,20 @@ export default function SettingsPage() {
     }
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    updateUserAvatar(avatarUrl);
-    updateUserProfile({ name, email, bio, githubUrl, linkedinUrl });
-    setSuccessMsg("Profile, social links, and avatar updated successfully!");
-    setTimeout(() => setSuccessMsg(""), 3000);
+    setSaving(true);
+    try {
+      await updateUserAvatar(avatarUrl);
+      await updateUserProfile({ name, email, bio, githubUrl, linkedinUrl });
+      showToast("Profile Updated! ✨", "Profile details, avatar, and social links saved to database.", "success");
+      setSuccessMsg("Profile, social links, and avatar updated successfully!");
+      setTimeout(() => setSuccessMsg(""), 3000);
+    } catch (err: any) {
+      showToast("Update Error ⚠️", err.message || "Failed to save profile changes", "error");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -217,10 +240,11 @@ export default function SettingsPage() {
 
               <button
                 type="submit"
+                disabled={saving}
                 className="w-full py-3 rounded-xl gradient-bg text-white font-bold shadow-glow hover:opacity-95 flex items-center justify-center gap-2 transition-all"
               >
                 <Save className="w-4 h-4" />
-                <span>Save Profile, Social Links & Avatar Changes</span>
+                <span>{saving ? "Saving Changes..." : "Save Profile, Social Links & Avatar Changes"}</span>
               </button>
             </form>
           </div>
