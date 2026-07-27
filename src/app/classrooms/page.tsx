@@ -174,7 +174,9 @@ export default function ClassroomsPage() {
                   {selectedClass} Virtual Classroom & Notes Hub
                 </h2>
                 <p className="text-xs text-gray-400 max-w-xl leading-relaxed">
-                  Connect with classmates in your batch, explore peer software projects, and download lecture notes shared by your {isClassTeacher ? "Class Teacher" : "Subject Teacher"}.
+                  {isTeacherOrAdmin
+                    ? `Manage enrolled students in ${selectedClass}, review student software projects, and upload lecture notes.`
+                    : `Connect with classmates in your batch, explore peer software projects, and download lecture notes shared by your Class Teacher.`}
                 </p>
               </div>
 
@@ -219,7 +221,9 @@ export default function ClassroomsPage() {
             {/* Quick Stats Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
               <div className="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800">
-                <span className="text-xs font-semibold text-gray-400 block">Classmates</span>
+                <span className="text-xs font-semibold text-gray-400 block">
+                  {isTeacherOrAdmin ? "Enrolled Students" : "Classmates"}
+                </span>
                 <span className="text-lg font-black text-white">{classroomData.classmates?.length || 0} Students</span>
               </div>
               <div className="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800">
@@ -249,7 +253,11 @@ export default function ClassroomsPage() {
                 }`}
               >
                 <Users className="w-4 h-4" />
-                <span>Classmates ({classroomData.classmates?.length || 0})</span>
+                <span>
+                  {isTeacherOrAdmin
+                    ? `Enrolled Students (${classroomData.classmates?.length || 0})`
+                    : `Classmates (${classroomData.classmates?.length || 0})`}
+                </span>
               </button>
 
               <button
@@ -301,12 +309,12 @@ export default function ClassroomsPage() {
             )}
           </div>
 
-          {/* TAB 1: CLASSMATES ROSTER */}
+          {/* TAB 1: CLASSMATES / ENROLLED STUDENTS ROSTER */}
           {activeTab === "classmates" && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {classroomData.classmates?.length === 0 ? (
                 <div className="col-span-full text-center py-12 text-gray-500 glass-card rounded-3xl">
-                  No registered classmates found in {selectedClass} yet.
+                  No registered students found in {selectedClass} yet.
                 </div>
               ) : (
                 classroomData.classmates?.map((mate: any) => (
