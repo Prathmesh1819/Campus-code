@@ -34,6 +34,7 @@ export default function ClassroomsPage() {
   const [activeTab, setActiveTab] = useState<"classmates" | "projects" | "notes" | "announcements">("classmates");
 
   const isTeacherOrAdmin = user?.role === "TEACHER" || user?.role === "ADMIN";
+  const isClassTeacher = selectedClass === "TY BSc CS";
 
   useEffect(() => {
     // If student, force selectedClass to user's registered classroom
@@ -173,26 +174,40 @@ export default function ClassroomsPage() {
                   {selectedClass} Virtual Classroom & Notes Hub
                 </h2>
                 <p className="text-xs text-gray-400 max-w-xl leading-relaxed">
-                  Connect with classmates in your batch, explore peer software projects, and download lecture notes shared by your Class Teacher.
+                  Connect with classmates in your batch, explore peer software projects, and download lecture notes shared by your {isClassTeacher ? "Class Teacher" : "Subject Teacher"}.
                 </p>
               </div>
 
-              {/* Ultra High-Contrast Class Teacher Card */}
-              <div className="p-5 rounded-3xl bg-slate-900 border border-amber-500/40 flex items-center gap-4 shrink-0 shadow-2xl min-w-[320px]">
+              {/* Dynamic Faculty Card: Class Teacher vs Subject Teacher */}
+              <div
+                className={`p-5 rounded-3xl bg-slate-900 border flex items-center gap-4 shrink-0 shadow-2xl min-w-[320px] transition-all ${
+                  isClassTeacher ? "border-amber-500/40" : "border-cyan-500/40"
+                }`}
+              >
                 <img
                   src={classroomData.classroom?.teacher?.avatar || "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&auto=format&fit=crop&q=80"}
-                  alt="Class Teacher"
-                  className="w-16 h-16 rounded-2xl object-cover ring-4 ring-amber-500/50 shadow-glow"
+                  alt={isClassTeacher ? "Class Teacher" : "Subject Teacher"}
+                  className={`w-16 h-16 rounded-2xl object-cover ring-4 shadow-glow ${
+                    isClassTeacher ? "ring-amber-500/50" : "ring-cyan-500/50"
+                  }`}
                 />
                 <div className="space-y-1">
-                  <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 text-[10px] font-black uppercase tracking-wider border border-amber-500/40">
-                    <ShieldCheck className="w-3 h-3 text-amber-400" /> Class Teacher
-                  </div>
+                  {isClassTeacher ? (
+                    <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 text-[10px] font-black uppercase tracking-wider border border-amber-500/40">
+                      <ShieldCheck className="w-3 h-3 text-amber-400" /> Class Teacher
+                    </div>
+                  ) : (
+                    <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-cyan-500/20 text-cyan-300 text-[10px] font-black uppercase tracking-wider border border-cyan-500/40">
+                      <BookOpen className="w-3 h-3 text-cyan-400" /> Subject Teacher
+                    </div>
+                  )}
+
                   <h4 className="text-base font-black text-white tracking-tight">
                     {classroomData.classroom?.teacher?.name || "Dr. Vikramaditya Gupta"}
                   </h4>
                   <p className="text-xs font-semibold text-purple-300 flex items-center gap-1">
-                    <Building2 className="w-3 h-3" /> Head of DSA & CS Faculty
+                    <Building2 className="w-3 h-3" />
+                    {isClassTeacher ? "Head of DSA & CS Faculty" : `CS Faculty for ${selectedClass}`}
                   </p>
                   <p className="text-[11px] font-mono text-gray-400 flex items-center gap-1">
                     <Mail className="w-3 h-3 text-cyan-400" /> teacher@campus.edu
@@ -401,7 +416,7 @@ export default function ClassroomsPage() {
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-bold text-white flex items-center gap-2">
                   <FileText className="w-4 h-4 text-cyan-400" />
-                  <span>Important Study Notes Shared by Class Teacher</span>
+                  <span>Important Study Notes Shared by {isClassTeacher ? "Class Teacher" : "Subject Teacher"}</span>
                 </h3>
               </div>
 
