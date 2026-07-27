@@ -48,14 +48,39 @@ export async function GET(req: Request) {
       return NextResponse.json({ messages });
     }
 
-    // Get list of recent contacts
-    const users = await prisma.user.findMany({
+    // Get list of all campus users except self
+    const allUsers = await prisma.user.findMany({
       where: { NOT: { id: userId } },
       select: { id: true, name: true, avatar: true, role: true, branch: true },
-      take: 20,
     });
 
-    return NextResponse.json({ contacts: users });
+    // Fetch latest message for each contact to sort by recent activity (WhatsApp style)
+    const contactsWithLatestMsg = await Promise.all(
+      allUsers.map(async (u) => {
+        const lastMsg = await prisma.message.findFirst({
+          where: {
+            OR: [
+              { senderId: userId, receiverId: u.id },
+              { senderId: u.id, receiverId: userId },
+            ],
+          },
+          orderBy: { createdAt: "desc" },
+        });
+
+        return {
+          ...u,
+          lastMessageAt: lastMsg ? lastMsg.createdAt : new Date(0).toISOString(),
+          lastMessageText: lastMsg ? lastMsg.content : "",
+        };
+      })
+    );
+
+    // Sort contacts by most recent message timestamp first
+    contactsWithLatestMsg.sort(
+      (a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()
+    );
+
+    return NextResponse.json({ contacts: contactsWithLatestMsg });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || "Failed to fetch messages" }, { status: 500 });
   }
@@ -98,7 +123,6 @@ export async function DELETE(req: Request) {
     }
 
     if (mode === "everyone") {
-      // Only sender can delete for everyone
       if (message.senderId !== userId) {
         return NextResponse.json({ error: "Only the sender can unsend/delete for everyone" }, { status: 403 });
       }
@@ -106,7 +130,6 @@ export async function DELETE(req: Request) {
       await prisma.message.delete({ where: { id: messageId } });
       return NextResponse.json({ success: true, message: "Deleted for everyone" });
     } else {
-      // Delete for me
       let deletedList: string[] = [];
       try {
         deletedList = JSON.parse(message.deletedFor || "[]");

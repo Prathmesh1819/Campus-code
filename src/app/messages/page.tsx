@@ -26,6 +26,9 @@ export default function MessagesPage() {
     if (user?.id && activePeer?.id) {
       fetchConversation(user.id, activePeer.id);
 
+      // Save active peer to localStorage so page refresh stays on current chat
+      localStorage.setItem(`campuscode_active_peer_${user.id}`, activePeer.id);
+
       // Poll conversation every 3 seconds for live read receipt and message updates
       const interval = setInterval(() => {
         fetchConversation(user.id, activePeer.id);
@@ -41,7 +44,15 @@ export default function MessagesPage() {
       const data = await res.json();
       if (data.contacts && data.contacts.length > 0) {
         setContacts(data.contacts);
-        setActivePeer(data.contacts[0]);
+
+        // Restore saved active peer from localStorage or default to most recent contact
+        const savedPeerId = localStorage.getItem(`campuscode_active_peer_${user?.id}`);
+        const foundSaved = data.contacts.find((c: any) => c.id === savedPeerId);
+        if (foundSaved) {
+          setActivePeer(foundSaved);
+        } else {
+          setActivePeer(data.contacts[0]);
+        }
       }
     } catch (err) {
       console.error("Fetch contacts error:", err);
@@ -91,6 +102,7 @@ export default function MessagesPage() {
 
       if (res.ok) {
         fetchConversation(user.id, activePeer.id);
+        fetchContacts(); // Update latest message snippet & contact order
       }
     } catch (err: any) {
       alert("Failed to send message: " + err.message);
@@ -110,10 +122,18 @@ export default function MessagesPage() {
         setMessages((prev) => prev.filter((m) => m.id !== messageId));
         if (activePeer?.id) {
           fetchConversation(user.id, activePeer.id);
+          fetchContacts();
         }
       }
     } catch (err: any) {
       alert("Error deleting message: " + err.message);
+    }
+  };
+
+  const selectContact = (contact: any) => {
+    setActivePeer(contact);
+    if (user?.id) {
+      fetchConversation(user.id, contact.id);
     }
   };
 
@@ -156,7 +176,7 @@ export default function MessagesPage() {
                   filteredContacts.map((c) => (
                     <button
                       key={c.id}
-                      onClick={() => setActivePeer(c)}
+                      onClick={() => selectContact(c)}
                       className={`w-full p-3 rounded-2xl flex items-center gap-3 transition-all text-left ${
                         activePeer?.id === c.id
                           ? "bg-purple-600/20 border border-purple-500/40 text-white shadow-glow"
@@ -169,7 +189,7 @@ export default function MessagesPage() {
                         className="w-10 h-10 rounded-xl object-cover ring-2 ring-purple-500/30 shrink-0"
                       />
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between mb-0.5">
                           <h4 className="text-xs font-bold text-white truncate">{c.name}</h4>
                           <span
                             className={`text-[9px] font-black uppercase px-1.5 py-0.5 rounded ${
@@ -183,7 +203,9 @@ export default function MessagesPage() {
                             {c.role}
                           </span>
                         </div>
-                        <p className="text-[10px] text-gray-400 truncate">{c.branch || "Campus User"}</p>
+                        <p className="text-[10px] text-gray-400 truncate">
+                          {c.lastMessageText || c.branch || "Campus User"}
+                        </p>
                       </div>
                     </button>
                   ))
