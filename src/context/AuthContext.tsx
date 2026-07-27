@@ -98,6 +98,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setToken(null);
     localStorage.removeItem("campuscode_user");
     localStorage.removeItem("campuscode_token");
+    window.location.href = "/";
   };
 
   const updateUserAvatar = (newAvatarUrl: string) => {

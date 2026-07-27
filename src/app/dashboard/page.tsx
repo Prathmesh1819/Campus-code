@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/Navbar";
 import { Sidebar } from "@/components/Sidebar";
 import { useAuth } from "@/context/AuthContext";
@@ -30,7 +31,8 @@ import {
 } from "lucide-react";
 
 export default function DashboardPage() {
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
+  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [solvedCount, setSolvedCount] = useState(0);
   const [projectsCount, setProjectsCount] = useState(0);
@@ -42,6 +44,11 @@ export default function DashboardPage() {
   const isTeacherOrAdmin = user?.role === "TEACHER" || user?.role === "ADMIN";
 
   useEffect(() => {
+    const savedUser = localStorage.getItem("campuscode_user");
+    if (!user && !savedUser) {
+      router.push("/");
+      return;
+    }
     if (user?.id) {
       fetchUserDashboardStats();
     }
