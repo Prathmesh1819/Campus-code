@@ -174,6 +174,9 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
   const displayUser = profileUser || currentUser;
   const totalYearContributions = selectedYearSubmissions.length;
 
+  const profileUrl = typeof window !== "undefined" ? window.location.href : `https://campuscode.vercel.app/profile/${displayUser?.name?.toLowerCase().replace(/\s+/g, "")}`;
+  const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(profileUrl)}`;
+
   return (
     <div className="min-h-screen flex flex-col bg-[#070913]">
       <Navbar onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
@@ -486,7 +489,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
         </div>
       )}
 
-      {/* QR Code Share Modal */}
+      {/* Real High-Res Scannable QR Code Share Modal */}
       {showQrModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
           <div className="relative w-full max-w-sm glass-card border border-purple-500/30 rounded-3xl p-6 text-center space-y-4">
@@ -497,14 +500,18 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
               <X className="w-5 h-5" />
             </button>
 
-            <h3 className="text-lg font-bold text-white">Share CampusCode Profile</h3>
-            <div className="p-4 bg-white rounded-2xl w-48 h-48 mx-auto flex items-center justify-center shadow-2xl">
-              <div className="w-40 h-40 bg-slate-950 rounded-xl p-2 font-mono text-[8px] text-purple-400 break-all overflow-hidden flex flex-col justify-center items-center">
-                <QrCode className="w-28 h-28 text-slate-950 bg-white p-2 rounded-lg" />
-                <span className="mt-1 text-slate-950 font-bold text-[10px]">@{displayUser?.name}</span>
-              </div>
+            <h3 className="text-lg font-black text-white">Share CampusCode Profile</h3>
+            <div className="p-4 bg-white rounded-3xl w-56 h-56 mx-auto flex items-center justify-center shadow-2xl ring-4 ring-purple-500/40">
+              <img
+                src={qrApiUrl}
+                alt={`QR Code for ${displayUser?.name}`}
+                className="w-48 h-48 rounded-xl object-contain"
+              />
             </div>
-            <p className="text-xs text-gray-400">Scan to view GitHub stats & project portfolio</p>
+            <p className="text-xs font-bold text-purple-300">@{displayUser?.name}</p>
+            <p className="text-[11px] text-gray-400">
+              Scan with mobile camera to view live profile & coding achievements!
+            </p>
           </div>
         </div>
       )}
