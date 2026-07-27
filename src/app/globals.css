@@ -99,13 +99,14 @@ html.light .bg-slate-800\/40 {
   border-color: #e2e8f0 !important;
 }
 
-/* Light Mode Overrides for Dark Purple Containers & Badges */
+/* Light Mode Overrides: Replace Purple with Vibrant Electric Blue (#1d4ed8) */
 html.light .bg-purple-950,
 html.light .bg-purple-950\/80,
 html.light .bg-purple-900,
-html.light .bg-purple-900\/80 {
-  background-color: #f3e8ff !important;
-  border-color: #c084fc !important;
+html.light .bg-purple-900\/80,
+html.light .bg-purple-500\/10 {
+  background-color: #eff6ff !important; /* Soft Electric Blue Tint */
+  border-color: #93c5fd !important; /* Electric Blue Border */
 }
 
 /* Light Theme Typography Contrast */
@@ -130,20 +131,22 @@ html.light .border-slate-700 {
   border-color: #e2e8f0 !important;
 }
 
-/* Vibrant Light Mode Gradients & Badges */
+/* Electric Blue Light Mode Gradients & Badges */
 html.light .gradient-text {
-  background: linear-gradient(135deg, #6d28d9 0%, #2563eb 50%, #0284c7 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #0284c7 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
 }
 
-html.light .bg-purple-500\/10 {
-  background-color: #f3e8ff !important;
+html.light .gradient-bg {
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #0284c7 100%) !important;
 }
 
 html.light .text-purple-300,
-html.light .text-purple-400 {
-  color: #6b21a8 !important;
+html.light .text-purple-400,
+html.light .text-purple-600,
+html.light .text-purple-700 {
+  color: #1d4ed8 !important; /* Vibrant Electric Royal Blue */
 }
 
 html.light .bg-amber-500\/10 {
@@ -177,7 +180,7 @@ html.light .text-emerald-400 {
 }
 
 html.light .shadow-glow {
-  box-shadow: 0 10px 20px -5px rgba(124, 58, 237, 0.25) !important;
+  box-shadow: 0 10px 20px -5px rgba(29, 78, 216, 0.25) !important;
 }
 
 .shadow-glow-cyan {
@@ -196,8 +199,23 @@ html.light .shadow-glow {
   }
 }
 
+@keyframes glow-pulse-blue {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(29, 78, 216, 0.4), 0 0 30px rgba(37, 99, 235, 0.2);
+    border-color: rgba(37, 99, 235, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 35px rgba(29, 78, 216, 0.7), 0 0 60px rgba(37, 99, 235, 0.5);
+    border-color: rgba(147, 197, 253, 1);
+  }
+}
+
 .glow-pill {
   animation: glow-pulse 2s infinite ease-in-out;
+}
+
+html.light .glow-pill {
+  animation: glow-pulse-blue 2s infinite ease-in-out !important;
 }
 
 /* Electric Gradients */
