@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Sidebar } from "@/components/Sidebar";
 import { useAuth } from "@/context/AuthContext";
-import { Send, Search, CheckCheck, MessageSquare } from "lucide-react";
+import { Send, Search, CheckCheck, MessageSquare, MoreVertical, Trash2, Check, Clock } from "lucide-react";
 
 export default function MessagesPage() {
   const { user } = useAuth();
@@ -14,6 +14,7 @@ export default function MessagesPage() {
   const [messages, setMessages] = useState<any[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeMenuMsgId, setActiveMenuMsgId] = useState<string | null>(null);
 
   useEffect(() => {
     if (user?.id) {
@@ -25,7 +26,7 @@ export default function MessagesPage() {
     if (user?.id && activePeer?.id) {
       fetchConversation(user.id, activePeer.id);
 
-      // Poll conversation every 3 seconds for live message syncing
+      // Poll conversation every 3 seconds for live read receipt and message updates
       const interval = setInterval(() => {
         fetchConversation(user.id, activePeer.id);
       }, 3000);
@@ -72,6 +73,7 @@ export default function MessagesPage() {
       senderId: user.id,
       receiverId: activePeer.id,
       content: messageContent,
+      readStatus: false,
       createdAt: new Date().toISOString(),
     };
     setMessages((prev) => [...prev, tempMsg]);
@@ -92,6 +94,26 @@ export default function MessagesPage() {
       }
     } catch (err: any) {
       alert("Failed to send message: " + err.message);
+    }
+  };
+
+  const handleDeleteMessage = async (messageId: string, mode: "everyone" | "me") => {
+    setActiveMenuMsgId(null);
+    if (!user?.id) return;
+
+    try {
+      const res = await fetch(`/api/messages?messageId=${messageId}&userId=${user.id}&mode=${mode}`, {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        setMessages((prev) => prev.filter((m) => m.id !== messageId));
+        if (activePeer?.id) {
+          fetchConversation(user.id, activePeer.id);
+        }
+      }
+    } catch (err: any) {
+      alert("Error deleting message: " + err.message);
     }
   };
 
@@ -196,15 +218,15 @@ export default function MessagesPage() {
                             {activePeer.role}
                           </span>
                         </h4>
-                        <span className="text-[10px] text-emerald-400 font-semibold">• Active Chat Channel</span>
+                        <span className="text-[10px] text-emerald-400 font-semibold">• Encrypted Live Chat Channel</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Message Stream */}
-                  <div className="flex-1 p-4 overflow-y-auto space-y-3">
+                  <div className="flex-1 p-4 overflow-y-auto space-y-4">
                     <div className="text-center text-[10px] text-gray-500 font-semibold">
-                      End-to-End Campus Encrypted Chat
+                      End-to-End Campus Encrypted Messaging
                     </div>
 
                     {messages.length === 0 ? (
@@ -214,20 +236,78 @@ export default function MessagesPage() {
                     ) : (
                       messages.map((m) => {
                         const isMe = m.senderId === user?.id;
+                        const isMenuOpen = activeMenuMsgId === m.id;
+                        const timeStr = new Date(m.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+                        const seenTimeStr = m.readAt ? new Date(m.readAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : null;
+
                         return (
-                          <div key={m.id} className={`flex ${isMe ? "justify-end" : "justify-start"}`}>
+                          <div key={m.id} className={`flex items-start gap-2 group ${isMe ? "justify-end" : "justify-start"}`}>
+                            {/* Message Context Menu */}
+                            <div className="relative shrink-0 pt-1">
+                              <button
+                                onClick={() => setActiveMenuMsgId(isMenuOpen ? null : m.id)}
+                                className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-white transition-opacity"
+                              >
+                                <MoreVertical className="w-3.5 h-3.5" />
+                              </button>
+
+                              {isMenuOpen && (
+                                <div className="absolute right-0 top-6 z-50 w-44 bg-slate-900 border border-slate-800 rounded-2xl p-1.5 shadow-xl space-y-1 animate-in fade-in">
+                                  {isMe && (
+                                    <button
+                                      onClick={() => handleDeleteMessage(m.id, "everyone")}
+                                      className="w-full px-3 py-1.5 text-[11px] font-bold text-rose-400 hover:bg-rose-500/10 rounded-xl flex items-center gap-2 transition-colors text-left"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5 text-rose-400" />
+                                      <span>Unsend for Everyone</span>
+                                    </button>
+                                  )}
+
+                                  <button
+                                    onClick={() => handleDeleteMessage(m.id, "me")}
+                                    className="w-full px-3 py-1.5 text-[11px] font-semibold text-gray-300 hover:bg-slate-800 rounded-xl flex items-center gap-2 transition-colors text-left"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5 text-gray-400" />
+                                    <span>Delete for Me</span>
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Message Bubble */}
                             <div
-                              className={`max-w-sm px-4 py-2.5 rounded-2xl text-xs space-y-1 ${
+                              className={`max-w-sm px-4 py-2.5 rounded-2xl text-xs space-y-1.5 shadow-md relative ${
                                 isMe
                                   ? "gradient-bg text-white shadow-glow"
                                   : "bg-slate-900 border border-slate-800 text-gray-200"
                               }`}
                             >
-                              <p className="leading-relaxed">{m.content}</p>
-                              <span className="text-[9px] opacity-75 text-right block font-mono">
-                                {new Date(m.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                                {isMe && <CheckCheck className="w-3 h-3 inline ml-1" />}
-                              </span>
+                              <p className="leading-relaxed whitespace-pre-wrap">{m.content}</p>
+
+                              {/* Footer Timestamp & WhatsApp-Style Seen Status */}
+                              <div className="flex items-center justify-end gap-1.5 text-[9px] opacity-80 pt-0.5 border-t border-white/10 font-mono">
+                                <span>{timeStr}</span>
+
+                                {isMe && (
+                                  <div className="flex items-center gap-0.5">
+                                    {m.readStatus ? (
+                                      <span
+                                        className="text-cyan-300 font-bold flex items-center gap-0.5"
+                                        title={seenTimeStr ? `Seen at ${seenTimeStr}` : "Seen"}
+                                      >
+                                        <CheckCheck className="w-3.5 h-3.5 text-cyan-300 stroke-[3]" />
+                                        <span className="text-[8px] text-cyan-200">
+                                          {seenTimeStr ? `Seen ${seenTimeStr}` : "Seen"}
+                                        </span>
+                                      </span>
+                                    ) : (
+                                      <span className="text-gray-400" title="Delivered">
+                                        <CheckCheck className="w-3.5 h-3.5 text-gray-300" />
+                                      </span>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           </div>
                         );

@@ -257,15 +257,17 @@ model Note {
 }
 
 model Message {
-  id         String   @id @default(uuid())
+  id         String    @id @default(uuid())
   senderId   String
-  sender     User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  sender     User      @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
   receiverId String
-  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  receiver   User      @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
   content    String
   mediaUrl   String?
-  readStatus Boolean  @default(false)
-  createdAt  DateTime @default(now())
+  readStatus Boolean   @default(false)
+  readAt     DateTime?
+  deletedFor String    @default("[]") // JSON string array of user IDs for "Delete for Me"
+  createdAt  DateTime  @default(now())
 }
 
 model Notification {
