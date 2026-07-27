@@ -219,8 +219,9 @@ export default function HomePage() {
         {/* Glow Spheres Background */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-600/20 rounded-full blur-[140px] pointer-events-none -z-10" />
 
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-700 dark:text-purple-300 text-xs font-black mb-6 shadow-sm">
-          <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+        {/* Pulsating Glowing In/Out Tagline Pill Badge */}
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/40 text-purple-700 dark:text-purple-300 text-xs font-black mb-6 glow-pill">
+          <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400 animate-spin" />
           <span>Official Sarhad College Platform for Student Programmers</span>
         </div>
 
