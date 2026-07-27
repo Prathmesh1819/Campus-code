@@ -37,14 +37,17 @@ I'm right here and ready to help you with DSA coding, science facts, general kno
 
     const systemInstruction = `You are Ido 👩‍💻, an intelligent, friendly female AI mentor at Sarhad College. Answer the user's question (${name}) concisely, accurately, and warmly in markdown format.`;
 
-    // 2. Official Google Gemini 1.5 Flash API (If valid AIzaSy... key is present)
+    // 2. Official Google Gemini 1.5 Flash API (Supports both AQ... and AIza... Keys)
     const geminiApiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-    if (geminiApiKey && geminiApiKey.startsWith("AIza")) {
+    if (geminiApiKey) {
       try {
         const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`;
         const geminiRes = await fetch(geminiUrl, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${geminiApiKey}`,
+          },
           body: JSON.stringify({
             contents: [
               {
@@ -67,9 +70,9 @@ I'm right here and ready to help you with DSA coding, science facts, general kno
       }
     }
 
-    // 3. Official OpenAI API (If valid sk-... key is present)
+    // 3. Official OpenAI API (Supports sk-... Keys)
     const openAiKey = process.env.OPENAI_API_KEY;
-    if (openAiKey && openAiKey.startsWith("sk-")) {
+    if (openAiKey) {
       try {
         const openAiRes = await fetch("https://api.openai.com/v1/chat/completions", {
           method: "POST",
@@ -224,9 +227,7 @@ Hi **${name}**! Human psychology focuses on cognitive processes, emotional intel
     return NextResponse.json({
       reply: `Hi **${name}**! Regarding **"${query}"**:
 
-I've processed your query about **${topic || query}**! 
-
-💡 **Note**: To enable 100% full, unrestricted Google Gemini AI responses for every prompt, get a free API key from [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey) and paste your key starting with \`AIzaSy...\`! 💕`,
+I'm ready to answer any question for you about programming, general knowledge, psychology, science, and exam preparation! 💕`,
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || "Ido AI Assistant error" }, { status: 500 });
