@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { AuthModal } from "@/components/AuthModal";
@@ -18,6 +18,8 @@ import {
   Terminal,
   Cpu,
   Globe,
+  Sun,
+  Moon,
 } from "lucide-react";
 
 const SARHAD_COLLEGE_LOGO =
@@ -25,6 +27,30 @@ const SARHAD_COLLEGE_LOGO =
 
 export default function HomePage() {
   const { openAuthModal, closeAuthModal, isAuthModalOpen, authMode } = useAuth();
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("campuscode_theme") as "dark" | "light" | null;
+    if (savedTheme) {
+      setTheme(savedTheme);
+      if (savedTheme === "light") {
+        document.documentElement.classList.add("light");
+      } else {
+        document.documentElement.classList.remove("light");
+      }
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === "dark" ? "light" : "dark";
+    setTheme(nextTheme);
+    localStorage.setItem("campuscode_theme", nextTheme);
+    if (nextTheme === "light") {
+      document.documentElement.classList.add("light");
+    } else {
+      document.documentElement.classList.remove("light");
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-[#070913] text-white selection:bg-purple-500 selection:text-white">
@@ -47,6 +73,24 @@ export default function HomePage() {
         </Link>
 
         <div className="flex items-center gap-3">
+          {/* Light / Dark Mode Theme Switcher */}
+          <button
+            onClick={toggleTheme}
+            className="px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-purple-500/50 text-gray-300 hover:text-white transition-all text-xs font-bold flex items-center gap-1.5"
+          >
+            {theme === "dark" ? (
+              <>
+                <Sun className="w-4 h-4 text-amber-400" />
+                <span>Light Mode</span>
+              </>
+            ) : (
+              <>
+                <Moon className="w-4 h-4 text-purple-400" />
+                <span>Dark Mode</span>
+              </>
+            )}
+          </button>
+
           <button
             onClick={() => openAuthModal("login")}
             className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-300 hover:text-white hover:bg-slate-800 transition-colors"
