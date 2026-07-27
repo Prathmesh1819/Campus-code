@@ -30,7 +30,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-const months = ["Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"];
+const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 export default function ProfilePage({ params }: { params: Promise<{ username: string }> }) {
   const { user: currentUser, updateUserAvatar } = useAuth();
@@ -125,7 +125,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
     document.body.removeChild(link);
   };
 
-  // Real-Time 365 Days Date Matrix & Submission Grouping
+  // Real-Time 365 Days Date Matrix starting from January
   const generateRealCalendarData = () => {
     const countsByDate: Record<string, number> = {};
     submissions.forEach((sub) => {
@@ -135,13 +135,13 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
       }
     });
 
-    const today = new Date();
+    // Start calendar from Jan 1st of selected year up to 52 weeks
+    const startJan = new Date(selectedYear, 0, 1);
     const daysList: { dateStr: string; formattedDate: string; count: number }[] = [];
 
-    // Generate 364 days backwards from today
-    for (let i = 363; i >= 0; i--) {
-      const d = new Date(today);
-      d.setDate(d.getDate() - i);
+    for (let i = 0; i < 364; i++) {
+      const d = new Date(startJan);
+      d.setDate(d.getDate() + i);
 
       const dateStr = d.toISOString().split("T")[0];
       const formattedDate = d.toLocaleDateString("en-US", {
@@ -249,7 +249,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <h3 className="text-lg font-black text-white tracking-tight flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-purple-400" />
-                <span>{totalContributions} {totalContributions === 1 ? "contribution" : "contributions"} in the last year</span>
+                <span>{totalContributions} {totalContributions === 1 ? "contribution" : "contributions"} in {selectedYear}</span>
               </h3>
 
               {/* Year Selectors */}
@@ -279,7 +279,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
 
             {/* Heatmap Main Container */}
             <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800/80 overflow-x-auto space-y-3">
-              {/* Top Month Labels Header */}
+              {/* Top Month Labels Header - Starts from Jan */}
               <div className="flex items-center text-[11px] font-semibold text-gray-400 pl-8 space-x-9 min-w-[700px]">
                 {months.map((m, i) => (
                   <span key={i} className="w-8 text-center">{m}</span>
