@@ -263,18 +263,28 @@ export default function MessagesPage() {
                         const seenTimeStr = m.readAt ? new Date(m.readAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : null;
 
                         return (
-                          <div key={m.id} className={`flex items-start gap-2 group ${isMe ? "justify-end" : "justify-start"}`}>
-                            {/* Message Context Menu */}
-                            <div className="relative shrink-0 pt-1">
+                          <div
+                            key={m.id}
+                            className={`flex items-center gap-2 group ${
+                              isMe ? "justify-end flex-row" : "justify-start flex-row-reverse"
+                            }`}
+                          >
+                            {/* Message Context Menu Button & Popover */}
+                            <div className="relative shrink-0">
                               <button
                                 onClick={() => setActiveMenuMsgId(isMenuOpen ? null : m.id)}
-                                className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-white transition-opacity"
+                                className="p-1 text-gray-400 hover:text-white opacity-80 hover:opacity-100 transition-all rounded-lg hover:bg-slate-800"
+                                title="Message options"
                               >
                                 <MoreVertical className="w-3.5 h-3.5" />
                               </button>
 
                               {isMenuOpen && (
-                                <div className="absolute right-0 top-6 z-50 w-44 bg-slate-900 border border-slate-800 rounded-2xl p-1.5 shadow-xl space-y-1 animate-in fade-in">
+                                <div
+                                  className={`absolute top-6 z-50 w-44 bg-slate-900 border border-slate-800 rounded-2xl p-1.5 shadow-2xl space-y-1 animate-in fade-in ${
+                                    isMe ? "right-0" : "left-0"
+                                  }`}
+                                >
                                   {isMe && (
                                     <button
                                       onClick={() => handleDeleteMessage(m.id, "everyone")}
