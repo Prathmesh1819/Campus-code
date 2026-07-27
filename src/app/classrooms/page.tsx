@@ -23,6 +23,8 @@ import {
   X,
   Upload,
   Lock,
+  Mail,
+  Building2,
 } from "lucide-react";
 
 export default function ClassroomsPage() {
@@ -72,7 +74,11 @@ export default function ClassroomsPage() {
           name: className,
           branch: "Computer Science",
           academicYear: "2024-2025",
-          teacher: { name: "Dr. Vikramaditya Gupta", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&auto=format&fit=crop&q=80" },
+          teacher: {
+            name: "Dr. Vikramaditya Gupta",
+            email: "teacher@campus.edu",
+            avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&auto=format&fit=crop&q=80",
+          },
         },
         classmates: [],
         notes: [],
@@ -157,8 +163,8 @@ export default function ClassroomsPage() {
 
           {/* Classroom Hero Card */}
           <div className="rounded-3xl glass-card border border-purple-500/30 p-6 sm:p-8 relative overflow-hidden space-y-6">
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-              <div className="space-y-2">
+            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+              <div className="space-y-2 flex-1">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-bold">
                   <BookOpen className="w-3.5 h-3.5" />
                   <span>CLASSROOM HUB • {selectedClass}</span>
@@ -166,26 +172,31 @@ export default function ClassroomsPage() {
                 <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
                   {selectedClass} Virtual Classroom & Notes Hub
                 </h2>
-                <p className="text-xs text-gray-400 max-w-xl">
+                <p className="text-xs text-gray-400 max-w-xl leading-relaxed">
                   Connect with classmates in your batch, explore peer software projects, and download lecture notes shared by your Class Teacher.
                 </p>
               </div>
 
-              {/* Class Teacher Card */}
-              <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-center gap-4 shrink-0 shadow-2xl">
+              {/* Ultra High-Contrast Class Teacher Card */}
+              <div className="p-5 rounded-3xl bg-slate-900 border border-amber-500/40 flex items-center gap-4 shrink-0 shadow-2xl min-w-[320px]">
                 <img
                   src={classroomData.classroom?.teacher?.avatar || "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&auto=format&fit=crop&q=80"}
                   alt="Class Teacher"
-                  className="w-14 h-14 rounded-2xl object-cover ring-2 ring-purple-500/50"
+                  className="w-16 h-16 rounded-2xl object-cover ring-4 ring-amber-500/50 shadow-glow"
                 />
-                <div>
-                  <div className="flex items-center gap-1.5 text-[10px] font-extrabold text-amber-400 uppercase tracking-wider">
-                    <ShieldCheck className="w-3.5 h-3.5" /> Class Teacher
+                <div className="space-y-1">
+                  <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 text-[10px] font-black uppercase tracking-wider border border-amber-500/40">
+                    <ShieldCheck className="w-3 h-3 text-amber-400" /> Class Teacher
                   </div>
-                  <h4 className="text-sm font-bold text-white">
+                  <h4 className="text-base font-black text-white tracking-tight">
                     {classroomData.classroom?.teacher?.name || "Dr. Vikramaditya Gupta"}
                   </h4>
-                  <p className="text-[11px] text-gray-400">Head of DSA & CS Faculty</p>
+                  <p className="text-xs font-semibold text-purple-300 flex items-center gap-1">
+                    <Building2 className="w-3 h-3" /> Head of DSA & CS Faculty
+                  </p>
+                  <p className="text-[11px] font-mono text-gray-400 flex items-center gap-1">
+                    <Mail className="w-3 h-3 text-cyan-400" /> teacher@campus.edu
+                  </p>
                 </div>
               </div>
             </div>
