@@ -699,7 +699,7 @@ export default function AdminPage() {
                     type="text"
                     value={newUserRollNo}
                     onChange={(e) => setNewUserRollNo(e.target.value)}
-                    placeholder="2024-BSC-010"
+                    placeholder="A-244001"
                     className="w-full bg-slate-900 border border-slate-800 rounded-xl py-2.5 px-3 text-white focus:outline-none"
                   />
                 </div>

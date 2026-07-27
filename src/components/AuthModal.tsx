@@ -287,7 +287,7 @@ export function AuthModal({ isOpen, onClose, defaultMode = "login" }: AuthModalP
                     <label className="font-bold text-gray-300 block mb-1">Roll Number</label>
                     <input
                       type="text"
-                      placeholder="e.g. 2025-BSC-001"
+                      placeholder="e.g. A-244001"
                       value={rollNumber}
                       onChange={(e) => setRollNumber(e.target.value)}
                       className="w-full bg-slate-900 border border-slate-800 focus:border-purple-500 rounded-xl py-2.5 px-3 text-white focus:outline-none"

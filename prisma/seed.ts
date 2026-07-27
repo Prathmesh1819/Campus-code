@@ -36,7 +36,7 @@ async function main() {
       email: "prathmeshdharashivkar18@gmail.com",
       password: hashedPassword,
       role: "STUDENT",
-      rollNumber: "2025-BSC-001",
+      rollNumber: "A-244001",
       className: "TY BSc CS",
       branch: "Computer Science",
       academicYear: "2025-26",
