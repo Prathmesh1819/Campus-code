@@ -28,7 +28,15 @@ import { availableStreams, availableClassrooms } from "@/components/AuthModal";
 export default function AdminPage() {
   const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"users" | "posts" | "stats">("users");
+  const [activeTab, setActiveTab] = useState<"users" | "posts" | "ai_assistant">("users");
+  const [aiSettings, setAiSettings] = useState({
+    aiName: "Ido",
+    aiAvatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop&q=80",
+    aiSubtitle: "Sarhad College Virtual Guide & Coding Assistant",
+    aiBadge: "FEMALE AI MENTOR 💖",
+    personaInstruction: "You are Ido 👩‍💻, an intelligent female AI coding mentor at Sarhad College.",
+  });
+  const [savingAiSettings, setSavingAiSettings] = useState(false);
 
   const [adminData, setAdminData] = useState<any>({
     stats: {
@@ -59,7 +67,44 @@ export default function AdminPage() {
 
   useEffect(() => {
     fetchAdminData();
+    fetchAiSettings();
   }, []);
+
+  const fetchAiSettings = async () => {
+    try {
+      const res = await fetch("/api/admin/ai-settings");
+      const data = await res.json();
+      if (data.settings) {
+        setAiSettings(data.settings);
+      }
+    } catch (err) {
+      console.error("Error fetching AI Settings:", err);
+    }
+  };
+
+  const handleSaveAiSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingAiSettings(true);
+    try {
+      const res = await fetch("/api/admin/ai-settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(aiSettings),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setUpdateMsg("AI Assistant profile & avatar updated successfully! 🎉");
+        setTimeout(() => setUpdateMsg(""), 4000);
+      } else {
+        alert("Failed to save AI Settings: " + data.error);
+      }
+    } catch (err: any) {
+      alert("Error saving AI Settings: " + err.message);
+    } finally {
+      setSavingAiSettings(false);
+    }
+  };
 
   const fetchAdminData = async () => {
     try {
@@ -271,6 +316,18 @@ export default function AdminPage() {
                 <MessageSquare className="w-4 h-4" />
                 <span>Moderate Community Posts ({adminData.posts?.length || 0})</span>
               </button>
+
+              <button
+                onClick={() => setActiveTab("ai_assistant")}
+                className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
+                  activeTab === "ai_assistant"
+                    ? "bg-rose-600 text-white shadow-glow"
+                    : "bg-slate-900 text-gray-400 hover:text-white"
+                }`}
+              >
+                <Code2 className="w-4 h-4 text-pink-400" />
+                <span>AI Assistant Profile & Persona</span>
+              </button>
             </div>
 
             {/* Admin Action: Add New Student / Teacher */}
@@ -393,6 +450,155 @@ export default function AdminPage() {
                   </div>
                 ))
               )}
+            </div>
+          {/* TAB 3: AI ASSISTANT CUSTOMIZATION */}
+          {activeTab === "ai_assistant" && (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              {/* Customization Form Column */}
+              <form onSubmit={handleSaveAiSettings} className="lg:col-span-7 rounded-3xl glass-card border border-slate-800 p-6 space-y-5">
+                <div className="border-b border-slate-800 pb-3">
+                  <h3 className="text-base font-black text-white flex items-center gap-2">
+                    <Code2 className="w-5 h-5 text-pink-400" /> Customize AI Virtual Assistant (Ido)
+                  </h3>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Super Admin settings to update the AI Assistant's avatar photo, displayed name, role subtitle, and system persona.
+                  </p>
+                </div>
+
+                <div className="space-y-4 text-xs">
+                  {/* AI Assistant Name */}
+                  <div>
+                    <label className="font-bold text-gray-300 block mb-1">AI Assistant Name</label>
+                    <input
+                      type="text"
+                      required
+                      value={aiSettings.aiName}
+                      onChange={(e) => setAiSettings({ ...aiSettings, aiName: e.target.value })}
+                      placeholder="e.g. Ido"
+                      className="w-full bg-slate-900 border border-slate-800 focus:border-purple-500 rounded-xl py-2.5 px-3 text-white focus:outline-none"
+                    />
+                  </div>
+
+                  {/* AI Assistant Avatar URL */}
+                  <div>
+                    <label className="font-bold text-gray-300 block mb-1">AI Profile Avatar Photo URL</label>
+                    <input
+                      type="text"
+                      required
+                      value={aiSettings.aiAvatar}
+                      onChange={(e) => setAiSettings({ ...aiSettings, aiAvatar: e.target.value })}
+                      placeholder="https://images.unsplash.com/..."
+                      className="w-full bg-slate-900 border border-slate-800 focus:border-purple-500 rounded-xl py-2.5 px-3 text-white focus:outline-none font-mono"
+                    />
+                  </div>
+
+                  {/* Preset Avatar Pickers */}
+                  <div>
+                    <label className="font-bold text-gray-300 block mb-2">Or Choose Preset AI Avatars</label>
+                    <div className="flex items-center gap-3 overflow-x-auto pb-1">
+                      {[
+                        "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop&q=80",
+                        "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&auto=format&fit=crop&q=80",
+                        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80",
+                        "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&auto=format&fit=crop&q=80",
+                        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80",
+                      ].map((url, i) => (
+                        <img
+                          key={i}
+                          src={url}
+                          alt="Preset Avatar"
+                          onClick={() => setAiSettings({ ...aiSettings, aiAvatar: url })}
+                          className={`w-12 h-12 rounded-2xl object-cover cursor-pointer transition-all border-2 ${
+                            aiSettings.aiAvatar === url ? "border-pink-500 scale-105 shadow-glow" : "border-slate-800 opacity-70 hover:opacity-100"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Role Subtitle & Badge */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="font-bold text-gray-300 block mb-1">Role Subtitle</label>
+                      <input
+                        type="text"
+                        value={aiSettings.aiSubtitle}
+                        onChange={(e) => setAiSettings({ ...aiSettings, aiSubtitle: e.target.value })}
+                        placeholder="e.g. Sarhad College Virtual Guide"
+                        className="w-full bg-slate-900 border border-slate-800 focus:border-purple-500 rounded-xl py-2.5 px-3 text-white focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="font-bold text-gray-300 block mb-1">Header Badge</label>
+                      <input
+                        type="text"
+                        value={aiSettings.aiBadge}
+                        onChange={(e) => setAiSettings({ ...aiSettings, aiBadge: e.target.value })}
+                        placeholder="e.g. FEMALE AI MENTOR 💖"
+                        className="w-full bg-slate-900 border border-slate-800 focus:border-purple-500 rounded-xl py-2.5 px-3 text-white focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  {/* System Persona Prompt */}
+                  <div>
+                    <label className="font-bold text-gray-300 block mb-1">System Persona Instruction Prompt</label>
+                    <textarea
+                      rows={3}
+                      value={aiSettings.personaInstruction}
+                      onChange={(e) => setAiSettings({ ...aiSettings, personaInstruction: e.target.value })}
+                      placeholder="You are Ido, an intelligent female AI coding mentor at Sarhad College..."
+                      className="w-full bg-slate-900 border border-slate-800 focus:border-purple-500 rounded-xl p-3 text-white focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <button
+                    type="submit"
+                    disabled={savingAiSettings}
+                    className="w-full py-3 rounded-xl gradient-bg text-white font-bold shadow-glow hover:opacity-95 transition-all text-xs flex items-center justify-center gap-2"
+                  >
+                    <Save className="w-4 h-4" />
+                    <span>{savingAiSettings ? "Saving AI Settings..." : "Save AI Assistant Customizations"}</span>
+                  </button>
+                </div>
+              </form>
+
+              {/* Live Preview Column */}
+              <div className="lg:col-span-5 space-y-4">
+                <div className="rounded-3xl glass-card border border-pink-500/40 p-5 space-y-4 bg-[#0c0a1a]">
+                  <div className="text-xs font-black text-pink-400 uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-800 pb-2">
+                    <CheckCircle2 className="w-4 h-4" /> Live AI Assistant Card Preview
+                  </div>
+
+                  <div className="p-4 bg-slate-950/90 rounded-2xl border border-slate-800 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={aiSettings.aiAvatar}
+                        alt="AI Avatar Preview"
+                        className="w-12 h-12 rounded-2xl object-cover ring-2 ring-pink-400 shadow-glow shrink-0"
+                      />
+                      <div className="min-w-0">
+                        <h4 className="text-sm font-black text-white flex items-center gap-1.5 truncate">
+                          <span>{aiSettings.aiName || "Ido"} 👩‍💻</span>
+                          <span className="px-2 py-0.5 rounded-full bg-pink-500/20 text-pink-300 border border-pink-500/30 text-[9px] font-bold shrink-0">
+                            {aiSettings.aiBadge || "FEMALE AI MENTOR 💖"}
+                          </span>
+                        </h4>
+                        <p className="text-[10px] text-gray-400 truncate">{aiSettings.aiSubtitle || "Virtual Guide"}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-slate-900 border border-pink-500/30 text-xs text-gray-200 space-y-1">
+                    <p className="font-bold text-pink-300 text-[11px]">🤖 {aiSettings.aiName || "Ido"} AI Chat Preview:</p>
+                    <p className="text-[11px] text-gray-300 leading-relaxed">
+                      "Hello Prathmesh! 👋 I'm <b>{aiSettings.aiName || "Ido"}</b>, your AI Virtual Assistant & Coding Mentor at Sarhad College. How can I help you today?"
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </main>

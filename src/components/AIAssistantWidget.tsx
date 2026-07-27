@@ -6,15 +6,9 @@ import {
   Sparkles,
   X,
   Send,
-  Code2,
-  Bug,
-  Lightbulb,
-  BookOpen,
   Trash2,
   Copy,
   Check,
-  Heart,
-  UserCheck,
 } from "lucide-react";
 
 interface Message {
@@ -24,16 +18,21 @@ interface Message {
   timestamp: string;
 }
 
-const IDO_AVATAR = "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop&q=80";
-
 export function AIAssistantWidget() {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [aiSettings, setAiSettings] = useState({
+    aiName: "Ido",
+    aiAvatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop&q=80",
+    aiSubtitle: "Sarhad College Virtual Guide & Coding Assistant",
+    aiBadge: "FEMALE AI MENTOR 💖",
+  });
+
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
       sender: "ido",
-      text: `Hello ${user?.name || "Student"}! 👋 I'm **Ido** 👩‍💻, your female AI Virtual Assistant & Coding Mentor at Sarhad College.\n\nHow can I help you with your coding, DSA problems, or coursework today?`,
+      text: `Hello ${user?.name || "Student"}! 👋 I'm **Ido** 👩‍💻, your AI Virtual Assistant & Coding Mentor at Sarhad College.\n\nHow can I help you with your coding, DSA problems, or coursework today?`,
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     },
   ]);
@@ -41,6 +40,34 @@ export function AIAssistantWidget() {
   const [loading, setLoading] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    fetchAiSettings();
+  }, []);
+
+  const fetchAiSettings = async () => {
+    try {
+      const res = await fetch("/api/admin/ai-settings");
+      const data = await res.json();
+      if (data.settings) {
+        setAiSettings(data.settings);
+        // Update welcome message with dynamic AI name if first time
+        setMessages((prev) => {
+          if (prev.length === 1 && prev[0].id === "welcome") {
+            return [
+              {
+                ...prev[0],
+                text: `Hello ${user?.name || "Student"}! 👋 I'm **${data.settings.aiName || "Ido"}** 👩‍💻, your AI Virtual Assistant & Coding Mentor at Sarhad College.\n\nHow can I help you with your coding, DSA problems, or coursework today?`,
+              },
+            ];
+          }
+          return prev;
+        });
+      }
+    } catch (err) {
+      console.error("Error fetching AI Settings:", err);
+    }
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -53,7 +80,7 @@ export function AIAssistantWidget() {
   }, [messages, isOpen]);
 
   const quickPrompts = [
-    { label: "👩‍💻 Who is Ido?", prompt: "Who are you and how can you help me?" },
+    { label: `👩‍💻 Who is ${aiSettings.aiName}?`, prompt: `Who are you and how can you help me?` },
     { label: "💡 Explain Two Sum DSA", prompt: "Explain the optimal Hash Map approach for Two Sum Target Pair" },
     { label: "🐛 Debug My Code", prompt: "How do I debug array index out of bounds error in C++?" },
     { label: "🚀 Web Project Ideas", prompt: "Suggest high impact web development project ideas for my resume" },
@@ -165,12 +192,12 @@ export function AIAssistantWidget() {
         <button
           onClick={() => setIsOpen(true)}
           className="fixed bottom-6 right-6 z-[999] p-3 rounded-full bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-600 text-white shadow-glow hover:scale-110 transition-all flex items-center gap-3 group border-2 border-pink-400/40"
-          title="Open Ido - Female AI Student Guide"
+          title={`Open ${aiSettings.aiName} - AI Student Guide`}
         >
           <div className="relative">
             <img
-              src={IDO_AVATAR}
-              alt="Ido AI Assistant"
+              src={aiSettings.aiAvatar}
+              alt={aiSettings.aiName}
               className="w-10 h-10 rounded-full object-cover ring-2 ring-pink-400 shadow-lg group-hover:scale-105 transition-transform"
             />
             <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-400 ring-2 ring-slate-950 animate-ping" />
@@ -178,7 +205,7 @@ export function AIAssistantWidget() {
           </div>
           <div className="flex flex-col text-left pr-2 hidden sm:flex">
             <span className="text-xs font-black tracking-wide text-white flex items-center gap-1">
-              Ask Ido AI 👩‍💻
+              Ask {aiSettings.aiName} AI 👩‍💻
             </span>
             <span className="text-[10px] text-pink-200 font-semibold">Virtual Mentor</span>
           </div>
@@ -193,20 +220,20 @@ export function AIAssistantWidget() {
             <div className="flex items-center gap-3">
               <div className="relative">
                 <img
-                  src={IDO_AVATAR}
-                  alt="Ido AI Assistant"
+                  src={aiSettings.aiAvatar}
+                  alt={aiSettings.aiName}
                   className="w-10 h-10 rounded-2xl object-cover ring-2 ring-pink-400 shadow-glow"
                 />
                 <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-400 ring-2 ring-slate-950" />
               </div>
               <div>
                 <h3 className="text-xs font-black text-white flex items-center gap-1.5">
-                  <span>Ido 👩‍💻</span>
+                  <span>{aiSettings.aiName} 👩‍💻</span>
                   <span className="px-2 py-0.5 rounded-full bg-pink-500/20 text-pink-300 border border-pink-500/30 text-[9px] font-bold">
-                    FEMALE AI MENTOR 💖
+                    {aiSettings.aiBadge}
                   </span>
                 </h3>
-                <p className="text-[10px] text-gray-400">Sarhad College Virtual Guide & Coding Assistant</p>
+                <p className="text-[10px] text-gray-400">{aiSettings.aiSubtitle}</p>
               </div>
             </div>
 
@@ -247,7 +274,7 @@ export function AIAssistantWidget() {
                         user?.name || "You"
                       ) : (
                         <span className="text-pink-300 font-bold flex items-center gap-1">
-                          <Sparkles className="w-3 h-3 text-pink-400" /> Ido AI
+                          <Sparkles className="w-3 h-3 text-pink-400" /> {aiSettings.aiName} AI
                         </span>
                       )}
                     </span>
@@ -274,7 +301,7 @@ export function AIAssistantWidget() {
               <div className="flex items-start gap-2">
                 <div className="p-3.5 rounded-2xl ido-chat-bubble bg-slate-900 border border-pink-500/30 text-xs text-pink-300 flex items-center gap-2 animate-pulse">
                   <Sparkles className="w-4 h-4 text-pink-400 animate-spin" />
-                  <span>Ido is typing a response...</span>
+                  <span>{aiSettings.aiName} is typing a response...</span>
                 </div>
               </div>
             )}
@@ -306,7 +333,7 @@ export function AIAssistantWidget() {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask Ido 👩‍💻 about DSA, code bugs, exams..."
+              placeholder={`Ask ${aiSettings.aiName} 👩‍💻 about DSA, code bugs, exams...`}
               className="flex-1 bg-slate-900 border border-slate-800 ido-chat-input rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-pink-500"
             />
             <button
