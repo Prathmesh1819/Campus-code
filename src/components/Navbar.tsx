@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { AuthModal } from "@/components/AuthModal";
 import {
@@ -35,6 +36,7 @@ const DEFAULT_COLLEGE_LOGO =
 
 export function Navbar({ onToggleSidebar, collegeLogoUrl = DEFAULT_COLLEGE_LOGO }: NavbarProps) {
   const { user, isAuthenticated, logout } = useAuth();
+  const router = useRouter();
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
@@ -67,6 +69,17 @@ export function Navbar({ onToggleSidebar, collegeLogoUrl = DEFAULT_COLLEGE_LOGO 
   const openAuth = (mode: "login" | "register") => {
     setAuthMode(mode);
     setAuthModalOpen(true);
+  };
+
+  const handleSocialClick = (platform: "github" | "linkedin") => {
+    setProfileDropdownOpen(false);
+    const targetUrl = platform === "github" ? user?.githubUrl : user?.linkedinUrl;
+    if (targetUrl) {
+      window.open(targetUrl, "_blank");
+    } else {
+      alert(`You haven't linked your ${platform === "github" ? "GitHub" : "LinkedIn"} profile yet! Redirecting you to Account Settings to add your profile link.`);
+      router.push("/settings");
+    }
   };
 
   const profileUsername = user?.name?.toLowerCase().replace(/\s+/g, "") || "aaravsharma";
@@ -146,7 +159,7 @@ export function Navbar({ onToggleSidebar, collegeLogoUrl = DEFAULT_COLLEGE_LOGO 
 
           {isAuthenticated ? (
             <>
-              {/* Gamification Stats (Streak & XP) - Real Nullish Coalescing */}
+              {/* Gamification Stats (Streak & XP) */}
               <div className="hidden sm:flex items-center gap-2">
                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold">
                   <Flame className="w-4 h-4 fill-amber-400" />
@@ -216,35 +229,29 @@ export function Navbar({ onToggleSidebar, collegeLogoUrl = DEFAULT_COLLEGE_LOGO 
                       <ChevronDown className="w-3.5 h-3.5 -rotate-90 text-gray-500" />
                     </Link>
 
-                    {/* GitHub Profile Link */}
-                    <a
-                      href="https://github.com"
-                      target="_blank"
-                      rel="noreferrer"
-                      onClick={() => setProfileDropdownOpen(false)}
-                      className="flex items-center justify-between px-3 py-2.5 text-xs font-bold text-gray-300 hover:text-white hover:bg-slate-800 rounded-xl transition-all"
+                    {/* Dynamic GitHub Profile Action */}
+                    <button
+                      onClick={() => handleSocialClick("github")}
+                      className="w-full flex items-center justify-between px-3 py-2.5 text-xs font-bold text-gray-300 hover:text-white hover:bg-slate-800 rounded-xl transition-all text-left"
                     >
                       <div className="flex items-center gap-2.5">
                         <Github className="w-4 h-4 text-gray-300" />
                         <span>GitHub Profile</span>
                       </div>
                       <ExternalLink className="w-3 h-3 text-gray-500" />
-                    </a>
+                    </button>
 
-                    {/* LinkedIn Profile Link */}
-                    <a
-                      href="https://linkedin.com"
-                      target="_blank"
-                      rel="noreferrer"
-                      onClick={() => setProfileDropdownOpen(false)}
-                      className="flex items-center justify-between px-3 py-2.5 text-xs font-bold text-gray-300 hover:text-white hover:bg-slate-800 rounded-xl transition-all"
+                    {/* Dynamic LinkedIn Profile Action */}
+                    <button
+                      onClick={() => handleSocialClick("linkedin")}
+                      className="w-full flex items-center justify-between px-3 py-2.5 text-xs font-bold text-gray-300 hover:text-white hover:bg-slate-800 rounded-xl transition-all text-left"
                     >
                       <div className="flex items-center gap-2.5">
                         <Linkedin className="w-4 h-4 text-cyan-400" />
                         <span>LinkedIn Profile</span>
                       </div>
                       <ExternalLink className="w-3 h-3 text-gray-500" />
-                    </a>
+                    </button>
 
                     {/* Settings */}
                     <Link

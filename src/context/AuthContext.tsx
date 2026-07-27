@@ -16,6 +16,8 @@ export interface User {
   streakDays: number;
   coins: number;
   bio?: string;
+  githubUrl?: string;
+  linkedinUrl?: string;
 }
 
 interface AuthContextType {
@@ -32,22 +34,6 @@ interface AuthContextType {
   closeAuthModal: () => void;
   authMode: "login" | "register";
 }
-
-const DEFAULT_USER: User = {
-  id: "student-1",
-  name: "Aarav Sharma",
-  email: "aarav@campus.edu",
-  role: "STUDENT",
-  rollNumber: "2024-CSE-001",
-  className: "TY BSc CS",
-  branch: "Computer Science",
-  avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80",
-  xp: 0,
-  level: 1,
-  streakDays: 0,
-  coins: 0,
-  bio: "Student at CampusCode",
-};
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 

@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Sidebar } from "@/components/Sidebar";
 import { useAuth } from "@/context/AuthContext";
-import { Settings as SettingsIcon, User, Lock, Save, Camera, Upload, Check } from "lucide-react";
+import { Settings as SettingsIcon, User, Lock, Save, Camera, Upload, Check, Github, Linkedin } from "lucide-react";
 
 const presetAvatars = [
   "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80",
@@ -18,9 +18,11 @@ const presetAvatars = [
 export default function SettingsPage() {
   const { user, updateUserAvatar, updateUserProfile } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [name, setName] = useState(user?.name || "Aarav Sharma");
-  const [email, setEmail] = useState(user?.email || "aarav@campus.edu");
-  const [bio, setBio] = useState(user?.bio || "Competitive programmer | Full-stack & AI Enthusiast");
+  const [name, setName] = useState(user?.name || "Student Name");
+  const [email, setEmail] = useState(user?.email || "student@campus.edu");
+  const [bio, setBio] = useState(user?.bio || "Student Programmer at CampusCode");
+  const [githubUrl, setGithubUrl] = useState(user?.githubUrl || "");
+  const [linkedinUrl, setLinkedinUrl] = useState(user?.linkedinUrl || "");
   const [avatarUrl, setAvatarUrl] = useState(user?.avatar || presetAvatars[0]);
   const [successMsg, setSuccessMsg] = useState("");
 
@@ -40,8 +42,8 @@ export default function SettingsPage() {
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     updateUserAvatar(avatarUrl);
-    updateUserProfile({ name, email, bio });
-    setSuccessMsg("Profile and avatar updated successfully!");
+    updateUserProfile({ name, email, bio, githubUrl, linkedinUrl });
+    setSuccessMsg("Profile, social links, and avatar updated successfully!");
     setTimeout(() => setSuccessMsg(""), 3000);
   };
 
@@ -59,9 +61,9 @@ export default function SettingsPage() {
               <span>STUDENT ACCOUNT SETTINGS</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-              Profile Customization & Avatar Upload
+              Profile Customization & Social Links
             </h1>
-            <p className="text-xs text-gray-400 mt-1">Upload profile photo from your device, select preset avatars, or update account bio.</p>
+            <p className="text-xs text-gray-400 mt-1">Upload profile photo from device, link your GitHub & LinkedIn accounts, or update bio.</p>
           </div>
 
           {successMsg && (
@@ -170,6 +172,37 @@ export default function SettingsPage() {
                   />
                 </div>
 
+                {/* GitHub & LinkedIn Social Link Settings */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="font-bold text-gray-300 block mb-1 flex items-center gap-1.5">
+                      <Github className="w-3.5 h-3.5 text-purple-400" />
+                      <span>GitHub Profile URL</span>
+                    </label>
+                    <input
+                      type="url"
+                      value={githubUrl}
+                      onChange={(e) => setGithubUrl(e.target.value)}
+                      placeholder="https://github.com/username"
+                      className="w-full bg-slate-900 border border-slate-800 rounded-xl py-2.5 px-3 text-white focus:outline-none focus:border-purple-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="font-bold text-gray-300 block mb-1 flex items-center gap-1.5">
+                      <Linkedin className="w-3.5 h-3.5 text-cyan-400" />
+                      <span>LinkedIn Profile URL</span>
+                    </label>
+                    <input
+                      type="url"
+                      value={linkedinUrl}
+                      onChange={(e) => setLinkedinUrl(e.target.value)}
+                      placeholder="https://linkedin.com/in/username"
+                      className="w-full bg-slate-900 border border-slate-800 rounded-xl py-2.5 px-3 text-white focus:outline-none focus:border-purple-500"
+                    />
+                  </div>
+                </div>
+
                 <div>
                   <label className="font-bold text-gray-300 block mb-1">Profile Bio</label>
                   <textarea
@@ -187,7 +220,7 @@ export default function SettingsPage() {
                 className="w-full py-3 rounded-xl gradient-bg text-white font-bold shadow-glow hover:opacity-95 flex items-center justify-center gap-2 transition-all"
               >
                 <Save className="w-4 h-4" />
-                <span>Save Profile & Avatar Changes</span>
+                <span>Save Profile, Social Links & Avatar Changes</span>
               </button>
             </form>
           </div>
