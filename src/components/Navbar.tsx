@@ -146,16 +146,16 @@ export function Navbar({ onToggleSidebar, collegeLogoUrl = DEFAULT_COLLEGE_LOGO 
 
           {isAuthenticated ? (
             <>
-              {/* Gamification Stats (Streak & XP) */}
+              {/* Gamification Stats (Streak & XP) - Real Nullish Coalescing */}
               <div className="hidden sm:flex items-center gap-2">
                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold">
                   <Flame className="w-4 h-4 fill-amber-400" />
-                  <span>{user?.streakDays || 14}d Streak</span>
+                  <span>{user?.streakDays ?? 0}d Streak</span>
                 </div>
 
                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs font-bold">
                   <Zap className="w-4 h-4 text-purple-400 fill-purple-400" />
-                  <span>{user?.xp || 2850} XP</span>
+                  <span>{user?.xp ?? 0} XP</span>
                 </div>
               </div>
 
