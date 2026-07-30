@@ -123,7 +123,7 @@ export default function AdminPage() {
 
   const fetchAdminData = async () => {
     try {
-      const res = await fetch("/api/admin");
+      const res = await fetch(`/api/admin?t=${Date.now()}`, { cache: "no-store" });
       const data = await res.json();
       if (data.stats) {
         setAdminData(data);

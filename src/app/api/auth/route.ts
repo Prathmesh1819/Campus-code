@@ -3,6 +3,9 @@ import { prisma } from "@/lib/prisma";
 import { hashPassword, comparePassword, generateAccessToken, generateRefreshToken } from "@/lib/auth";
 import { calculateAndUpdateStreak } from "@/lib/streak";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 // Temporary in-memory OTP store for password resets
 const otpStore = new Map<string, string>();
 
