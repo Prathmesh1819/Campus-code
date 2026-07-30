@@ -129,26 +129,51 @@ export default function TeacherPage() {
         <main className="flex-1 p-4 lg:p-8 space-y-6 overflow-y-auto">
           {/* Header Banner */}
           <div className="rounded-3xl glass-card border border-purple-500/30 p-6 sm:p-8 relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2 text-xs font-bold text-amber-400 mb-2">
-                <GraduationCap className="w-4 h-4" />
-                <span>VERIFIED FACULTY & TEACHER PORTAL</span>
+            <div className="flex items-center gap-4">
+              <div className="relative group shrink-0">
+                <img
+                  src={user?.avatar || "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&auto=format&fit=crop&q=80"}
+                  alt={user?.name || "Teacher"}
+                  className="w-16 h-16 rounded-2xl object-cover ring-4 ring-purple-500/50 shadow-glow"
+                />
+                <Link
+                  href="/settings"
+                  className="absolute -bottom-1 -right-1 p-1.5 rounded-xl bg-purple-600 text-white shadow-glow hover:scale-110 transition-transform"
+                  title="Change Faculty Photo"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                </Link>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-                Classroom Management & Assignments
-              </h1>
-              <p className="text-xs sm:text-sm text-gray-400 mt-1 max-w-2xl">
-                Create assignments, post class notices, upload lecture notes, and track student coding progress across batches.
-              </p>
+
+              <div>
+                <div className="flex items-center gap-2 text-xs font-bold text-amber-400 mb-1">
+                  <GraduationCap className="w-4 h-4" />
+                  <span>VERIFIED FACULTY & TEACHER PORTAL</span>
+                </div>
+                <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                  {user?.name || "Dr. Vikramaditya Gupta"}
+                </h1>
+                <p className="text-xs text-gray-400 mt-0.5">
+                  Class Teacher & Faculty Lead • {user?.className || "TY BSc CS"} Batch
+                </p>
+              </div>
             </div>
 
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="px-5 py-3 rounded-2xl gradient-bg text-white text-xs font-bold shadow-glow hover:opacity-95 transition-all flex items-center gap-2 shrink-0"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Post New Item</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <Link
+                href="/settings"
+                className="px-4 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 hover:border-purple-500/40 text-purple-300 text-xs font-bold transition-all flex items-center gap-1.5"
+              >
+                <span>Edit Faculty Avatar & Profile</span>
+              </Link>
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="px-5 py-2.5 rounded-2xl gradient-bg text-white text-xs font-bold shadow-glow hover:opacity-95 transition-all flex items-center gap-2 shrink-0"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Post New Item</span>
+              </button>
+            </div>
           </div>
 
           {/* Real Live Quick Stats Grid */}
