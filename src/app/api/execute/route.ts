@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { executeCodeSimulation } from "@/lib/code-runner";
+import { executeCodeMock } from "@/lib/codeExecutor";
+import { calculateAndUpdateStreak } from "@/lib/streak";
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const { problemId, userId, code, language, isSubmit } = body;
+    const { problemId, userId, code, language, isSubmit } = await req.json();
+
+    if (!code || !language) {
+      return NextResponse.json({ error: "Code and language are required" }, { status: 400 });
+    }
 
     const problem = await prisma.problem.findUnique({
       where: { id: problemId },
@@ -16,14 +20,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Problem not found" }, { status: 404 });
     }
 
-    const testCasesToRun = problem.testCases.map((tc) => ({
-      input: tc.input,
-      expectedOutput: tc.expectedOutput,
-    }));
-
-    const result = executeCodeSimulation(code, language, testCasesToRun);
+    // Execute code against test cases
+    const result = executeCodeMock(code, language, problem.testCases);
 
     let submissionRecord = null;
+
     if (isSubmit && userId) {
       submissionRecord = await prisma.submission.create({
         data: {
@@ -39,20 +40,19 @@ export async function POST(req: Request) {
         },
       });
 
-      // Update user XP, Level, Coins & Streak if Accepted
+      // Update user XP, Level & Coins if Accepted, and Recalculate Dynamic Streak
       if (result.status === "ACCEPTED") {
-        const currentUser = await prisma.user.findUnique({ where: { id: userId } });
         const xpGain = problem.difficulty === "HARD" ? 150 : problem.difficulty === "MEDIUM" ? 100 : 50;
-        const newStreak = (currentUser?.streakDays || 0) === 0 ? 1 : (currentUser?.streakDays || 1) + 1;
 
         await prisma.user.update({
           where: { id: userId },
           data: {
             xp: { increment: xpGain },
             coins: { increment: 20 },
-            streakDays: newStreak,
           },
         });
+
+        await calculateAndUpdateStreak(userId);
       }
     }
 

@@ -44,7 +44,7 @@ async function main() {
       bio: "Full-Stack Developer & Student Lead @ Sarhad College",
       xp: 1550,
       level: 2,
-      streakDays: 5,
+      streakDays: 0,
       coins: 200,
     },
   });

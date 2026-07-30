@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { hashPassword, comparePassword, generateAccessToken, generateRefreshToken } from "@/lib/auth";
+import { calculateAndUpdateStreak } from "@/lib/streak";
 
 // Temporary in-memory OTP store for password resets
 const otpStore = new Map<string, string>();
@@ -12,6 +13,8 @@ export async function GET(req: Request) {
     const username = searchParams.get("username");
 
     if (userId) {
+      const realStreak = await calculateAndUpdateStreak(userId);
+
       const user = await prisma.user.findUnique({
         where: { id: userId },
         select: {
@@ -37,7 +40,7 @@ export async function GET(req: Request) {
         return NextResponse.json({ error: "User not found" }, { status: 404 });
       }
 
-      return NextResponse.json({ user });
+      return NextResponse.json({ user: { ...user, streakDays: realStreak } });
     }
 
     if (username) {
@@ -180,6 +183,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "Incorrect password. Please try again or click Forgot Password." }, { status: 401 });
       }
 
+      const realStreak = await calculateAndUpdateStreak(user.id);
       const token = generateAccessToken({ userId: user.id, email: user.email, role: user.role, name: user.name });
       const refreshToken = generateRefreshToken({ userId: user.id, email: user.email, role: user.role, name: user.name });
 
@@ -196,7 +200,7 @@ export async function POST(req: Request) {
           className: user.className,
           xp: user.xp,
           level: user.level,
-          streakDays: user.streakDays,
+          streakDays: realStreak,
           coins: user.coins,
           bio: user.bio,
           githubUrl: user.githubUrl,
