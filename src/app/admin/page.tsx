@@ -14,6 +14,7 @@ import {
   UserCheck,
   UserPlus,
   Trash2,
+  Edit,
   MessageSquare,
   ShieldAlert,
   Save,
@@ -21,6 +22,7 @@ import {
   X,
   GraduationCap,
   Building2,
+  KeyRound,
 } from "lucide-react";
 import Link from "next/link";
 import { availableStreams, availableClassrooms } from "@/components/AuthModal";
@@ -64,6 +66,19 @@ export default function AdminPage() {
   const [newUserClass, setNewUserClass] = useState(availableClassrooms[0]);
   const [newUserBranch, setNewUserBranch] = useState(availableStreams[0]);
   const [newUserRollNo, setNewUserRollNo] = useState("");
+
+  // Edit User Modal State
+  const [showEditUserModal, setShowEditUserModal] = useState(false);
+  const [editingUserId, setEditingUserId] = useState("");
+  const [editUserName, setEditUserName] = useState("");
+  const [editUserEmail, setEditUserEmail] = useState("");
+  const [editUserPassword, setEditUserPassword] = useState("");
+  const [editUserRole, setEditUserRole] = useState<"STUDENT" | "TEACHER" | "ADMIN">("STUDENT");
+  const [editUserClass, setEditUserClass] = useState(availableClassrooms[0]);
+  const [editUserBranch, setEditUserBranch] = useState(availableStreams[0]);
+  const [editUserRollNo, setEditUserRollNo] = useState("");
+  const [editUserXp, setEditUserXp] = useState(0);
+  const [editUserCoins, setEditUserCoins] = useState(0);
 
   useEffect(() => {
     fetchAdminData();
@@ -110,7 +125,7 @@ export default function AdminPage() {
     try {
       const res = await fetch("/api/admin");
       const data = await res.json();
-      if (data.users) {
+      if (data.stats) {
         setAdminData(data);
         const rolesMap: Record<string, string> = {};
         data.users.forEach((u: any) => {
@@ -118,8 +133,8 @@ export default function AdminPage() {
         });
         setUserRolesState(rolesMap);
       }
-    } catch (err: any) {
-      console.error("Admin fetch error:", err);
+    } catch (err) {
+      console.error("Error loading admin dashboard data:", err);
     } finally {
       setLoading(false);
     }
@@ -147,6 +162,54 @@ export default function AdminPage() {
     }
   };
 
+  const openEditUserModal = (u: any) => {
+    setEditingUserId(u.id);
+    setEditUserName(u.name || "");
+    setEditUserEmail(u.email || "");
+    setEditUserPassword("");
+    setEditUserRole(u.role || "STUDENT");
+    setEditUserClass(u.className || availableClassrooms[0]);
+    setEditUserBranch(u.branch || availableStreams[0]);
+    setEditUserRollNo(u.rollNumber || "");
+    setEditUserXp(u.xp || 0);
+    setEditUserCoins(u.coins || 0);
+    setShowEditUserModal(true);
+  };
+
+  const handleEditUserSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const res = await fetch("/api/admin", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: editingUserId,
+          name: editUserName,
+          email: editUserEmail,
+          password: editUserPassword,
+          role: editUserRole,
+          className: editUserClass,
+          branch: editUserBranch,
+          rollNumber: editUserRollNo,
+          xp: editUserXp,
+          coins: editUserCoins,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setShowEditUserModal(false);
+        setUpdateMsg(data.message || "User details updated successfully!");
+        setTimeout(() => setUpdateMsg(""), 3000);
+        fetchAdminData();
+      } else {
+        alert("Failed to update user: " + data.error);
+      }
+    } catch (err: any) {
+      alert("Error: " + err.message);
+    }
+  };
+
   const handleAddUser = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -166,36 +229,37 @@ export default function AdminPage() {
 
       const data = await res.json();
       if (res.ok) {
-        setUpdateMsg(`Created new ${newUserRole} account for ${newUserName}`);
-        setTimeout(() => setUpdateMsg(""), 3000);
         setShowAddUserModal(false);
         setNewUserName("");
         setNewUserEmail("");
         setNewUserPassword("");
+        setNewUserRollNo("");
+        setUpdateMsg(data.message || "User created successfully!");
+        setTimeout(() => setUpdateMsg(""), 3000);
         fetchAdminData();
       } else {
-        alert("User creation error: " + data.error);
+        alert("Failed to add user: " + data.error);
       }
     } catch (err: any) {
-      alert("Error creating user: " + err.message);
+      alert("Error: " + err.message);
     }
   };
 
-  const handleDeleteUser = async (userId: string, userName: string) => {
-    if (!confirm(`Are you sure you want to permanently delete user "${userName}"?`)) return;
+  const handleDeleteUser = async (userId: string, name: string) => {
+    if (!confirm(`Are you sure you want to permanently delete user "${name}"?`)) return;
 
     try {
       const res = await fetch(`/api/admin?userId=${userId}`, { method: "DELETE" });
       const data = await res.json();
       if (res.ok) {
-        setUpdateMsg(`User "${userName}" deleted successfully.`);
+        setUpdateMsg(data.message || "User deleted.");
         setTimeout(() => setUpdateMsg(""), 3000);
         fetchAdminData();
       } else {
-        alert("Delete failed: " + data.error);
+        alert("Deletion failed: " + data.error);
       }
     } catch (err: any) {
-      alert("Error deleting user: " + err.message);
+      alert("Error: " + err.message);
     }
   };
 
@@ -206,34 +270,34 @@ export default function AdminPage() {
       const res = await fetch(`/api/admin?postId=${postId}`, { method: "DELETE" });
       const data = await res.json();
       if (res.ok) {
-        setUpdateMsg("Post deleted successfully.");
+        setUpdateMsg(data.message || "Post deleted.");
         setTimeout(() => setUpdateMsg(""), 3000);
         fetchAdminData();
+      } else {
+        alert("Failed to delete post: " + data.error);
       }
     } catch (err: any) {
-      alert("Error deleting post: " + err.message);
+      alert("Error: " + err.message);
     }
   };
 
-  // Role Access Guard: Only ADMIN can access Admin Portal
+  // Guard Access: Only ADMIN role can view the Super Admin Console
   if (user?.role !== "ADMIN") {
     return (
       <div className="min-h-screen flex flex-col bg-[#070913] text-white">
         <Navbar />
-        <div className="flex-1 flex items-center justify-center p-6">
-          <div className="max-w-md w-full glass-card border border-rose-500/30 rounded-3xl p-8 text-center space-y-4">
-            <div className="w-16 h-16 rounded-3xl bg-rose-500/10 border border-rose-500/30 text-rose-400 mx-auto flex items-center justify-center">
-              <ShieldAlert className="w-8 h-8" />
-            </div>
-            <h2 className="text-xl font-black">Admin Console Access Denied</h2>
+        <div className="flex-1 flex items-center justify-center p-6 text-center">
+          <div className="max-w-md p-8 glass-card border border-rose-500/30 rounded-3xl space-y-4">
+            <ShieldAlert className="w-12 h-12 text-rose-500 mx-auto" />
+            <h2 className="text-2xl font-black">Restricted Access</h2>
             <p className="text-xs text-gray-400">
-              Only Super Administrators have permission to add, delete, or manage users and posts.
+              The Super Admin Console is strictly reserved for Admin accounts. Please log in with admin privileges.
             </p>
             <Link
-              href="/dashboard"
-              className="inline-block w-full py-3 rounded-xl gradient-bg text-white font-bold text-xs shadow-glow"
+              href="/"
+              className="inline-block px-6 py-2.5 rounded-xl gradient-bg text-white text-xs font-bold shadow-glow"
             >
-              Return to Student Dashboard
+              Return to Campus Home
             </Link>
           </div>
         </div>
@@ -253,16 +317,17 @@ export default function AdminPage() {
           <div className="rounded-3xl glass-card border border-rose-500/30 p-6 sm:p-8 relative overflow-hidden">
             <div className="flex items-center gap-2 text-xs font-bold text-rose-400 mb-2">
               <ShieldCheck className="w-4 h-4" />
-              <span>SUPER ADMIN CONSOLE</span>
+              <span>SUPER ADMIN PRIVILEGES ACTIVE</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-              User & Content Management Center
+              Campus<span className="text-gradient">Code</span> Super Admin Console
             </h1>
-            <p className="text-xs sm:text-sm text-gray-400 mt-1 max-w-2xl">
-              Add or delete student/teacher accounts, assign roles, and moderate community posts across CampusCode.
+            <p className="text-xs text-gray-400 mt-1">
+              Manage student & teacher rosters, edit details, assign role permissions, customize AI Assistant Ido, and moderate community posts.
             </p>
           </div>
 
+          {/* Success Banner */}
           {updateMsg && (
             <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold flex items-center gap-2 animate-in fade-in">
               <Check className="w-4 h-4" />
@@ -349,16 +414,17 @@ export default function AdminPage() {
                     <tr>
                       <th className="px-6 py-4">User Name</th>
                       <th className="px-6 py-4">Email</th>
+                      <th className="px-6 py-4">Roll No</th>
                       <th className="px-6 py-4">Batch / Class</th>
                       <th className="px-6 py-4">Current Role</th>
                       <th className="px-6 py-4">Change Role</th>
-                      <th className="px-6 py-4 text-right">Delete User</th>
+                      <th className="px-6 py-4 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800/60">
                     {loading ? (
                       <tr>
-                        <td colSpan={6} className="text-center py-12 text-gray-500 font-medium">
+                        <td colSpan={7} className="text-center py-12 text-gray-500 font-medium">
                           Loading user roster...
                         </td>
                       </tr>
@@ -374,6 +440,7 @@ export default function AdminPage() {
                             )}
                           </td>
                           <td className="px-6 py-4 font-mono text-gray-300">{u.email}</td>
+                          <td className="px-6 py-4 font-mono text-purple-300 font-bold">{u.rollNumber || "N/A"}</td>
                           <td className="px-6 py-4 text-gray-400">{u.className || u.branch || "General"}</td>
                           <td className="px-6 py-4">
                             <span
@@ -399,7 +466,14 @@ export default function AdminPage() {
                               <option value="ADMIN">ADMIN</option>
                             </select>
                           </td>
-                          <td className="px-6 py-4 text-right">
+                          <td className="px-6 py-4 text-right flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => openEditUserModal(u)}
+                              className="p-2 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-300 hover:bg-purple-500/20 transition-all"
+                              title="Edit user details"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </button>
                             {u.id !== user?.id && (
                               <button
                                 onClick={() => handleDeleteUser(u.id, u.name)}
@@ -606,6 +680,153 @@ export default function AdminPage() {
         </main>
       </div>
 
+      {/* Edit User Modal */}
+      {showEditUserModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+          <div className="relative w-full max-w-lg glass-card border border-purple-500/40 rounded-3xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+            <button
+              onClick={() => setShowEditUserModal(false)}
+              className="absolute top-4 right-4 p-2 rounded-xl text-gray-400 hover:text-white"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <h3 className="text-lg font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-3">
+              <Edit className="w-5 h-5 text-purple-400" /> Edit Student / Teacher Details
+            </h3>
+
+            <form onSubmit={handleEditUserSubmit} className="space-y-4 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold text-gray-300 block mb-1">Full Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={editUserName}
+                    onChange={(e) => setEditUserName(e.target.value)}
+                    placeholder="User Name"
+                    className="w-full bg-slate-900 border border-slate-800 focus:border-purple-500 rounded-xl py-2.5 px-3 text-white focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="font-bold text-gray-300 block mb-1">Email Address</label>
+                  <input
+                    type="email"
+                    required
+                    value={editUserEmail}
+                    onChange={(e) => setEditUserEmail(e.target.value)}
+                    placeholder="user@campus.edu"
+                    className="w-full bg-slate-900 border border-slate-800 focus:border-purple-500 rounded-xl py-2.5 px-3 text-white focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold text-gray-300 block mb-1">Roll Number</label>
+                  <input
+                    type="text"
+                    value={editUserRollNo}
+                    onChange={(e) => setEditUserRollNo(e.target.value)}
+                    placeholder="A-244001"
+                    className="w-full bg-slate-900 border border-slate-800 focus:border-purple-500 rounded-xl py-2.5 px-3 text-white focus:outline-none font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="font-bold text-gray-300 block mb-1">Account Role</label>
+                  <select
+                    value={editUserRole}
+                    onChange={(e) => setEditUserRole(e.target.value as any)}
+                    className="w-full bg-slate-900 border border-slate-800 focus:border-purple-500 rounded-xl py-2.5 px-3 text-white focus:outline-none"
+                  >
+                    <option value="STUDENT">STUDENT</option>
+                    <option value="TEACHER">TEACHER</option>
+                    <option value="ADMIN">ADMIN</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold text-gray-300 block mb-1">Classroom / Batch</label>
+                  <select
+                    value={editUserClass}
+                    onChange={(e) => setEditUserClass(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-800 focus:border-purple-500 rounded-xl py-2.5 px-3 text-white focus:outline-none"
+                  >
+                    {availableClassrooms.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="font-bold text-gray-300 block mb-1">Stream / Branch</label>
+                  <select
+                    value={editUserBranch}
+                    onChange={(e) => setEditUserBranch(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-800 focus:border-purple-500 rounded-xl py-2.5 px-3 text-white focus:outline-none"
+                  >
+                    {availableStreams.map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold text-gray-300 block mb-1">XP Points</label>
+                  <input
+                    type="number"
+                    value={editUserXp}
+                    onChange={(e) => setEditUserXp(Number(e.target.value))}
+                    className="w-full bg-slate-900 border border-slate-800 focus:border-purple-500 rounded-xl py-2.5 px-3 text-white focus:outline-none font-mono"
+                  />
+                </div>
+
+                <div>
+                  <label className="font-bold text-gray-300 block mb-1">Coins Balance</label>
+                  <input
+                    type="number"
+                    value={editUserCoins}
+                    onChange={(e) => setEditUserCoins(Number(e.target.value))}
+                    className="w-full bg-slate-900 border border-slate-800 focus:border-purple-500 rounded-xl py-2.5 px-3 text-white focus:outline-none font-mono"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="font-bold text-gray-300 block mb-1 flex items-center gap-1">
+                  <KeyRound className="w-3.5 h-3.5 text-amber-400" /> Reset Password (Optional)
+                </label>
+                <input
+                  type="password"
+                  value={editUserPassword}
+                  onChange={(e) => setEditUserPassword(e.target.value)}
+                  placeholder="Leave blank to keep existing password"
+                  className="w-full bg-slate-900 border border-slate-800 focus:border-purple-500 rounded-xl py-2.5 px-3 text-white focus:outline-none"
+                />
+              </div>
+
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  className="w-full py-3 rounded-xl gradient-bg text-white font-bold shadow-glow hover:opacity-95 flex items-center justify-center gap-2 text-xs"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>Save User Changes</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Add User Modal */}
       {showAddUserModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
@@ -630,7 +851,7 @@ export default function AdminPage() {
                     newUserRole === "STUDENT" ? "bg-rose-600 text-white shadow-glow" : "text-gray-400 hover:text-white"
                   }`}
                 >
-                  Student
+                  Student Account
                 </button>
                 <button
                   type="button"
@@ -639,7 +860,7 @@ export default function AdminPage() {
                     newUserRole === "TEACHER" ? "bg-rose-600 text-white shadow-glow" : "text-gray-400 hover:text-white"
                   }`}
                 >
-                  Teacher / Faculty
+                  Teacher Account
                 </button>
               </div>
 
@@ -712,7 +933,7 @@ export default function AdminPage() {
                 className="w-full py-3 rounded-xl gradient-bg text-white font-bold shadow-glow hover:opacity-95 flex items-center justify-center gap-2"
               >
                 <UserPlus className="w-4 h-4" />
-                <span>Create User Account</span>
+                <span>Create Account Now</span>
               </button>
             </form>
           </div>

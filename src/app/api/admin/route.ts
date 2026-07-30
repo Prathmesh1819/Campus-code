@@ -22,6 +22,8 @@ export async function GET(req: Request) {
         rollNumber: true,
         className: true,
         branch: true,
+        xp: true,
+        coins: true,
         createdAt: true,
       },
       orderBy: { createdAt: "desc" },
@@ -59,7 +61,7 @@ export async function POST(req: Request) {
     const { name, email, password, role, rollNumber, className, branch, academicYear } = body;
 
     if (!name || !email || !password) {
-      return NextResponse.json({ error: "Name, Email, and Password are required" }, { status: 400 });
+      return NextResponse.json({ error: "Name, email, and password are required" }, { status: 400 });
     }
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
@@ -68,7 +70,7 @@ export async function POST(req: Request) {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await prisma.user.create({
+    const newUser = await prisma.user.create({
       data: {
         name,
         email,
@@ -82,9 +84,49 @@ export async function POST(req: Request) {
       },
     });
 
-    return NextResponse.json({ message: `New ${user.role} user created successfully!`, user });
+    return NextResponse.json({
+      message: `User ${newUser.name} created successfully!`,
+      user: newUser,
+    });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || "Failed to create user" }, { status: 500 });
+  }
+}
+
+export async function PUT(req: Request) {
+  try {
+    const body = await req.json();
+    const { userId, name, email, role, rollNumber, className, branch, xp, coins, password } = body;
+
+    if (!userId) {
+      return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+    }
+
+    const updateData: any = {};
+    if (name) updateData.name = name;
+    if (email) updateData.email = email;
+    if (role) updateData.role = role;
+    if (rollNumber !== undefined) updateData.rollNumber = rollNumber;
+    if (className !== undefined) updateData.className = className;
+    if (branch !== undefined) updateData.branch = branch;
+    if (xp !== undefined && !isNaN(Number(xp))) updateData.xp = Number(xp);
+    if (coins !== undefined && !isNaN(Number(coins))) updateData.coins = Number(coins);
+
+    if (password && password.trim().length >= 4) {
+      updateData.password = await bcrypt.hash(password, 10);
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: updateData,
+    });
+
+    return NextResponse.json({
+      message: `User ${updatedUser.name} details updated successfully!`,
+      user: updatedUser,
+    });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message || "Failed to update user details" }, { status: 500 });
   }
 }
 
