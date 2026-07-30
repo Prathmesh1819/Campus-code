@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Navbar } from "@/components/Navbar";
 import { useAuth } from "@/context/AuthContext";
 import dynamic from "next/dynamic";
@@ -13,7 +13,6 @@ import {
   Clock,
   Cpu,
   BookOpen,
-  FileText,
   Sparkles,
   ChevronLeft,
   RotateCcw,
@@ -22,6 +21,11 @@ import {
   Terminal,
   X,
   Database,
+  Check,
+  ChevronUp,
+  ChevronDown,
+  Layers,
+  FileCode,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -30,12 +34,7 @@ const Editor = dynamic(() => import("@monaco-editor/react"), { ssr: false });
 
 const starterCodeTemplates: Record<string, string> = {
   sql: `-- SQL Query Starter Solution
--- Write your SQL query below to fetch the required result dataset
-
-SELECT 
-    -- TODO: Write your SELECT query here
-    
-FROM Employee;`,
+SELECT * FROM Employee;`,
 
   javascript: `/**
  * @param {number[]} nums
@@ -79,7 +78,6 @@ public:
 
   c: `// C Starter Solution
 #include <stdio.h>
-#include <stdlib.h>
 
 void solve(int nums[], int numsSize, int target) {
     // TODO: Write your solution algorithm in C
@@ -90,14 +88,12 @@ void solve(int nums[], int numsSize, int target) {
 package main
 
 func solve(nums []int, target int) []int {
-    // TODO: Write your solution algorithm here
     return nil
 }
 `,
 
   rust: `// Rust 2021 Starter Solution
 pub fn solve(nums: Vec<i32>, target: i32) -> Vec<i32> {
-    // TODO: Write your solution algorithm here
     vec![]
 }
 `,
@@ -105,7 +101,6 @@ pub fn solve(nums: Vec<i32>, target: i32) -> Vec<i32> {
   kotlin: `// Kotlin Starter Solution
 class Solution {
     fun solve(nums: IntArray, target: Int): IntArray {
-        // TODO: Write your solution algorithm here
         return intArrayOf()
     }
 }
@@ -113,10 +108,10 @@ class Solution {
 };
 
 export default function SingleProblemPage({ params }: { params: Promise<{ id: string }> }) {
-  const { user, updateUserProfile, refreshUserData } = useAuth();
+  const { user, refreshUserData } = useAuth();
   const [problem, setProblem] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"description" | "editorial" | "submissions" | "notes">("description");
+  const [activeTab, setActiveTab] = useState<"description" | "editorial" | "submissions">("description");
 
   // Code Editor state
   const [language, setLanguage] = useState("javascript");
@@ -125,6 +120,12 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
   const [executionResult, setExecutionResult] = useState<any>(null);
   const [showSuccessBanner, setShowSuccessBanner] = useState(false);
   const [submissionsHistory, setSubmissionsHistory] = useState<any[]>([]);
+
+  // LeetCode-Style Bottom Panel state
+  const [bottomTab, setBottomTab] = useState<"testcase" | "result">("testcase");
+  const [selectedCaseIdx, setSelectedCaseIdx] = useState(0);
+  const [isBottomPanelOpen, setIsBottomPanelOpen] = useState(true);
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchProblemDetail();
@@ -138,8 +139,6 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
       const data = await res.json();
       if (data.problem) {
         setProblem(data.problem);
-
-        // Auto-switch to SQL mode if problem category is SQL
         if (data.problem.category === "SQL") {
           setLanguage("sql");
           setCode(starterCodeTemplates.sql);
@@ -151,13 +150,13 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
         title: "Two Sum Target Pair",
         difficulty: "EASY",
         category: "Arrays",
-        description: "Given an array of integers `nums` and an integer `target`, return indices of the two numbers such that they add up to `target`.",
+        description: `Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target. You may assume that each input would have exactly one solution, and you may not use the same element twice.`,
         examples: JSON.stringify([
-          { input: "[2,7,11,15], 9", output: "[0,1]", explanation: "Because nums[0] + nums[1] == 9, we return [0, 1]." },
+          { input: "nums = [2,7,11,15], target = 9", output: "[0,1]", explanation: "Because nums[0] + nums[1] == 9, we return [0, 1]." },
+          { input: "nums = [3,2,4], target = 6", output: "[1,2]" },
         ]),
-        constraints: "2 <= nums.length <= 10^4\n-10^9 <= nums[i] <= 10^9\nOnly one valid answer exists.",
-        hints: JSON.stringify(["Use a Hash Map for O(1) lookups."]),
-        editorial: "### Hash Map Solution\nUsing a hash map allows us to check for target - nums[i] in O(1) average time.",
+        constraints: `2 <= nums.length <= 10^4\n-10^9 <= nums[i] <= 10^9\n-10^9 <= target <= 10^9`,
+        editorial: `Use a Hash Map to store numbers and their indices in O(n) time.`,
       });
     } finally {
       setLoading(false);
@@ -165,13 +164,16 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
   };
 
   const fetchSubmissionsHistory = async () => {
+    if (!user?.id) return;
     try {
       const resolvedParams = await params;
-      const res = await fetch(`/api/submissions?problemId=${resolvedParams.id}&userId=${user?.id || ""}`);
+      const res = await fetch(`/api/submissions?userId=${user.id}&problemId=${resolvedParams.id}`);
       const data = await res.json();
-      if (data.submissions) setSubmissionsHistory(data.submissions);
-    } catch {
-      setSubmissionsHistory([]);
+      if (data.submissions) {
+        setSubmissionsHistory(data.submissions);
+      }
+    } catch (e) {
+      // Ignore
     }
   };
 
@@ -185,6 +187,8 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
     setExecuting(true);
     setExecutionResult(null);
     setShowSuccessBanner(false);
+    setIsBottomPanelOpen(true);
+    setBottomTab("result");
 
     try {
       const resolvedParams = await params;
@@ -203,8 +207,9 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
       const data = await res.json();
       if (data.result) {
         setExecutionResult(data.result);
+        setSelectedCaseIdx(0);
+
         if (isSubmit) {
-          // Prepend new submission record instantly into history
           const newSubmission = {
             id: data.submission?.id || `sub-${Date.now()}`,
             status: data.result.status,
@@ -217,10 +222,14 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
 
           if (data.result.status === "ACCEPTED") {
             setShowSuccessBanner(true);
-            // Sync with DB
             await refreshUserData();
           }
         }
+
+        // Auto Scroll to Test Result Panel
+        setTimeout(() => {
+          resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }, 100);
       }
     } catch (err: any) {
       alert("Execution error: " + err.message);
@@ -235,7 +244,7 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
     <div className="min-h-screen flex flex-col bg-[#070913] text-white">
       <Navbar />
 
-      {/* Workspace Bar */}
+      {/* Top Workspace Bar */}
       <div className="bg-slate-950 border-b border-slate-800 px-4 py-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <Link href="/problems" className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:text-purple-400 text-gray-400 transition-colors">
@@ -262,20 +271,20 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
           </div>
         </div>
 
-        {/* Action Controls */}
+        {/* Action Run / Submit Buttons */}
         <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
           <button
             onClick={() => handleRunCode(false)}
             disabled={executing}
-            className="px-4 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-gray-200 text-xs font-bold transition-all flex items-center gap-1.5 border border-slate-700"
+            className="px-4 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-gray-200 text-xs font-bold transition-all flex items-center gap-1.5 border border-slate-700 disabled:opacity-50"
           >
             <Play className="w-3.5 h-3.5 text-emerald-400 fill-emerald-400" />
-            <span>{executing ? "Executing Query..." : "Run Test Cases"}</span>
+            <span>{executing ? "Running Testcases..." : "Run Test Cases"}</span>
           </button>
           <button
             onClick={() => handleRunCode(true)}
             disabled={executing}
-            className="px-5 py-1.5 rounded-xl gradient-bg text-white text-xs font-bold shadow-glow hover:opacity-95 transition-all flex items-center gap-1.5"
+            className="px-5 py-1.5 rounded-xl gradient-bg text-white text-xs font-bold shadow-glow hover:opacity-95 transition-all flex items-center gap-1.5 disabled:opacity-50"
           >
             <Send className="w-3.5 h-3.5" />
             <span>{executing ? "Evaluating..." : "Submit Solution"}</span>
@@ -283,29 +292,29 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
         </div>
       </div>
 
-      {/* Celebratory Accepted Banner */}
+      {/* Accepted Banner */}
       {showSuccessBanner && (
         <div className="bg-emerald-950/90 border-b border-emerald-500/40 px-6 py-3 flex items-center justify-between animate-in slide-in-from-top-2">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-emerald-500 text-slate-950 flex items-center justify-center font-bold">
-              <Trophy className="w-5 h-5 fill-slate-950" />
+              🏆
             </div>
             <div>
-              <h4 className="text-xs font-black text-emerald-300 uppercase tracking-wider">Solution Accepted! 🚀</h4>
-              <p className="text-[11px] text-emerald-200">Congratulations! You earned <b>+50 XP</b> and <b>+20 Campus Coins</b>.</p>
+              <h4 className="text-xs font-bold text-emerald-300">Congratulations! Solution Accepted! 🎉</h4>
+              <p className="text-[10px] text-emerald-200">You earned +50 XP & +10 Coins! Keep building your streak!</p>
             </div>
           </div>
-          <button onClick={() => setShowSuccessBanner(false)} className="text-emerald-400 hover:text-white">
-            <X className="w-4 h-4" />
+          <button onClick={() => setShowSuccessBanner(false)} className="text-emerald-400 hover:text-white text-xs font-bold">
+            Dismiss
           </button>
         </div>
       )}
 
-      {/* Editor Split Workspace */}
+      {/* Main Split Layout */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-0 overflow-hidden h-[calc(100vh-115px)]">
-        {/* Left Column */}
+        {/* Left Column: Problem Tabs */}
         <div className="lg:col-span-5 border-r border-slate-800 flex flex-col bg-slate-950/60 overflow-y-auto">
-          <div className="flex items-center gap-1 border-b border-slate-800 px-4 pt-2 bg-slate-950">
+          <div className="flex items-center gap-1 border-b border-slate-800 px-4 pt-2 bg-slate-950 sticky top-0 z-10">
             <button
               onClick={() => setActiveTab("description")}
               className={`px-3 py-2 text-xs font-bold border-b-2 transition-all flex items-center gap-1.5 ${
@@ -357,9 +366,23 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
                         <span className="text-emerald-400 font-bold">Output:</span>{" "}
                         <span className="text-gray-300">{ex.output}</span>
                       </div>
+                      {ex.explanation && (
+                        <div className="text-gray-400 text-[11px]">
+                          <span className="text-gray-500">Explanation:</span> {ex.explanation}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
+
+                {problem?.constraints && (
+                  <div className="space-y-2">
+                    <h4 className="text-xs font-bold text-gray-200 uppercase tracking-wider">Constraints</h4>
+                    <pre className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-[11px] font-mono text-gray-400 whitespace-pre-line">
+                      {problem.constraints}
+                    </pre>
+                  </div>
+                )}
               </>
             )}
 
@@ -414,9 +437,10 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
           </div>
         </div>
 
-        {/* Right Column */}
-        <div className="lg:col-span-7 flex flex-col bg-[#0b0f19]">
-          <div className="bg-slate-950 border-b border-slate-800 px-4 py-2 flex items-center justify-between">
+        {/* Right Column: Code Editor & LeetCode Bottom Workspace */}
+        <div className="lg:col-span-7 flex flex-col bg-[#0b0f19] relative overflow-hidden">
+          {/* Editor Header Bar */}
+          <div className="bg-slate-950 border-b border-slate-800 px-4 py-2 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-2">
               <Code2 className="w-4 h-4 text-purple-400" />
               <select
@@ -436,15 +460,18 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
               </select>
             </div>
 
-            <button
-              onClick={() => setCode(starterCodeTemplates[language] || starterCodeTemplates.sql)}
-              className="text-[11px] font-semibold text-gray-400 hover:text-white flex items-center gap-1"
-            >
-              <RotateCcw className="w-3.5 h-3.5" /> Reset Starter Code
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setCode(starterCodeTemplates[language] || starterCodeTemplates.sql)}
+                className="text-[11px] font-semibold text-gray-400 hover:text-white flex items-center gap-1"
+              >
+                <RotateCcw className="w-3.5 h-3.5" /> Reset Code
+              </button>
+            </div>
           </div>
 
-          <div className="flex-1 min-h-[350px]">
+          {/* Code Editor Window */}
+          <div className="flex-1 min-h-[260px] relative">
             <Editor
               height="100%"
               language={language === "c" || language === "cpp" ? "cpp" : language}
@@ -462,62 +489,209 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
             />
           </div>
 
-          {/* Execution Output */}
-          {executionResult && (
-            <div className="border-t border-slate-800 bg-slate-950 p-4 max-h-80 overflow-y-auto animate-in slide-in-from-bottom-2 space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Terminal className="w-4 h-4 text-purple-400" />
-                  <h4 className="text-xs font-bold text-white uppercase tracking-wider">Debugger Execution Output</h4>
-                  {executionResult.status === "ACCEPTED" ? (
-                    <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-black">
-                      <CheckCircle2 className="w-3.5 h-3.5" /> ACCEPTED
-                    </span>
-                  ) : (
-                    <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-400 text-[10px] font-black">
-                      <XCircle className="w-3.5 h-3.5" /> {executionResult.status}
-                    </span>
+          {/* LEETCODE-STYLE INTERACTIVE TESTCASE & TEST RESULT BOTTOM PANEL */}
+          <div
+            ref={resultsRef}
+            className={`border-t border-slate-800 bg-[#090d16] flex flex-col transition-all duration-300 shrink-0 ${
+              isBottomPanelOpen ? "h-64 sm:h-72" : "h-10"
+            }`}
+          >
+            {/* LeetCode Bottom Tab Bar */}
+            <div className="px-4 bg-slate-950 border-b border-slate-800 flex items-center justify-between h-10 shrink-0 select-none">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    setBottomTab("testcase");
+                    setIsBottomPanelOpen(true);
+                  }}
+                  className={`px-3 py-1.5 text-xs font-bold rounded-t-lg transition-all flex items-center gap-1.5 ${
+                    bottomTab === "testcase"
+                      ? "bg-[#090d16] text-purple-400 border-t-2 border-purple-500"
+                      : "text-gray-400 hover:text-white"
+                  }`}
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Testcase</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setBottomTab("result");
+                    setIsBottomPanelOpen(true);
+                  }}
+                  className={`px-3 py-1.5 text-xs font-bold rounded-t-lg transition-all flex items-center gap-1.5 relative ${
+                    bottomTab === "result"
+                      ? "bg-[#090d16] text-purple-400 border-t-2 border-purple-500"
+                      : "text-gray-400 hover:text-white"
+                  }`}
+                >
+                  <Terminal className="w-3.5 h-3.5 text-purple-400" />
+                  <span>Test Result</span>
+                  {executing && <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />}
+                  {executionResult && (
+                    <span
+                      className={`w-2.5 h-2.5 rounded-full ${
+                        executionResult.status === "ACCEPTED" ? "bg-emerald-400" : "bg-rose-500"
+                      }`}
+                    />
                   )}
-                </div>
-
-                <div className="flex items-center gap-3 text-xs font-mono text-gray-400">
-                  <span>⏱️ {executionResult.executionTimeMs} ms</span>
-                  <span>💾 {(executionResult.memoryUsageKb / 1024).toFixed(1)} MB</span>
-                </div>
+                </button>
               </div>
 
-              {/* Console Logs */}
-              <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 font-mono text-xs text-gray-300 space-y-1">
-                {executionResult.outputLogs?.map((log: string, idx: number) => (
-                  <p key={idx} className={log.includes("✅") ? "text-emerald-400 font-semibold" : log.includes("❌") ? "text-rose-400 font-semibold" : "text-gray-300"}>
-                    {log}
-                  </p>
-                ))}
-              </div>
-
-              {/* Test Cases */}
-              <div className="space-y-2">
-                {executionResult.testCaseDetails?.map((tc: any, idx: number) => (
-                  <div
-                    key={idx}
-                    className={`p-3 rounded-xl border font-mono text-xs space-y-1 ${
-                      tc.passed
-                        ? "bg-emerald-950/20 border-emerald-500/30 text-emerald-300"
-                        : "bg-rose-950/20 border-rose-500/30 text-rose-300"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between font-bold">
-                      <span>Test Case #{idx + 1} ({language.toUpperCase()})</span>
-                      <span>{tc.passed ? "✓ PASSED" : "✗ FAILED"}</span>
-                    </div>
-                    <div className="text-gray-300">Input: <span className="text-white">{tc.input}</span></div>
-                    <div className="text-gray-300">Expected Output: <span className="text-emerald-400">{tc.expected}</span></div>
-                    <div className="text-gray-300">Your Code Output: <span className={tc.passed ? "text-emerald-300" : "text-rose-400"}>{tc.actual}</span></div>
-                  </div>
-                ))}
-              </div>
+              <button
+                onClick={() => setIsBottomPanelOpen(!isBottomPanelOpen)}
+                className="text-gray-400 hover:text-white p-1 rounded-lg hover:bg-slate-900 transition-colors flex items-center gap-1 text-[11px]"
+              >
+                <span className="hidden sm:inline font-semibold">{isBottomPanelOpen ? "Console Collapse" : "Console Expand"}</span>
+                {isBottomPanelOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
+              </button>
             </div>
-          )}
+
+            {/* Bottom Content Body */}
+            {isBottomPanelOpen && (
+              <div className="flex-1 p-4 overflow-y-auto space-y-3 font-mono text-xs">
+                {/* TAB 1: TESTCASE INPUTS */}
+                {bottomTab === "testcase" && (
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 overflow-x-auto pb-1">
+                      {parsedExamples.map((_: any, idx: number) => (
+                        <button
+                          key={idx}
+                          onClick={() => setSelectedCaseIdx(idx)}
+                          className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
+                            selectedCaseIdx === idx
+                              ? "bg-purple-600/20 text-purple-300 border border-purple-500/40"
+                              : "bg-slate-900 text-gray-400 hover:text-white border border-slate-800"
+                          }`}
+                        >
+                          Case {idx + 1}
+                        </button>
+                      ))}
+                    </div>
+
+                    {parsedExamples[selectedCaseIdx] && (
+                      <div className="space-y-2">
+                        <div>
+                          <span className="text-gray-400 text-[11px] font-semibold block mb-1">Input:</span>
+                          <pre className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-gray-200">
+                            {parsedExamples[selectedCaseIdx].input}
+                          </pre>
+                        </div>
+                        <div>
+                          <span className="text-gray-400 text-[11px] font-semibold block mb-1">Expected Output:</span>
+                          <pre className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-emerald-400">
+                            {parsedExamples[selectedCaseIdx].output}
+                          </pre>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* TAB 2: TEST RESULT */}
+                {bottomTab === "result" && (
+                  <div className="space-y-3">
+                    {executing ? (
+                      <div className="p-6 text-center text-xs text-amber-400 flex items-center justify-center gap-2 animate-pulse">
+                        <Sparkles className="w-4 h-4 animate-spin" />
+                        <span>Running test cases against solution sandbox...</span>
+                      </div>
+                    ) : !executionResult ? (
+                      <div className="p-6 text-center text-xs text-gray-500">
+                        Click <strong className="text-emerald-400">"Run Test Cases"</strong> or <strong className="text-purple-400">"Submit Solution"</strong> to see testcase results here!
+                      </div>
+                    ) : (
+                      <>
+                        {/* Status Header */}
+                        <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
+                          <div className="flex items-center gap-2">
+                            {executionResult.status === "ACCEPTED" ? (
+                              <h3 className="text-base font-black text-emerald-400 flex items-center gap-1.5">
+                                <CheckCircle2 className="w-5 h-5 text-emerald-400" /> Accepted
+                              </h3>
+                            ) : (
+                              <h3 className="text-base font-black text-rose-400 flex items-center gap-1.5">
+                                <XCircle className="w-5 h-5 text-rose-400" /> {executionResult.status}
+                              </h3>
+                            )}
+                          </div>
+
+                          <div className="flex items-center gap-3 text-xs text-gray-400 font-semibold">
+                            <span>⏱️ Runtime: <strong className="text-white">{executionResult.executionTimeMs} ms</strong></span>
+                            <span>💾 Memory: <strong className="text-white">{(executionResult.memoryUsageKb / 1024).toFixed(1)} MB</strong></span>
+                          </div>
+                        </div>
+
+                        {/* Test Case Pills */}
+                        {executionResult.testCaseDetails && executionResult.testCaseDetails.length > 0 && (
+                          <div className="space-y-3">
+                            <div className="flex items-center gap-2 overflow-x-auto pb-1">
+                              {executionResult.testCaseDetails.map((tc: any, idx: number) => (
+                                <button
+                                  key={idx}
+                                  onClick={() => setSelectedCaseIdx(idx)}
+                                  className={`px-3 py-1 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
+                                    selectedCaseIdx === idx
+                                      ? tc.passed
+                                        ? "bg-emerald-950/40 text-emerald-300 border border-emerald-500/40"
+                                        : "bg-rose-950/40 text-rose-300 border border-rose-500/40"
+                                      : "bg-slate-900 text-gray-400 border border-slate-800"
+                                  }`}
+                                >
+                                  <span className={`w-2 h-2 rounded-full ${tc.passed ? "bg-emerald-400" : "bg-rose-500"}`} />
+                                  <span>Case {idx + 1}</span>
+                                </button>
+                              ))}
+                            </div>
+
+                            {/* Selected Case Detail */}
+                            {executionResult.testCaseDetails[selectedCaseIdx] && (
+                              <div className="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 space-y-2 text-xs">
+                                <div>
+                                  <span className="text-gray-400 text-[11px] font-semibold block mb-0.5">Input:</span>
+                                  <pre className="p-2.5 rounded-xl bg-slate-900 text-gray-200 border border-slate-800">
+                                    {executionResult.testCaseDetails[selectedCaseIdx].input}
+                                  </pre>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                  <div>
+                                    <span className="text-gray-400 text-[11px] font-semibold block mb-0.5">Expected Output:</span>
+                                    <pre className="p-2.5 rounded-xl bg-slate-900 text-emerald-400 border border-slate-800">
+                                      {executionResult.testCaseDetails[selectedCaseIdx].expected}
+                                    </pre>
+                                  </div>
+                                  <div>
+                                    <span className="text-gray-400 text-[11px] font-semibold block mb-0.5">Your Code Output:</span>
+                                    <pre className={`p-2.5 rounded-xl bg-slate-900 border border-slate-800 ${
+                                      executionResult.testCaseDetails[selectedCaseIdx].passed ? "text-emerald-300" : "text-rose-400 font-bold"
+                                    }`}>
+                                      {executionResult.testCaseDetails[selectedCaseIdx].actual}
+                                    </pre>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Execution Logs */}
+                        {executionResult.outputLogs && executionResult.outputLogs.length > 0 && (
+                          <div className="space-y-1">
+                            <span className="text-gray-400 text-[11px] font-semibold block">Stdout / Execution Logs:</span>
+                            <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-gray-300 space-y-1 text-xs">
+                              {executionResult.outputLogs.map((log: string, idx: number) => (
+                                <p key={idx}>{log}</p>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
