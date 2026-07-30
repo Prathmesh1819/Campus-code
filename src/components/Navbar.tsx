@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { AuthModal } from "@/components/AuthModal";
+import { SarhadLogo } from "@/components/SarhadLogo";
 import {
   Code2,
   Search,
@@ -28,19 +29,14 @@ import {
 
 interface NavbarProps {
   onToggleSidebar?: () => void;
-  collegeLogoUrl?: string; // Custom College Logo Image URL
 }
 
-const DEFAULT_COLLEGE_LOGO =
-  "https://play-lh.googleusercontent.com/wa7ffYAuxK3CPrBHmHPVXRgueD9m7kjWFNB0a4xaCHWqrzKdNumpq_mZN8iQb2bIowERDjYkBTOflnishysXpL8=w240-h480-rw";
-
-export function Navbar({ onToggleSidebar, collegeLogoUrl = DEFAULT_COLLEGE_LOGO }: NavbarProps) {
+export function Navbar({ onToggleSidebar }: NavbarProps) {
   const { user, isAuthenticated, logout } = useAuth();
   const router = useRouter();
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
-  const [logoError, setLogoError] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">("dark");
 
   useEffect(() => {
@@ -71,18 +67,18 @@ export function Navbar({ onToggleSidebar, collegeLogoUrl = DEFAULT_COLLEGE_LOGO 
     setAuthModalOpen(true);
   };
 
+  const profileUsername = user?.name ? user.name.toLowerCase().replace(/\s+/g, "") : "user";
+
   const handleSocialClick = (platform: "github" | "linkedin") => {
     setProfileDropdownOpen(false);
-    const targetUrl = platform === "github" ? user?.githubUrl : user?.linkedinUrl;
-    if (targetUrl) {
-      window.open(targetUrl, "_blank");
-    } else {
-      alert(`You haven't linked your ${platform === "github" ? "GitHub" : "LinkedIn"} profile yet! Redirecting you to Account Settings to add your profile link.`);
-      router.push("/settings");
+    if (platform === "github") {
+      const url = user?.githubUrl || `https://github.com/${profileUsername}`;
+      window.open(url, "_blank");
+    } else if (platform === "linkedin") {
+      const url = user?.linkedinUrl || `https://linkedin.com/in/${profileUsername}`;
+      window.open(url, "_blank");
     }
   };
-
-  const profileUsername = user?.name?.toLowerCase().replace(/\s+/g, "") || "aaravsharma";
 
   return (
     <>
@@ -99,19 +95,8 @@ export function Navbar({ onToggleSidebar, collegeLogoUrl = DEFAULT_COLLEGE_LOGO 
           )}
 
           <Link href="/" className="flex items-center gap-3 group">
-            {/* Official College Logo */}
-            {!logoError ? (
-              <img
-                src={collegeLogoUrl}
-                alt="Sarhad College Logo"
-                onError={() => setLogoError(true)}
-                className="w-10 h-10 rounded-2xl object-cover ring-2 ring-purple-500/50 shadow-glow group-hover:scale-105 transition-transform bg-white p-0.5"
-              />
-            ) : (
-              <div className="w-10 h-10 rounded-2xl gradient-bg flex items-center justify-center shadow-glow group-hover:scale-105 transition-transform">
-                <Code2 className="w-5 h-5 text-white" />
-              </div>
-            )}
+            {/* Official Sarhad College Crest Emblem Logo */}
+            <SarhadLogo className="w-10 h-10" />
 
             <div className="flex flex-col">
               <span className="font-black text-lg text-white tracking-tight leading-none">
