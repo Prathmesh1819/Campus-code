@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { executeCodeMock } from "@/lib/codeExecutor";
+import { executeCodeSimulation } from "@/lib/code-runner";
 import { calculateAndUpdateStreak } from "@/lib/streak";
 
 export async function POST(req: Request) {
@@ -21,7 +21,7 @@ export async function POST(req: Request) {
     }
 
     // Execute code against test cases
-    const result = executeCodeMock(code, language, problem.testCases);
+    const result = executeCodeSimulation(code, language, problem.testCases);
 
     let submissionRecord = null;
 

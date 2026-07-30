@@ -451,6 +451,8 @@ export default function AdminPage() {
                 ))
               )}
             </div>
+          )}
+
           {/* TAB 3: AI ASSISTANT CUSTOMIZATION */}
           {activeTab === "ai_assistant" && (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">

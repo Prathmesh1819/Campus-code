@@ -6,8 +6,8 @@ import { useToast } from "@/context/ToastContext";
 import { X, Lock, Mail, User, KeyRound, GraduationCap, Building2, ChevronDown, Send } from "lucide-react";
 
 interface AuthModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+  isOpen?: boolean;
+  onClose?: () => void;
   defaultMode?: "login" | "register" | "forgot";
 }
 
@@ -33,7 +33,7 @@ export const availableClassrooms = [
   "MCA Second Year",
 ];
 
-export function AuthModal({ isOpen, onClose, defaultMode = "login" }: AuthModalProps) {
+export function AuthModal({ isOpen = false, onClose = () => {}, defaultMode = "login" }: AuthModalProps) {
   const { login } = useAuth();
   const { showToast } = useToast();
   const [mode, setMode] = useState<"login" | "register" | "forgot" | "otp">(defaultMode);
