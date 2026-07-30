@@ -295,16 +295,17 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "User ID is required" }, { status: 400 });
       }
 
+      const updateData: any = {};
+      if (name) updateData.name = name;
+      if (email) updateData.email = email;
+      if (avatar) updateData.avatar = avatar;
+      if (bio !== undefined && bio !== "") updateData.bio = bio;
+      if (githubUrl !== undefined && githubUrl !== null && githubUrl !== "") updateData.githubUrl = githubUrl;
+      if (linkedinUrl !== undefined && linkedinUrl !== null && linkedinUrl !== "") updateData.linkedinUrl = linkedinUrl;
+
       const updatedUser = await prisma.user.update({
         where: { id: userId },
-        data: {
-          ...(name && { name }),
-          ...(email && { email }),
-          ...(avatar && { avatar }),
-          ...(bio !== undefined && { bio }),
-          ...(githubUrl !== undefined && { githubUrl }),
-          ...(linkedinUrl !== undefined && { linkedinUrl }),
-        },
+        data: updateData,
         select: {
           id: true,
           name: true,

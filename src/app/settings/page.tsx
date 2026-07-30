@@ -58,8 +58,13 @@ export default function SettingsPage() {
     e.preventDefault();
     setSaving(true);
     try {
+      const profileFields: any = { name, email };
+      if (bio.trim()) profileFields.bio = bio;
+      if (githubUrl.trim()) profileFields.githubUrl = githubUrl;
+      if (linkedinUrl.trim()) profileFields.linkedinUrl = linkedinUrl;
+
       await updateUserAvatar(avatarUrl);
-      await updateUserProfile({ name, email, bio, githubUrl, linkedinUrl });
+      await updateUserProfile(profileFields);
       showToast("Profile Updated! ✨", "Profile details, avatar, and social links saved to database.", "success");
       setSuccessMsg("Profile, social links, and avatar updated successfully!");
       setTimeout(() => setSuccessMsg(""), 3000);
