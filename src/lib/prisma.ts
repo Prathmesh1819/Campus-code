@@ -3,6 +3,13 @@ import path from "path";
 import fs from "fs";
 
 function getDatabaseUrl(): string {
+  if (process.env.DATABASE_URL) {
+    return process.env.DATABASE_URL;
+  }
+  if (process.env.POSTGRES_PRISMA_URL) {
+    return process.env.POSTGRES_PRISMA_URL;
+  }
+
   if (process.env.VERCEL || process.env.NODE_ENV === "production") {
     const tmpDbPath = "/tmp/dev.db";
     const seedDbPath = path.join(process.cwd(), "prisma", "dev.db");
