@@ -3,11 +3,9 @@ import path from "path";
 import fs from "fs";
 
 function getDatabaseUrl(): string {
-  if (process.env.DATABASE_URL) {
-    return process.env.DATABASE_URL;
-  }
-  if (process.env.POSTGRES_PRISMA_URL) {
-    return process.env.POSTGRES_PRISMA_URL;
+  const envDbUrl = process.env.DATABASE_URL || process.env.POSTGRES_PRISMA_URL;
+  if (envDbUrl && envDbUrl.startsWith("file:")) {
+    return envDbUrl;
   }
 
   if (process.env.VERCEL || process.env.NODE_ENV === "production") {
