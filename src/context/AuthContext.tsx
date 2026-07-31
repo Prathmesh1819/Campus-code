@@ -125,15 +125,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const updateUserProfile = async (updatedFields: Partial<User>) => {
     if (!user?.id) return;
-    const updated = { ...user, ...updatedFields };
-    setUser(updated);
-    localStorage.setItem("campuscode_user", JSON.stringify(updated));
+
+    const payload: any = { action: "update_profile", userId: user.id };
+    const updatedUserObject: any = { ...user };
+
+    Object.entries(updatedFields).forEach(([key, val]) => {
+      if (val !== undefined && val !== null && val !== "") {
+        payload[key] = val;
+        updatedUserObject[key] = val;
+      }
+    });
+
+    setUser(updatedUserObject);
+    localStorage.setItem("campuscode_user", JSON.stringify(updatedUserObject));
 
     try {
       const res = await fetch("/api/auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "update_profile", userId: user.id, ...updatedFields }),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (data.user) {

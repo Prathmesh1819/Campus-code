@@ -47,7 +47,33 @@ export default function SettingsPage() {
       const reader = new FileReader();
       reader.onloadend = () => {
         if (typeof reader.result === "string") {
-          setAvatarUrl(reader.result);
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+            const maxDim = 250;
+            let width = img.width;
+            let height = img.height;
+            if (width > height) {
+              if (width > maxDim) {
+                height *= maxDim / width;
+                width = maxDim;
+              }
+            } else {
+              if (height > maxDim) {
+                width *= maxDim / height;
+                height = maxDim;
+              }
+            }
+            canvas.width = width;
+            canvas.height = height;
+            if (ctx) {
+              ctx.drawImage(img, 0, 0, width, height);
+              const compressed = canvas.toDataURL("image/jpeg", 0.85);
+              setAvatarUrl(compressed);
+            }
+          };
+          img.src = reader.result;
         }
       };
       reader.readAsDataURL(file);
@@ -58,15 +84,19 @@ export default function SettingsPage() {
     e.preventDefault();
     setSaving(true);
     try {
-      const profileFields: any = { name, email };
+      const profileFields: any = {
+        name,
+        email,
+        avatar: avatarUrl,
+      };
+
       if (bio.trim()) profileFields.bio = bio;
       if (githubUrl.trim()) profileFields.githubUrl = githubUrl;
       if (linkedinUrl.trim()) profileFields.linkedinUrl = linkedinUrl;
 
-      await updateUserAvatar(avatarUrl);
       await updateUserProfile(profileFields);
-      showToast("Profile Updated! ✨", "Profile details, avatar, and social links saved to database.", "success");
-      setSuccessMsg("Profile, social links, and avatar updated successfully!");
+      showToast("Profile Updated! ✨", "Profile details, avatar photo, and social links saved successfully.", "success");
+      setSuccessMsg("Profile, social links, and avatar photo updated successfully!");
       setTimeout(() => setSuccessMsg(""), 3000);
     } catch (err: any) {
       showToast("Update Error ⚠️", err.message || "Failed to save profile changes", "error");
