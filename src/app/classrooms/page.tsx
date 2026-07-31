@@ -66,7 +66,7 @@ export default function ClassroomsPage() {
   const fetchClassroomData = async (className: string) => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/classrooms?className=${encodeURIComponent(className)}`);
+      const res = await fetch(`/api/classrooms?className=${encodeURIComponent(className)}&t=${Date.now()}`, { cache: "no-store" });
       const data = await res.json();
       setClassroomData(data);
     } catch {
