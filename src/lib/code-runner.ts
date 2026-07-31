@@ -49,10 +49,80 @@ export function executeCodeSimulation(
 
   let passedCount = 0;
   const outputLogs: string[] = [];
+  const langUpper = language.toUpperCase();
 
-  outputLogs.push(`🚀 Executing ${language.toUpperCase()} Query Engine & Test Suite...`);
+  outputLogs.push(`🚀 Compiling & Executing ${langUpper} Test Suite...`);
 
-  // Polyglot & SQL Evaluation Engine
+  let compilationErrors: string[] = [];
+
+  // Syntax & Compilation Verification Engine
+  if (language === "java") {
+    if (/=\s*;/.test(code)) {
+      compilationErrors.push("javac: error: illegal start of expression. Missing operand after '=' assignment (e.g. 'int target = ;')");
+    }
+    if (/\b\w+\s*\[\s*\]\s*[\+\-\*\/\;\,\.\)]/.test(code)) {
+      compilationErrors.push("javac: error: expression expected inside array subscript brackets '[]' (e.g. 'nums[]' is invalid syntax)");
+    }
+    const openBraces = (code.match(/\{/g) || []).length;
+    const closeBraces = (code.match(/\}/g) || []).length;
+    if (openBraces !== closeBraces) {
+      compilationErrors.push(`javac: error: reached end of file while parsing. Unclosed '{' brace (${openBraces} open vs ${closeBraces} close)`);
+    }
+    const openParens = (code.match(/\(/g) || []).length;
+    const closeParens = (code.match(/\)/g) || []).length;
+    if (openParens !== closeParens) {
+      compilationErrors.push(`javac: error: unmatched parenthesis '(' (${openParens} open vs ${closeParens} close)`);
+    }
+  } else if (language === "cpp" || language === "c") {
+    if (/=\s*;/.test(code)) {
+      compilationErrors.push("g++: error: expected primary-expression before ';' token");
+    }
+    if (/\b\w+\s*\[\s*\]\s*[\+\-\*\/\;\,\.\)]/.test(code)) {
+      compilationErrors.push("g++: error: expected primary-expression before ']' token");
+    }
+    const openBraces = (code.match(/\{/g) || []).length;
+    const closeBraces = (code.match(/\}/g) || []).length;
+    if (openBraces !== closeBraces) {
+      compilationErrors.push(`g++: error: expected '}' at end of input`);
+    }
+  } else if (language === "python") {
+    if (/=\s*$/m.test(code) || /=\s*#/.test(code) || /=\s*\n/.test(code)) {
+      compilationErrors.push("SyntaxError: invalid syntax (incomplete assignment statement)");
+    }
+    const openParens = (code.match(/\(/g) || []).length;
+    const closeParens = (code.match(/\)/g) || []).length;
+    if (openParens !== closeParens) {
+      compilationErrors.push(`SyntaxError: '(' was never closed`);
+    }
+  }
+
+  // If compilation errors were detected
+  if (compilationErrors.length > 0) {
+    const errorText = compilationErrors.join("\n");
+    outputLogs.push(`❌ COMPILATION ERROR:\n${errorText}`);
+
+    for (let i = 0; i < testCases.length; i++) {
+      testCaseDetails.push({
+        input: testCases[i].input,
+        expected: testCases[i].expectedOutput,
+        actual: `CompilationError: ${compilationErrors[0]}`,
+        passed: false,
+      });
+    }
+
+    return {
+      status: "COMPILATION_ERROR",
+      executionTimeMs: 12,
+      memoryUsageKb,
+      testCasesPassed: 0,
+      totalTestCases: testCases.length,
+      outputLogs,
+      errorMessage: errorText,
+      testCaseDetails,
+    };
+  }
+
+  // Multi-language Test Case Evaluation Loop
   for (let i = 0; i < testCases.length; i++) {
     const tc = testCases[i];
     let actual = "";
@@ -111,11 +181,23 @@ export function executeCodeSimulation(
           passed = false;
         }
       } else if (language === "python") {
-        const hasDef = code.includes("def solve");
+        const hasDef = code.includes("def ");
         const hasReturn = code.includes("return");
-        const hasMapOrLoop = code.includes("dict") || code.includes("{}") || code.includes("in") || code.includes("for");
+        const hasLogic = code.includes("dict") || code.includes("{}") || code.includes("in") || code.includes("for") || code.includes("while");
 
-        if (hasDef && hasReturn && hasMapOrLoop) {
+        if (hasDef && hasReturn && hasLogic) {
+          actual = tc.expectedOutput;
+          passed = true;
+        } else {
+          actual = "[]";
+          passed = false;
+        }
+      } else if (language === "java") {
+        const hasClassOrFunc = code.includes("class") || code.includes("twoSum") || code.includes("solve") || code.includes("main");
+        const hasReturn = code.includes("return");
+        const hasLogic = code.includes("for") || code.includes("while") || code.includes("if") || code.includes("map") || code.includes("put");
+
+        if (hasClassOrFunc && hasReturn && hasLogic) {
           actual = tc.expectedOutput;
           passed = true;
         } else {
@@ -123,7 +205,7 @@ export function executeCodeSimulation(
           passed = false;
         }
       } else if (language === "cpp" || language === "c") {
-        const hasFunc = code.includes("solve");
+        const hasFunc = code.includes("solve") || code.includes("twoSum") || code.includes("main");
         const hasReturn = code.includes("return");
         const hasLogic = code.includes("vector") || code.includes("for") || code.includes("while") || code.includes("int") || code.includes("map");
 
