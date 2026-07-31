@@ -224,7 +224,11 @@ export default function ClassroomsPage() {
                 <span className="text-xs font-semibold text-gray-400 block">
                   {isTeacherOrAdmin ? "Enrolled Students" : "Classmates"}
                 </span>
-                <span className="text-lg font-black text-white">{classroomData.classmates?.length || 0} Students</span>
+                <span className="text-lg font-black text-white">
+                  {user && user.role === "STUDENT" && !classroomData.classmates?.some((m: any) => m.email === user.email)
+                    ? (classroomData.classmates?.length || 0) + 1
+                    : classroomData.classmates?.length || 0} Students
+                </span>
               </div>
               <div className="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800">
                 <span className="text-xs font-semibold text-gray-400 block">Class Projects</span>
@@ -241,121 +245,130 @@ export default function ClassroomsPage() {
             </div>
           </div>
 
-          {/* Navigation Tab Bar */}
-          <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-            <div className="flex items-center gap-2 overflow-x-auto">
+          {/* Controls & Classroom Hub Redirect */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-2 border-b border-slate-800 pb-2">
               <button
                 onClick={() => setActiveTab("classmates")}
-                className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
-                  activeTab === "classmates"
-                    ? "bg-purple-600 text-white shadow-glow"
-                    : "bg-slate-900 text-gray-400 hover:text-white"
+                className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${
+                  activeTab === "classmates" ? "bg-purple-600/20 text-purple-300 border border-purple-500/30" : "text-gray-400 hover:text-white"
                 }`}
               >
-                <Users className="w-4 h-4" />
-                <span>
-                  {isTeacherOrAdmin
-                    ? `Enrolled Students (${classroomData.classmates?.length || 0})`
-                    : `Classmates (${classroomData.classmates?.length || 0})`}
-                </span>
+                Classmates ({user && user.role === "STUDENT" && !classroomData.classmates?.some((m: any) => m.email === user.email) ? (classroomData.classmates?.length || 0) + 1 : classroomData.classmates?.length || 0})
               </button>
-
               <button
                 onClick={() => setActiveTab("projects")}
-                className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
-                  activeTab === "projects"
-                    ? "bg-purple-600 text-white shadow-glow"
-                    : "bg-slate-900 text-gray-400 hover:text-white"
+                className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${
+                  activeTab === "projects" ? "bg-purple-600/20 text-purple-300 border border-purple-500/30" : "text-gray-400 hover:text-white"
                 }`}
               >
-                <FolderGit2 className="w-4 h-4 text-purple-400" />
-                <span>Class Projects ({classroomData.projects?.length || 0})</span>
+                Class Projects ({classroomData.projects?.length || 0})
               </button>
-
               <button
                 onClick={() => setActiveTab("notes")}
-                className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
-                  activeTab === "notes"
-                    ? "bg-purple-600 text-white shadow-glow"
-                    : "bg-slate-900 text-gray-400 hover:text-white"
+                className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${
+                  activeTab === "notes" ? "bg-purple-600/20 text-purple-300 border border-purple-500/30" : "text-gray-400 hover:text-white"
                 }`}
               >
-                <FileText className="w-4 h-4 text-cyan-400" />
-                <span>Teacher Notes ({classroomData.notes?.length || 0})</span>
+                Teacher Notes ({classroomData.notes?.length || 0})
               </button>
-
               <button
                 onClick={() => setActiveTab("announcements")}
-                className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
-                  activeTab === "announcements"
-                    ? "bg-purple-600 text-white shadow-glow"
-                    : "bg-slate-900 text-gray-400 hover:text-white"
+                className={`px-4 py-2 text-xs font-bold rounded-xl transition-all ${
+                  activeTab === "announcements" ? "bg-purple-600/20 text-purple-300 border border-purple-500/30" : "text-gray-400 hover:text-white"
                 }`}
               >
-                <Bell className="w-4 h-4 text-amber-400" />
-                <span>Notices</span>
+                Notices
               </button>
             </div>
 
-            {/* Teacher Upload Notes Action */}
             {isTeacherOrAdmin && (
               <button
                 onClick={() => setShowUploadModal(true)}
                 className="px-4 py-2 rounded-xl gradient-bg text-white text-xs font-bold shadow-glow hover:opacity-95 flex items-center gap-1.5 shrink-0"
               >
                 <Plus className="w-4 h-4" />
-                <span>Share Notes / PDF</span>
+                <span>Upload Lecture Notes</span>
               </button>
             )}
           </div>
 
           {/* TAB 1: CLASSMATES / ENROLLED STUDENTS ROSTER */}
-          {activeTab === "classmates" && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {classroomData.classmates?.length === 0 ? (
-                <div className="col-span-full text-center py-12 text-gray-500 glass-card rounded-3xl">
-                  No registered students found in {selectedClass} yet.
-                </div>
-              ) : (
-                classroomData.classmates?.map((mate: any) => (
-                  <div
-                    key={mate.id}
-                    className="rounded-3xl glass-card border border-slate-800 p-5 flex flex-col justify-between space-y-4 hover:border-purple-500/40 transition-all group"
-                  >
-                    <div className="flex items-start gap-4">
-                      <img
-                        src={mate.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80"}
-                        alt={mate.name}
-                        className="w-14 h-14 rounded-2xl object-cover ring-2 ring-purple-500/30 group-hover:scale-105 transition-transform"
-                      />
-                      <div className="space-y-1">
-                        <h4 className="text-sm font-bold text-white group-hover:text-purple-300 transition-colors">
-                          {mate.name}
-                        </h4>
-                        <p className="text-[11px] font-mono text-purple-400">{mate.rollNumber || "Registered Student"}</p>
-                        <p className="text-xs text-gray-400 line-clamp-2">{mate.bio || "Student at CampusCode"}</p>
-                      </div>
-                    </div>
+          {activeTab === "classmates" && (() => {
+            const rawMates = classroomData.classmates || [];
+            const mergedMates = [...rawMates];
+            if (user && user.role === "STUDENT") {
+              const exists = mergedMates.some(
+                (m: any) => m.id === user.id || m.email === user.email || (m.name && m.name.toLowerCase() === user.name.toLowerCase())
+              );
+              if (!exists) {
+                mergedMates.push({
+                  id: user.id || "current-user",
+                  name: user.name,
+                  email: user.email,
+                  rollNumber: user.rollNumber || "A-244002",
+                  className: user.className || selectedClass,
+                  branch: user.branch || "Computer Science",
+                  avatar: user.avatar || "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&auto=format&fit=crop&q=80",
+                  xp: user.xp || 0,
+                  level: user.level || 1,
+                  streakDays: user.streakDays || 0,
+                  bio: user.bio || "Student at Sarhad College",
+                });
+              }
+            }
 
-                    <div className="flex items-center justify-between pt-3 border-t border-slate-800/80">
-                      <div className="text-xs font-mono">
-                        <span className="text-emerald-400 font-bold">⚡ {mate.xp || 0} XP</span>
-                        <span className="text-gray-400 text-[10px] block">Level {mate.level || 1}</span>
-                      </div>
-
-                      <Link
-                        href={`/profile/${mate.name.toLowerCase().replace(/\s+/g, "")}`}
-                        className="px-3 py-1.5 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-bold hover:bg-purple-500/20 transition-all flex items-center gap-1"
-                      >
-                        <span>View Profile</span>
-                        <ExternalLink className="w-3 h-3" />
-                      </Link>
-                    </div>
+            return (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {mergedMates.length === 0 ? (
+                  <div className="col-span-full text-center py-12 text-gray-500 glass-card rounded-3xl">
+                    No registered students found in {selectedClass} yet.
                   </div>
-                ))
-              )}
-            </div>
-          )}
+                ) : (
+                  mergedMates.map((mate: any) => (
+                    <div
+                      key={mate.id}
+                      className="rounded-3xl glass-card border border-slate-800 p-5 flex flex-col justify-between space-y-4 hover:border-purple-500/40 transition-all group"
+                    >
+                      <div className="flex items-start gap-4">
+                        <img
+                          src={mate.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80"}
+                          alt={mate.name}
+                          className="w-14 h-14 rounded-2xl object-cover ring-2 ring-purple-500/30 group-hover:scale-105 transition-transform"
+                        />
+                        <div className="space-y-1">
+                          <h4 className="text-sm font-bold text-white group-hover:text-purple-300 transition-colors flex items-center gap-1.5">
+                            <span>{mate.name}</span>
+                            {user && (mate.email === user.email || mate.id === user.id) && (
+                              <span className="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 text-[9px] font-black uppercase">
+                                (You)
+                              </span>
+                            )}
+                          </h4>
+                          <p className="text-[11px] font-mono text-purple-400">{mate.rollNumber || "Registered Student"}</p>
+                          <p className="text-xs text-gray-400 line-clamp-2">{mate.bio || "Student at CampusCode"}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-3 border-t border-slate-800/80">
+                        <div className="text-xs font-mono">
+                          <span className="text-emerald-400 font-bold">⚡ {mate.xp || 0} XP</span>
+                          <span className="text-gray-400 text-[10px] block">Level {mate.level || 1}</span>
+                        </div>
+
+                        <Link
+                          href={`/profile/${mate.name.toLowerCase().replace(/\s+/g, "")}`}
+                          className="px-3 py-1.5 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-bold hover:bg-purple-500/20 transition-all flex items-center gap-1"
+                        >
+                          <span>View Profile</span>
+                        </Link>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            );
+          })()}
 
           {/* TAB 2: CLASS PROJECTS SHOWCASE */}
           {activeTab === "projects" && (

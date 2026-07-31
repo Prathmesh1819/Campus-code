@@ -45,7 +45,44 @@ async function main() {
       xp: 1550,
       level: 2,
       streakDays: 0,
-      coins: 200,
+    },
+  });
+
+  const student2 = await prisma.user.create({
+    data: {
+      name: "Pratik Hanamghar",
+      email: "pratikhanamghar37@gmail.com",
+      password: hashedPassword,
+      role: "STUDENT",
+      rollNumber: "A-244002",
+      className: "TY BSc CS",
+      branch: "Computer Science",
+      academicYear: "2025-26",
+      avatar: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&auto=format&fit=crop&q=80",
+      bio: "Software Engineering Student @ Sarhad College",
+      xp: 1200,
+      level: 2,
+      streakDays: 0,
+      coins: 150,
+    },
+  });
+
+  const student3 = await prisma.user.create({
+    data: {
+      name: "Sushant Bagal",
+      email: "sushantbagal2811@gmail.com",
+      password: hashedPassword,
+      role: "STUDENT",
+      rollNumber: "A-244003",
+      className: "TY BSc CS",
+      branch: "Computer Science",
+      academicYear: "2025-26",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80",
+      bio: "BSc CS Student & Open Source Enthusiast @ Sarhad College",
+      xp: 950,
+      level: 1,
+      streakDays: 0,
+      coins: 100,
     },
   });
 
