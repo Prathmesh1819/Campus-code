@@ -15,46 +15,61 @@ export interface ExecutionResult {
 }
 
 /**
- * Transpiles Java / C++ / Python algorithms into executable JavaScript
+ * Transpiles Java / C++ / Python / Kotlin / Rust / C algorithms into executable JavaScript
  * to evaluate algorithmic logic & detect syntax errors accurately.
  */
 function transpileToJS(code: string, language: string): { jsCode: string; error?: string } {
   let cleanCode = code.trim();
 
-  // 1. Common Pre-Compiler Syntax Checks
-  if (language === "java" || language === "cpp" || language === "c") {
+  // 1. Pre-Compiler Syntax Checks for Java / C++ / C / Rust / Kotlin
+  if (["java", "cpp", "c", "rust", "kotlin"].includes(language)) {
     // Check for dangling member methods / statements like "numMap.put" or "list.add" without "("
     if (/\b[a-zA-Z_]\w*\.[a-zA-Z_]\w*\s*[\}\;\r\n]/.test(cleanCode)) {
-      return { jsCode: "", error: "javac: error: not a statement. Missing invocation arguments after method reference (e.g., 'numMap.put' is missing parentheses)" };
+      return {
+        jsCode: "",
+        error: `${language === "java" ? "javac" : language === "cpp" ? "g++" : language}: error: not a statement. Missing invocation arguments after method reference (e.g. 'numMap.put' is missing parentheses)`,
+      };
     }
     // Check for empty array subscripts inside expressions: e.g. "nums[]"
     if (/\b\w+\s*\[\s*\]\s*[\+\-\*\/\;\,\.\)]/.test(cleanCode)) {
-      return { jsCode: "", error: "javac: error: expression expected inside array subscript brackets '[]' (e.g. 'nums[]' is invalid syntax)" };
+      return {
+        jsCode: "",
+        error: `${language === "java" ? "javac" : "compiler"}: error: expression expected inside array subscript brackets '[]' (e.g. 'nums[]' is invalid syntax)`,
+      };
     }
     // Check for missing operand after assignment: e.g. "target = ;" or "x = ;"
-    if (/=\s*;/.test(cleanCode) || /=\s*\)/.test(cleanCode)) {
-      return { jsCode: "", error: "javac: error: illegal start of expression. Missing assignment value after '=' (e.g. 'target = ;')" };
+    if (/=\s*;/.test(cleanCode) || /=\s*\)/.test(cleanCode) || /=\s*\}/.test(cleanCode)) {
+      return {
+        jsCode: "",
+        error: `${language === "java" ? "javac" : "compiler"}: error: illegal start of expression. Missing assignment value after '=' (e.g. 'target = ;')`,
+      };
     }
     // Check brace balance
     const openBraces = (cleanCode.match(/\{/g) || []).length;
     const closeBraces = (cleanCode.match(/\}/g) || []).length;
     if (openBraces !== closeBraces) {
-      return { jsCode: "", error: `javac: error: reached end of file while parsing. Unclosed '{' brace (${openBraces} open vs ${closeBraces} close)` };
+      return {
+        jsCode: "",
+        error: `compiler error: reached end of file while parsing. Unclosed '{' brace (${openBraces} open vs ${closeBraces} close)`,
+      };
     }
     const openParens = (cleanCode.match(/\(/g) || []).length;
     const closeParens = (cleanCode.match(/\)/g) || []).length;
     if (openParens !== closeParens) {
-      return { jsCode: "", error: `javac: error: unmatched parenthesis '(' (${openParens} open vs ${closeParens} close)` };
+      return {
+        jsCode: "",
+        error: `compiler error: unmatched parenthesis '(' (${openParens} open vs ${closeParens} close)`,
+      };
     }
   }
 
   if (language === "java") {
-    // Transpile Java Java collections and types to JavaScript equivalents
     let js = cleanCode
       .replace(/import\s+[\w\.\*]+;/g, "")
-      .replace(/public\s+class\s+\w+\s*\{/g, "")
-      .replace(/public\s+static\s+/g, "")
-      .replace(/public\s+/g, "")
+      .replace(/public\s+class\s+(\w+)/g, "class $1")
+      .replace(/class\s+(\w+)\s*\{/g, "class $1 {")
+      .replace(/public\s+static\s+(\w+\[\]|\w+)\s+(\w+)/g, "static $2")
+      .replace(/public\s+(\w+\[\]|\w+)\s+(\w+)/g, "$2")
       .replace(/private\s+/g, "")
       .replace(/Map<[\w\s,]+>\s+(\w+)\s*=\s*new\s+HashMap<.*?>\(\);/g, "const $1 = new Map();")
       .replace(/Set<[\w\s]+>\s+(\w+)\s*=\s*new\s+HashSet<.*?>\(\);/g, "const $1 = new Set();")
@@ -107,13 +122,37 @@ function transpileToJS(code: string, language: string): { jsCode: string; error?
     let js = cleanCode
       .replace(/#include\s+<[^>]+>/g, "")
       .replace(/using\s+namespace\s+std;/g, "")
-      .replace(/class\s+\w+\s*\{/g, "")
+      .replace(/class\s+(\w+)/g, "class $1")
       .replace(/public:/g, "")
       .replace(/vector<int>/g, "var")
       .replace(/vector<string>/g, "var")
       .replace(/unordered_map<[^>]+>/g, "var")
       .replace(/int\s+/g, "let ")
       .replace(/auto\s+/g, "let ");
+
+    return { jsCode: js };
+  }
+
+  if (language === "kotlin") {
+    let js = cleanCode
+      .replace(/class\s+(\w+)/g, "class $1")
+      .replace(/fun\s+(\w+)\(([^)]*)\)\s*:\s*\w+/g, "function $1($2)")
+      .replace(/fun\s+(\w+)\(([^)]*)\)/g, "function $1($2)")
+      .replace(/val\s+/g, "const ")
+      .replace(/var\s+/g, "let ")
+      .replace(/intArrayOf\(([^)]*)\)/g, "[$1]")
+      .replace(/listOf\(([^)]*)\)/g, "[$1]");
+
+    return { jsCode: js };
+  }
+
+  if (language === "rust") {
+    let js = cleanCode
+      .replace(/pub\s+fn\s+(\w+)\(([^)]*)\)\s*->\s*[^{]+/g, "function $1($2)")
+      .replace(/fn\s+(\w+)\(([^)]*)\)\s*->\s*[^{]+/g, "function $1($2)")
+      .replace(/let\s+mut\s+/g, "let ")
+      .replace(/vec!\[([^\]]*)\]/g, "[$1]")
+      .replace(/HashMap::new\(\)/g, "new Map()");
 
     return { jsCode: js };
   }
@@ -160,7 +199,7 @@ export function executeCodeSimulation(
 
   outputLogs.push(`🚀 Compiling & Executing ${langUpper} Algorithm Engine...`);
 
-  // Transpile and check syntax
+  // Transpile and check pre-compilation errors
   const transpiled = transpileToJS(code, language);
   if (transpiled.error) {
     outputLogs.push(`❌ COMPILATION ERROR:\n${transpiled.error}`);
@@ -216,10 +255,37 @@ export function executeCodeSimulation(
             `${transpiled.jsCode}\n
             try {
               let fn = null;
+
+              // 1. Standalone function check
               if (typeof solve === 'function') fn = solve;
               else if (typeof twoSum === 'function') fn = twoSum;
               else if (typeof isValid === 'function') fn = isValid;
               else if (typeof isPalindrome === 'function') fn = isPalindrome;
+
+              // 2. Class method check (Java / C++ / Kotlin / JS class)
+              if (!fn) {
+                const globalScope = this || globalThis;
+                const classNames = ['Solution', 'TwoSumSolution', 'TwoSum', 'Main'];
+                for (const cName of classNames) {
+                  try {
+                    const cls = eval(cName);
+                    if (typeof cls === 'function' || typeof cls === 'object') {
+                      // Check static methods first
+                      if (typeof cls.solve === 'function') { fn = cls.solve.bind(cls); break; }
+                      if (typeof cls.twoSum === 'function') { fn = cls.twoSum.bind(cls); break; }
+                      if (typeof cls.isValid === 'function') { fn = cls.isValid.bind(cls); break; }
+                      if (typeof cls.isPalindrome === 'function') { fn = cls.isPalindrome.bind(cls); break; }
+
+                      // Check instance methods
+                      const inst = new cls();
+                      if (typeof inst.solve === 'function') { fn = inst.solve.bind(inst); break; }
+                      if (typeof inst.twoSum === 'function') { fn = inst.twoSum.bind(inst); break; }
+                      if (typeof inst.isValid === 'function') { fn = inst.isValid.bind(inst); break; }
+                      if (typeof inst.isPalindrome === 'function') { fn = inst.isPalindrome.bind(inst); break; }
+                    }
+                  } catch (e) {}
+                }
+              }
 
               if (fn) {
                 const parts = inputStr.split(', ');
@@ -237,14 +303,14 @@ export function executeCodeSimulation(
 
           const evalResult = runner(tc.input);
           if (evalResult === "NO_SOLVE_FUNC") {
-            actual = "Function solution not defined or method signature mismatch.";
+            actual = "CompilationError: Function solution not defined or method signature mismatch.";
             passed = false;
           } else if (typeof evalResult === "string" && evalResult.startsWith("EXEC_ERR:")) {
             actual = `RuntimeError: ${evalResult.replace("EXEC_ERR: ", "")}`;
             passed = false;
           } else {
             actual = String(evalResult);
-            // Standardize JSON array formatting e.g. [0,1] vs [0, 1]
+            // Standardize array formatting e.g. [0,1] vs [0, 1]
             const cleanActual = actual.replace(/\s+/g, "");
             const cleanExpected = tc.expectedOutput.replace(/\s+/g, "");
             passed = cleanActual === cleanExpected;
