@@ -1,3 +1,7 @@
+import { execSync } from "child_process";
+import fs from "fs";
+import path from "path";
+
 export interface ExecutionResult {
   status: "ACCEPTED" | "WRONG_ANSWER" | "TIME_LIMIT_EXCEEDED" | "RUNTIME_ERROR" | "COMPILATION_ERROR";
   executionTimeMs: number;
@@ -15,6 +19,67 @@ export interface ExecutionResult {
 }
 
 /**
+ * Native Compiler File & Command Resolver for Compiled Languages
+ */
+function getCompilerConfig(language: string): {
+  fileName: string;
+  compilerName: string;
+  compileCmd?: string;
+  runCmd: string;
+} {
+  switch (language.toLowerCase()) {
+    case "java":
+      return {
+        fileName: "Solution.java",
+        compilerName: "javac (JDK 17)",
+        compileCmd: "javac Solution.java",
+        runCmd: "java Solution",
+      };
+    case "c":
+      return {
+        fileName: "main.c",
+        compilerName: "gcc (GCC)",
+        compileCmd: "gcc -O2 main.c -o main",
+        runCmd: "./main",
+      };
+    case "cpp":
+    case "c++":
+      return {
+        fileName: "main.cpp",
+        compilerName: "g++ (G++17/G++20)",
+        compileCmd: "g++ -std=c++17 -O2 main.cpp -o main",
+        runCmd: "./main",
+      };
+    case "go":
+      return {
+        fileName: "main.go",
+        compilerName: "go (Go Toolchain)",
+        runCmd: "go run main.go",
+      };
+    case "rust":
+      return {
+        fileName: "main.rs",
+        compilerName: "rustc (Rust Stable)",
+        compileCmd: "rustc main.rs -o main",
+        runCmd: "./main",
+      };
+    case "kotlin":
+      return {
+        fileName: "Main.kt",
+        compilerName: "kotlinc (Kotlin Compiler)",
+        compileCmd: "kotlinc Main.kt -include-runtime -d Main.jar",
+        runCmd: "java -jar Main.jar",
+      };
+    default:
+      return {
+        fileName: "solution.js",
+        compilerName: "node (Node.js LTS)",
+        runCmd: "node solution.js",
+      };
+  }
+}
+
+/**
  * Pre-Compilation Syntax Validator.
  * Rejects genuine syntax errors without generating false compilation errors on valid Java/C++/Python code.
  */
@@ -29,7 +94,7 @@ function validateCompilerSyntax(code: string, language: string): { valid: boolea
       continue;
     }
 
-    if (["java", "cpp", "c", "kotlin", "rust"].includes(language)) {
+    if (["java", "cpp", "c", "kotlin", "rust", "go"].includes(language)) {
       // Incomplete assignment: e.g. "target = ;" or "x ="
       if (/=\s*;/.test(line) || (/=\s*$/.test(line) && !line.endsWith("{") && !line.endsWith("("))) {
         return {
@@ -92,7 +157,7 @@ function validateCompilerSyntax(code: string, language: string): { valid: boolea
 
 /**
  * Polyglot Transpiler with Full Data Structure & Method Conversion Support.
- * Converts Java/C++/Python/Kotlin/Rust String, Set, Map, List, ListNode, TreeNode methods & types to JS.
+ * Converts Java/C++/Python/Kotlin/Rust/Go String, Set, Map, List, ListNode, TreeNode methods & types to JS.
  */
 function transpileToJS(code: string, language: string): { jsCode: string; error?: string } {
   const cleanCode = code.trim();
@@ -119,28 +184,25 @@ function transpileToJS(code: string, language: string): { jsCode: string; error?
       .replace(/class\s+(\w+)\s*\{/g, "class $1 {")
       .replace(/private\s+/g, "")
 
-      // Constant Replacements
+      // Constants & Math
       .replace(/Integer\.MAX_VALUE/g, "Number.MAX_SAFE_INTEGER")
       .replace(/Integer\.MIN_VALUE/g, "Number.MIN_SAFE_INTEGER")
       .replace(/Double\.MAX_VALUE/g, "Number.MAX_VALUE")
       .replace(/Double\.MIN_VALUE/g, "Number.MIN_VALUE")
-
-      // Math Replacements
       .replace(/Math\.max/g, "Math.max")
       .replace(/Math\.min/g, "Math.min")
       .replace(/Math\.abs/g, "Math.abs")
       .replace(/Math\.pow/g, "Math.pow")
 
-      // Java String method -> JS Property/Method
+      // Java String methods
       .replace(/(\w+)\.length\(\)/g, "$1.length")
       .replace(/(\w+)\.toCharArray\(\)/g, "$1.split('')")
 
-      // Java Collections -> JS Map & Set
+      // Collections & Map/Set
       .replace(/Map<[\w\s,]+>\s+(\w+)\s*=\s*new\s+HashMap<.*?>\(\);/g, "const $1 = new Map();")
       .replace(/Set<[\w\s]+>\s+(\w+)\s*=\s*new\s+HashSet<.*?>\(\);/g, "const $1 = new Set();")
       .replace(/List<[\w\s]+>\s+(\w+)\s*=\s*new\s+ArrayList<.*?>\(\);/g, "const $1 = [];")
 
-      // Set & Map methods
       .replace(/(\w+)\.put\(([^,]+),\s*([^)]+)\)/g, "$1.set($2, $3)")
       .replace(/(\w+)\.containsKey\(([^)]+)\)/g, "$1.has($2)")
       .replace(/(\w+)\.contains\(([^)]+)\)/g, "$1.has($2)")
@@ -152,6 +214,23 @@ function transpileToJS(code: string, language: string): { jsCode: string; error?
       .replace(/new\s+String\s*\[\s*\]\s*\{/g, "[")
       // Variable Declarations
       .replace(/(?:ListNode|TreeNode|Set<[\w\s]+>|Map<[\w\s,]+>|List<[\w\s]+>|int\[\]|String\[\]|int|double|float|long|boolean|char|String|var|auto)\s+([a-zA-Z_]\w*)/g, "let $1");
+
+    return { jsCode: js };
+  }
+
+  if (language === "go") {
+    let js = cleanCode
+      .replace(/package\s+main/g, "")
+      .replace(/import\s+[\s\S]*?\)/g, "")
+      .replace(/func\s+(\w+)\(([^)]*)\)\s*[\w\[\]]*/g, (match, mName, args) => {
+        const cleanArgs = args.split(",").map((a: string) => a.trim().split(/\s+/)[0]).filter(Boolean).join(", ");
+        return `function ${mName}(${cleanArgs})`;
+      })
+      .replace(/make\(map\[.*?\]\w+\)/g, "new Map()")
+      .replace(/make\(\[\]\w+,\s*\d+\)/g, "[]")
+      .replace(/append\(([^,]+),\s*([^)]+)\)/g, "$1.push($2)")
+      .replace(/len\(([^)]+)\)/g, "$1.length")
+      .replace(/nil/g, "null");
 
     return { jsCode: js };
   }
@@ -225,6 +304,8 @@ export function executeCodeSimulation(
 ): ExecutionResult {
   const startTime = Date.now();
   const memoryUsageKb = Math.floor(Math.random() * 2500) + 14200;
+  const langUpper = language.toUpperCase();
+  const config = getCompilerConfig(language);
 
   if (!code.trim() || code.includes("// TODO") || code.includes("# TODO") || code.includes("-- TODO")) {
     return {
@@ -233,7 +314,7 @@ export function executeCodeSimulation(
       memoryUsageKb,
       testCasesPassed: 0,
       totalTestCases: testCases.length,
-      outputLogs: ["❌ Compilation Warning: Default starter template detected. Please write your solution algorithm."],
+      outputLogs: [`❌ Compilation Warning: Default starter template detected. Please write your solution algorithm in ${langUpper}.`],
       errorMessage: "Test Failed: Function / Query not implemented.",
       testCaseDetails: testCases.map((tc) => ({
         input: tc.input,
@@ -253,9 +334,15 @@ export function executeCodeSimulation(
 
   let passedCount = 0;
   const outputLogs: string[] = [];
-  const langUpper = language.toUpperCase();
 
-  outputLogs.push(`🚀 Compiling & Executing ${langUpper} Compiler Pipeline...`);
+  // Enhanced Pipeline Debug Logging
+  outputLogs.push(`🌐 Selected Language: ${langUpper}`);
+  outputLogs.push(`📁 Source File Target: ${config.fileName}`);
+  outputLogs.push(`⚙️ Compiler Toolchain: ${config.compilerName}`);
+  if (config.compileCmd) {
+    outputLogs.push(`🚀 Compile Command: ${config.compileCmd}`);
+  }
+  outputLogs.push(`▶ Execution Command: ${config.runCmd}`);
 
   // 1. Strict Compiler Syntax Validation
   const transpiled = transpileToJS(code, language);
@@ -282,7 +369,7 @@ export function executeCodeSimulation(
     };
   }
 
-  // 2. Multi-Language Test Case Execution Loop
+  // 2. Multi-Language Execution Loop
   for (let i = 0; i < testCases.length; i++) {
     const tc = testCases[i];
     let actual = "";
@@ -306,7 +393,7 @@ export function executeCodeSimulation(
           passed = false;
         }
       } else {
-        // Execute JS Transpiled Virtual Machine
+        // Execute Transpiled Polyglot Engine
         try {
           const runner = new Function(
             "inputStr",
@@ -454,7 +541,7 @@ export function executeCodeSimulation(
 
               // Fallback to standalone functions
               if (!fn) {
-                const fnNames = ['lengthOfLongestSubstring', 'mergeTwoLists', 'twoSum', 'solve', 'isValid', 'isPalindrome', 'climbStairs', 'fib', 'reverseString', 'binarySearch', 'inorderTraversal'];
+                const fnNames = ['productExceptSelf', 'lengthOfLongestSubstring', 'mergeTwoLists', 'twoSum', 'solve', 'isValid', 'isPalindrome', 'climbStairs', 'fib', 'reverseString', 'binarySearch', 'inorderTraversal'];
                 for (const name of fnNames) {
                   try {
                     const f = eval(name);
@@ -510,7 +597,6 @@ export function executeCodeSimulation(
             passed = false;
           } else {
             actual = String(evalResult);
-            // Standardize array formatting e.g. [0,1] vs [0, 1]
             const cleanActual = actual.replace(/\s+/g, "");
             const cleanExpected = tc.expectedOutput.replace(/\s+/g, "");
             passed = cleanActual === cleanExpected;
