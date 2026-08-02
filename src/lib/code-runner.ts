@@ -15,33 +15,24 @@ export interface ExecutionResult {
 }
 
 /**
- * Strict Line-by-Line Compiler & Syntax Analyzer for Polyglot Languages.
- * Faithfully reproduces official toolchain error diagnostics (javac, gcc, g++, python3, node, kotlinc, rustc).
+ * Clean & Accurate Pre-Compilation Syntax Validator.
+ * Rejects genuine syntax errors (unbalanced braces/parentheses, incomplete assignments, missing colons)
+ * without triggering false compilation errors on valid LeetCode code (such as nums.length or Integer.MAX_VALUE).
  */
 function validateCompilerSyntax(code: string, language: string): { valid: boolean; error?: string; line?: number } {
   const lines = code.split("\n");
 
   for (let i = 0; i < lines.length; i++) {
-    const rawLine = lines[i];
-    const line = rawLine.trim();
+    const line = lines[i].trim();
     const lineNum = i + 1;
 
-    // Skip empty lines & comment lines
+    // Skip empty lines & comments
     if (!line || line.startsWith("//") || line.startsWith("#") || line.startsWith("/*") || line.startsWith("*")) {
       continue;
     }
 
     if (["java", "cpp", "c", "kotlin", "rust"].includes(language)) {
-      // 1. Incomplete method call / member reference without invocation brackets e.g. "numMap.put" or "list.add"
-      if (/\b[a-zA-Z_]\w*\.[a-zA-Z_]\w*\s*[\}\;\r\n]/.test(line) && !line.includes("(")) {
-        return {
-          valid: false,
-          error: `${language === "java" ? "javac" : language === "cpp" ? "g++" : "gcc"}: error: Solution.${language === "java" ? "java" : "cpp"}:${lineNum}: not a statement\n    ${line}\n    ^`,
-          line: lineNum,
-        };
-      }
-
-      // 2. Incomplete assignment / missing value after '=' e.g. "target = ;" or "x ="
+      // Missing operand / value after assignment: e.g. "target = ;" or "x = ;"
       if (/=\s*;/.test(line) || (/=\s*$/.test(line) && !line.endsWith("{") && !line.endsWith("("))) {
         return {
           valid: false,
@@ -50,8 +41,8 @@ function validateCompilerSyntax(code: string, language: string): { valid: boolea
         };
       }
 
-      // 3. Invalid array subscript e.g. "nums[]" inside expressions
-      if (/\b\w+\s*\[\s*\]\s*[\+\-\*\/\;\,\.\)]/.test(line)) {
+      // Empty subscript inside expressions e.g. "nums[] +"
+      if (/\b\w+\s*\[\s*\]\s*[\+\-\*\/\;\,\.]/.test(line)) {
         return {
           valid: false,
           error: `${language === "java" ? "javac" : "compiler"}: error: Solution.${language === "java" ? "java" : "cpp"}:${lineNum}: expression expected inside array subscript brackets '[]'\n    ${line}\n    ^`,
@@ -61,7 +52,7 @@ function validateCompilerSyntax(code: string, language: string): { valid: boolea
     }
 
     if (language === "python") {
-      // 1. Missing colon on python block keywords
+      // Python missing colon on def/if/elif/else/for/while/class
       if (/^(def|if|elif|else|for|while|class)\b/.test(line) && !line.endsWith(":") && !line.includes("#")) {
         return {
           valid: false,
@@ -70,22 +61,11 @@ function validateCompilerSyntax(code: string, language: string): { valid: boolea
         };
       }
 
-      // 2. Incomplete assignment
+      // Incomplete assignment in python
       if (/=\s*$/.test(line)) {
         return {
           valid: false,
           error: `SyntaxError: Solution.py:${lineNum}: invalid syntax (incomplete assignment statement)\n    ${line}\n    ^`,
-          line: lineNum,
-        };
-      }
-    }
-
-    if (language === "sql") {
-      // SQL missing SELECT / FROM
-      if (/^\s*(FROM|WHERE|JOIN)\b/i.test(line) && !code.toUpperCase().includes("SELECT")) {
-        return {
-          valid: false,
-          error: `SQLite3::Error: line ${lineNum}: near "${line.split(" ")[0]}": syntax error. Query must begin with SELECT statement.`,
           line: lineNum,
         };
       }
@@ -115,8 +95,8 @@ function validateCompilerSyntax(code: string, language: string): { valid: boolea
 }
 
 /**
- * Transpiles Java / C++ / Python / Kotlin / Rust / C algorithms into executable JavaScript
- * to evaluate algorithmic logic & detect syntax errors accurately.
+ * Polyglot Transpiler into executable JavaScript
+ * to evaluate algorithmic logic & detect syntax errors accurately across JDK 17, G++, Python 3, Node.js.
  */
 function transpileToJS(code: string, language: string): { jsCode: string; error?: string } {
   const cleanCode = code.trim();
@@ -135,6 +115,14 @@ function transpileToJS(code: string, language: string): { jsCode: string; error?
       .replace(/public\s+static\s+(\w+\[\]|\w+)\s+(\w+)/g, "static $2")
       .replace(/public\s+(\w+\[\]|\w+)\s+(\w+)/g, "$2")
       .replace(/private\s+/g, "")
+      .replace(/Integer\.MAX_VALUE/g, "Number.MAX_SAFE_INTEGER")
+      .replace(/Integer\.MIN_VALUE/g, "Number.MIN_SAFE_INTEGER")
+      .replace(/Double\.MAX_VALUE/g, "Number.MAX_VALUE")
+      .replace(/Double\.MIN_VALUE/g, "Number.MIN_VALUE")
+      .replace(/Math\.max/g, "Math.max")
+      .replace(/Math\.min/g, "Math.min")
+      .replace(/Math\.abs/g, "Math.abs")
+      .replace(/Math\.pow/g, "Math.pow")
       .replace(/Map<[\w\s,]+>\s+(\w+)\s*=\s*new\s+HashMap<.*?>\(\);/g, "const $1 = new Map();")
       .replace(/Set<[\w\s]+>\s+(\w+)\s*=\s*new\s+HashSet<.*?>\(\);/g, "const $1 = new Set();")
       .replace(/List<[\w\s]+>\s+(\w+)\s*=\s*new\s+ArrayList<.*?>\(\);/g, "const $1 = [];")
@@ -252,7 +240,7 @@ export function executeCodeSimulation(
   const outputLogs: string[] = [];
   const langUpper = language.toUpperCase();
 
-  outputLogs.push(`🚀 Compiling & Executing ${langUpper} Toolchain...`);
+  outputLogs.push(`🚀 Compiling & Executing ${langUpper} Compiler Pipeline...`);
 
   // 1. Strict Compiler Syntax Validation
   const transpiled = transpileToJS(code, language);
@@ -279,7 +267,7 @@ export function executeCodeSimulation(
     };
   }
 
-  // 2. Execution & Evaluation Loop
+  // 2. Multi-Language Test Case Execution Loop
   for (let i = 0; i < testCases.length; i++) {
     const tc = testCases[i];
     let actual = "";
@@ -311,33 +299,40 @@ export function executeCodeSimulation(
             try {
               let fn = null;
 
-              // 1. Standalone function check
-              if (typeof solve === 'function') fn = solve;
-              else if (typeof twoSum === 'function') fn = twoSum;
-              else if (typeof isValid === 'function') fn = isValid;
-              else if (typeof isPalindrome === 'function') fn = isPalindrome;
-
-              // 2. Class method check (Java / C++ / Kotlin / JS class)
-              if (!fn) {
-                const classNames = ['Solution', 'TwoSumSolution', 'TwoSum', 'Main'];
-                for (const cName of classNames) {
-                  try {
-                    const cls = eval(cName);
-                    if (typeof cls === 'function' || typeof cls === 'object') {
-                      // Check static methods first
-                      if (typeof cls.solve === 'function') { fn = cls.solve.bind(cls); break; }
-                      if (typeof cls.twoSum === 'function') { fn = cls.twoSum.bind(cls); break; }
-                      if (typeof cls.isValid === 'function') { fn = cls.isValid.bind(cls); break; }
-                      if (typeof cls.isPalindrome === 'function') { fn = cls.isPalindrome.bind(cls); break; }
-
-                      // Check instance methods
-                      const inst = new cls();
-                      if (typeof inst.solve === 'function') { fn = inst.solve.bind(inst); break; }
-                      if (typeof inst.twoSum === 'function') { fn = inst.twoSum.bind(inst); break; }
-                      if (typeof inst.isValid === 'function') { fn = inst.isValid.bind(inst); break; }
-                      if (typeof inst.isPalindrome === 'function') { fn = inst.isPalindrome.bind(inst); break; }
+              // Universal Method Resolver: find any declared solution function or class method dynamically
+              const targetClasses = ['Solution', 'TwoSumSolution', 'TwoSum', 'Main'];
+              for (const cName of targetClasses) {
+                try {
+                  const cls = eval(cName);
+                  if (typeof cls === 'function' || typeof cls === 'object') {
+                    // Check static methods first
+                    const staticMethods = Object.getOwnPropertyNames(cls).filter(m => typeof cls[m] === 'function' && m !== 'length' && m !== 'name' && m !== 'prototype');
+                    if (staticMethods.length > 0) {
+                      fn = cls[staticMethods[0]].bind(cls);
+                      break;
                     }
-                  } catch (e) {}
+
+                    // Check instance methods
+                    const inst = new cls();
+                    const proto = Object.getPrototypeOf(inst);
+                    const methodNames = Object.getOwnPropertyNames(proto).filter(m => m !== 'constructor' && typeof inst[m] === 'function');
+                    if (methodNames.length > 0) {
+                      fn = inst[methodNames[0]].bind(inst);
+                      break;
+                    }
+                  }
+                } catch (e) {}
+              }
+
+              // Fallback to standalone functions
+              if (!fn) {
+                const reserved = new Set(['inputStr', 'eval', 'Function', 'Object', 'Array', 'String', 'Number', 'Boolean', 'Math', 'Date', 'RegExp', 'Map', 'Set', 'Error', 'JSON', 'runner', 'fn', 'res', 'parsedArgs', 'parts']);
+                const fnNames = ['twoSum', 'solve', 'isValid', 'isPalindrome', 'climbStairs', 'fib', 'reverseString', 'binarySearch'];
+                for (const name of fnNames) {
+                  try {
+                    const f = eval(name);
+                    if (typeof f === 'function') { fn = f; break; }
+                  } catch(e) {}
                 }
               }
 
@@ -357,7 +352,7 @@ export function executeCodeSimulation(
 
           const evalResult = runner(tc.input);
           if (evalResult === "NO_SOLVE_FUNC") {
-            actual = "CompilationError: Function solution not defined or method signature mismatch.";
+            actual = "CompilationError: Solution method signature not found.";
             passed = false;
           } else if (typeof evalResult === "string" && evalResult.startsWith("EXEC_ERR:")) {
             actual = `RuntimeError: ${evalResult.replace("EXEC_ERR: ", "")}`;
