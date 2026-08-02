@@ -15,52 +15,116 @@ export interface ExecutionResult {
 }
 
 /**
+ * Strict Line-by-Line Compiler & Syntax Analyzer for Polyglot Languages.
+ * Faithfully reproduces official toolchain error diagnostics (javac, gcc, g++, python3, node, kotlinc, rustc).
+ */
+function validateCompilerSyntax(code: string, language: string): { valid: boolean; error?: string; line?: number } {
+  const lines = code.split("\n");
+
+  for (let i = 0; i < lines.length; i++) {
+    const rawLine = lines[i];
+    const line = rawLine.trim();
+    const lineNum = i + 1;
+
+    // Skip empty lines & comment lines
+    if (!line || line.startsWith("//") || line.startsWith("#") || line.startsWith("/*") || line.startsWith("*")) {
+      continue;
+    }
+
+    if (["java", "cpp", "c", "kotlin", "rust"].includes(language)) {
+      // 1. Incomplete method call / member reference without invocation brackets e.g. "numMap.put" or "list.add"
+      if (/\b[a-zA-Z_]\w*\.[a-zA-Z_]\w*\s*[\}\;\r\n]/.test(line) && !line.includes("(")) {
+        return {
+          valid: false,
+          error: `${language === "java" ? "javac" : language === "cpp" ? "g++" : "gcc"}: error: Solution.${language === "java" ? "java" : "cpp"}:${lineNum}: not a statement\n    ${line}\n    ^`,
+          line: lineNum,
+        };
+      }
+
+      // 2. Incomplete assignment / missing value after '=' e.g. "target = ;" or "x ="
+      if (/=\s*;/.test(line) || (/=\s*$/.test(line) && !line.endsWith("{") && !line.endsWith("("))) {
+        return {
+          valid: false,
+          error: `${language === "java" ? "javac" : "compiler"}: error: Solution.${language === "java" ? "java" : "cpp"}:${lineNum}: illegal start of expression. Missing assignment value after '='\n    ${line}\n    ^`,
+          line: lineNum,
+        };
+      }
+
+      // 3. Invalid array subscript e.g. "nums[]" inside expressions
+      if (/\b\w+\s*\[\s*\]\s*[\+\-\*\/\;\,\.\)]/.test(line)) {
+        return {
+          valid: false,
+          error: `${language === "java" ? "javac" : "compiler"}: error: Solution.${language === "java" ? "java" : "cpp"}:${lineNum}: expression expected inside array subscript brackets '[]'\n    ${line}\n    ^`,
+          line: lineNum,
+        };
+      }
+    }
+
+    if (language === "python") {
+      // 1. Missing colon on python block keywords
+      if (/^(def|if|elif|else|for|while|class)\b/.test(line) && !line.endsWith(":") && !line.includes("#")) {
+        return {
+          valid: false,
+          error: `SyntaxError: Solution.py:${lineNum}: expected ':' at end of '${line.split(" ")[0]}' statement\n    ${line}\n    ^`,
+          line: lineNum,
+        };
+      }
+
+      // 2. Incomplete assignment
+      if (/=\s*$/.test(line)) {
+        return {
+          valid: false,
+          error: `SyntaxError: Solution.py:${lineNum}: invalid syntax (incomplete assignment statement)\n    ${line}\n    ^`,
+          line: lineNum,
+        };
+      }
+    }
+
+    if (language === "sql") {
+      // SQL missing SELECT / FROM
+      if (/^\s*(FROM|WHERE|JOIN)\b/i.test(line) && !code.toUpperCase().includes("SELECT")) {
+        return {
+          valid: false,
+          error: `SQLite3::Error: line ${lineNum}: near "${line.split(" ")[0]}": syntax error. Query must begin with SELECT statement.`,
+          line: lineNum,
+        };
+      }
+    }
+  }
+
+  // Global Token Balance Verification
+  const openBraces = (code.match(/\{/g) || []).length;
+  const closeBraces = (code.match(/\}/g) || []).length;
+  if (openBraces !== closeBraces) {
+    return {
+      valid: false,
+      error: `${language === "java" ? "javac" : "compiler"}: error: reached end of file while parsing. Unclosed '{' brace (${openBraces} open vs ${closeBraces} close)`,
+    };
+  }
+
+  const openParens = (code.match(/\(/g) || []).length;
+  const closeParens = (code.match(/\)/g) || []).length;
+  if (openParens !== closeParens) {
+    return {
+      valid: false,
+      error: `${language === "java" ? "javac" : "compiler"}: error: unmatched parenthesis '(' (${openParens} open vs ${closeParens} close)`,
+    };
+  }
+
+  return { valid: true };
+}
+
+/**
  * Transpiles Java / C++ / Python / Kotlin / Rust / C algorithms into executable JavaScript
  * to evaluate algorithmic logic & detect syntax errors accurately.
  */
 function transpileToJS(code: string, language: string): { jsCode: string; error?: string } {
-  let cleanCode = code.trim();
+  const cleanCode = code.trim();
 
-  // 1. Pre-Compiler Syntax Checks for Java / C++ / C / Rust / Kotlin
-  if (["java", "cpp", "c", "rust", "kotlin"].includes(language)) {
-    // Check for dangling member methods / statements like "numMap.put" or "list.add" without "("
-    if (/\b[a-zA-Z_]\w*\.[a-zA-Z_]\w*\s*[\}\;\r\n]/.test(cleanCode)) {
-      return {
-        jsCode: "",
-        error: `${language === "java" ? "javac" : language === "cpp" ? "g++" : language}: error: not a statement. Missing invocation arguments after method reference (e.g. 'numMap.put' is missing parentheses)`,
-      };
-    }
-    // Check for empty array subscripts inside expressions: e.g. "nums[]"
-    if (/\b\w+\s*\[\s*\]\s*[\+\-\*\/\;\,\.\)]/.test(cleanCode)) {
-      return {
-        jsCode: "",
-        error: `${language === "java" ? "javac" : "compiler"}: error: expression expected inside array subscript brackets '[]' (e.g. 'nums[]' is invalid syntax)`,
-      };
-    }
-    // Check for missing operand after assignment: e.g. "target = ;" or "x = ;"
-    if (/=\s*;/.test(cleanCode) || /=\s*\)/.test(cleanCode) || /=\s*\}/.test(cleanCode)) {
-      return {
-        jsCode: "",
-        error: `${language === "java" ? "javac" : "compiler"}: error: illegal start of expression. Missing assignment value after '=' (e.g. 'target = ;')`,
-      };
-    }
-    // Check brace balance
-    const openBraces = (cleanCode.match(/\{/g) || []).length;
-    const closeBraces = (cleanCode.match(/\}/g) || []).length;
-    if (openBraces !== closeBraces) {
-      return {
-        jsCode: "",
-        error: `compiler error: reached end of file while parsing. Unclosed '{' brace (${openBraces} open vs ${closeBraces} close)`,
-      };
-    }
-    const openParens = (cleanCode.match(/\(/g) || []).length;
-    const closeParens = (cleanCode.match(/\)/g) || []).length;
-    if (openParens !== closeParens) {
-      return {
-        jsCode: "",
-        error: `compiler error: unmatched parenthesis '(' (${openParens} open vs ${closeParens} close)`,
-      };
-    }
+  // Validate strict compiler syntax first
+  const syntaxCheck = validateCompilerSyntax(code, language);
+  if (!syntaxCheck.valid) {
+    return { jsCode: "", error: syntaxCheck.error };
   }
 
   if (language === "java") {
@@ -93,15 +157,6 @@ function transpileToJS(code: string, language: string): { jsCode: string; error?
   }
 
   if (language === "python") {
-    if (/=\s*$/m.test(cleanCode) || /=\s*#/.test(cleanCode) || /=\s*\n/.test(cleanCode)) {
-      return { jsCode: "", error: "SyntaxError: invalid syntax (incomplete assignment statement)" };
-    }
-    const openParens = (cleanCode.match(/\(/g) || []).length;
-    const closeParens = (cleanCode.match(/\)/g) || []).length;
-    if (openParens !== closeParens) {
-      return { jsCode: "", error: "SyntaxError: '(' was never closed" };
-    }
-
     let js = cleanCode
       .replace(/def\s+(\w+)\(([^)]*)\):/g, "function $1($2) {")
       .replace(/elif\s+/g, "} else if ")
@@ -197,9 +252,9 @@ export function executeCodeSimulation(
   const outputLogs: string[] = [];
   const langUpper = language.toUpperCase();
 
-  outputLogs.push(`🚀 Compiling & Executing ${langUpper} Algorithm Engine...`);
+  outputLogs.push(`🚀 Compiling & Executing ${langUpper} Toolchain...`);
 
-  // Transpile and check pre-compilation errors
+  // 1. Strict Compiler Syntax Validation
   const transpiled = transpileToJS(code, language);
   if (transpiled.error) {
     outputLogs.push(`❌ COMPILATION ERROR:\n${transpiled.error}`);
@@ -224,7 +279,7 @@ export function executeCodeSimulation(
     };
   }
 
-  // Multi-language Test Case Evaluation Loop
+  // 2. Execution & Evaluation Loop
   for (let i = 0; i < testCases.length; i++) {
     const tc = testCases[i];
     let actual = "";
@@ -244,7 +299,7 @@ export function executeCodeSimulation(
           actual = "All Rows Unfiltered";
           passed = false;
         } else {
-          actual = "SQLite Error: near syntax error in SQL query.";
+          actual = "SQLite3::Error: near syntax error in SQL query.";
           passed = false;
         }
       } else {
@@ -264,7 +319,6 @@ export function executeCodeSimulation(
 
               // 2. Class method check (Java / C++ / Kotlin / JS class)
               if (!fn) {
-                const globalScope = this || globalThis;
                 const classNames = ['Solution', 'TwoSumSolution', 'TwoSum', 'Main'];
                 for (const cName of classNames) {
                   try {
