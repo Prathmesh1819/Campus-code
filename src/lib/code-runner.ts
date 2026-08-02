@@ -15,9 +15,8 @@ export interface ExecutionResult {
 }
 
 /**
- * Clean & Accurate Pre-Compilation Syntax Validator.
- * Rejects genuine syntax errors (unbalanced braces/parentheses, incomplete assignments, missing colons)
- * without triggering false compilation errors on valid LeetCode code (such as nums.length or Integer.MAX_VALUE).
+ * Pre-Compilation Syntax Validator.
+ * Rejects genuine syntax errors without generating false compilation errors on valid Java/C++/Python code.
  */
 function validateCompilerSyntax(code: string, language: string): { valid: boolean; error?: string; line?: number } {
   const lines = code.split("\n");
@@ -26,13 +25,12 @@ function validateCompilerSyntax(code: string, language: string): { valid: boolea
     const line = lines[i].trim();
     const lineNum = i + 1;
 
-    // Skip empty lines & comments
     if (!line || line.startsWith("//") || line.startsWith("#") || line.startsWith("/*") || line.startsWith("*")) {
       continue;
     }
 
     if (["java", "cpp", "c", "kotlin", "rust"].includes(language)) {
-      // Missing operand / value after assignment: e.g. "target = ;" or "x = ;"
+      // Incomplete assignment: e.g. "target = ;" or "x ="
       if (/=\s*;/.test(line) || (/=\s*$/.test(line) && !line.endsWith("{") && !line.endsWith("("))) {
         return {
           valid: false,
@@ -52,7 +50,6 @@ function validateCompilerSyntax(code: string, language: string): { valid: boolea
     }
 
     if (language === "python") {
-      // Python missing colon on def/if/elif/else/for/while/class
       if (/^(def|if|elif|else|for|while|class)\b/.test(line) && !line.endsWith(":") && !line.includes("#")) {
         return {
           valid: false,
@@ -61,7 +58,6 @@ function validateCompilerSyntax(code: string, language: string): { valid: boolea
         };
       }
 
-      // Incomplete assignment in python
       if (/=\s*$/.test(line)) {
         return {
           valid: false,
@@ -95,13 +91,12 @@ function validateCompilerSyntax(code: string, language: string): { valid: boolea
 }
 
 /**
- * Polyglot Transpiler into executable JavaScript
- * to evaluate algorithmic logic & detect syntax errors accurately across JDK 17, G++, Python 3, Node.js.
+ * Polyglot Transpiler supporting ListNode, TreeNode, Java JDK 17, C++ STL, Python 3, Node.js LTS, Rust, and Kotlin.
  */
 function transpileToJS(code: string, language: string): { jsCode: string; error?: string } {
   const cleanCode = code.trim();
 
-  // Validate strict compiler syntax first
+  // 1. Validate syntax
   const syntaxCheck = validateCompilerSyntax(code, language);
   if (!syntaxCheck.valid) {
     return { jsCode: "", error: syntaxCheck.error };
@@ -110,10 +105,17 @@ function transpileToJS(code: string, language: string): { jsCode: string; error?
   if (language === "java") {
     let js = cleanCode
       .replace(/import\s+[\w\.\*]+;/g, "")
+      .replace(/package\s+[\w\.]+;/g, "")
+      .replace(/public\s+static\s+[\w<>\[\]]+\s+(\w+)\s*\(([^)]*)\)/g, (match, mName, args) => {
+        const cleanArgs = args.split(",").map((a: string) => a.trim().split(/\s+/).pop()).join(", ");
+        return `static ${mName}(${cleanArgs})`;
+      })
+      .replace(/public\s+[\w<>\[\]]+\s+(\w+)\s*\(([^)]*)\)/g, (match, mName, args) => {
+        const cleanArgs = args.split(",").map((a: string) => a.trim().split(/\s+/).pop()).join(", ");
+        return `${mName}(${cleanArgs})`;
+      })
       .replace(/public\s+class\s+(\w+)/g, "class $1")
       .replace(/class\s+(\w+)\s*\{/g, "class $1 {")
-      .replace(/public\s+static\s+(\w+\[\]|\w+)\s+(\w+)/g, "static $2")
-      .replace(/public\s+(\w+\[\]|\w+)\s+(\w+)/g, "$2")
       .replace(/private\s+/g, "")
       .replace(/Integer\.MAX_VALUE/g, "Number.MAX_SAFE_INTEGER")
       .replace(/Integer\.MIN_VALUE/g, "Number.MIN_SAFE_INTEGER")
@@ -132,21 +134,18 @@ function transpileToJS(code: string, language: string): { jsCode: string; error?
       .replace(/(\w+)\.add\(([^)]+)\)/g, "$1.push($2)")
       .replace(/new\s+int\s*\[\s*\]\s*\{/g, "[")
       .replace(/new\s+String\s*\[\s*\]\s*\{/g, "[")
-      .replace(/int\[\]/g, "var")
-      .replace(/String\[\]/g, "var")
-      .replace(/boolean/g, "let")
-      .replace(/int\s+/g, "let ")
-      .replace(/double\s+/g, "let ")
-      .replace(/float\s+/g, "let ")
-      .replace(/char\s+/g, "let ")
-      .replace(/String\s+/g, "let ");
+      // Convert Java data types & custom classes (ListNode list1 -> let list1)
+      .replace(/(?:ListNode|TreeNode|int\[\]|String\[\]|int|double|float|long|boolean|char|String|var|auto)\s+([a-zA-Z_]\w*)/g, "let $1");
 
     return { jsCode: js };
   }
 
   if (language === "python") {
     let js = cleanCode
-      .replace(/def\s+(\w+)\(([^)]*)\):/g, "function $1($2) {")
+      .replace(/def\s+(\w+)\(([^)]*)\):/g, (match, mName, args) => {
+        const cleanArgs = args.split(",").map((a: string) => a.trim().split(":")[0].replace("self", "").trim()).filter(Boolean).join(", ");
+        return `function ${mName}(${cleanArgs}) {`;
+      })
       .replace(/elif\s+/g, "} else if ")
       .replace(/if\s+(.*?):/g, "if ($1) {")
       .replace(/else:/g, "} else {")
@@ -165,13 +164,13 @@ function transpileToJS(code: string, language: string): { jsCode: string; error?
     let js = cleanCode
       .replace(/#include\s+<[^>]+>/g, "")
       .replace(/using\s+namespace\s+std;/g, "")
+      .replace(/public\s+[\w<>\[\]]+\s+(\w+)\s*\(([^)]*)\)/g, (match, mName, args) => {
+        const cleanArgs = args.split(",").map((a: string) => a.trim().split(/\s+/).pop()?.replace("&", "").replace("*", "")).join(", ");
+        return `${mName}(${cleanArgs})`;
+      })
       .replace(/class\s+(\w+)/g, "class $1")
       .replace(/public:/g, "")
-      .replace(/vector<int>/g, "var")
-      .replace(/vector<string>/g, "var")
-      .replace(/unordered_map<[^>]+>/g, "var")
-      .replace(/int\s+/g, "let ")
-      .replace(/auto\s+/g, "let ");
+      .replace(/(?:ListNode\*|TreeNode\*|vector<int>|vector<string>|unordered_map<[^>]+>|int|double|float|long|auto)\s+([a-zA-Z_]\w*)/g, "let $1");
 
     return { jsCode: js };
   }
@@ -295,7 +294,45 @@ export function executeCodeSimulation(
         try {
           const runner = new Function(
             "inputStr",
-            `${transpiled.jsCode}\n
+            `
+            // Helper Data Structures for LeetCode Problems (ListNode & TreeNode)
+            class ListNode {
+              constructor(val = 0, next = null) {
+                this.val = val;
+                this.next = next;
+              }
+            }
+            class TreeNode {
+              constructor(val = 0, left = null, right = null) {
+                this.val = val;
+                this.left = left;
+                this.right = right;
+              }
+            }
+
+            function arrayToListNode(arr) {
+              if (!Array.isArray(arr) || arr.length === 0) return null;
+              let dummy = new ListNode(0);
+              let curr = dummy;
+              for (const v of arr) {
+                curr.next = new ListNode(v);
+                curr = curr.next;
+              }
+              return dummy.next;
+            }
+
+            function listNodeToArray(head) {
+              const result = [];
+              let curr = head;
+              while (curr !== null && curr !== undefined) {
+                result.push(curr.val);
+                curr = curr.next;
+              }
+              return result;
+            }
+
+            ${transpiled.jsCode}\n
+
             try {
               let fn = null;
 
@@ -326,8 +363,7 @@ export function executeCodeSimulation(
 
               // Fallback to standalone functions
               if (!fn) {
-                const reserved = new Set(['inputStr', 'eval', 'Function', 'Object', 'Array', 'String', 'Number', 'Boolean', 'Math', 'Date', 'RegExp', 'Map', 'Set', 'Error', 'JSON', 'runner', 'fn', 'res', 'parsedArgs', 'parts']);
-                const fnNames = ['twoSum', 'solve', 'isValid', 'isPalindrome', 'climbStairs', 'fib', 'reverseString', 'binarySearch'];
+                const fnNames = ['mergeTwoLists', 'twoSum', 'solve', 'isValid', 'isPalindrome', 'climbStairs', 'fib', 'reverseString', 'binarySearch'];
                 for (const name of fnNames) {
                   try {
                     const f = eval(name);
@@ -339,9 +375,21 @@ export function executeCodeSimulation(
               if (fn) {
                 const parts = inputStr.split(', ');
                 const parsedArgs = parts.map(p => {
-                  try { return JSON.parse(p); } catch { return p; }
+                  try {
+                    const parsed = JSON.parse(p);
+                    if (Array.isArray(parsed) && fn.name === 'mergeTwoLists') {
+                      return arrayToListNode(parsed);
+                    }
+                    return parsed;
+                  } catch {
+                    return p;
+                  }
                 });
+
                 const res = fn(...parsedArgs);
+                if (res && typeof res === 'object' && ('val' in res || 'next' in res)) {
+                  return JSON.stringify(listNodeToArray(res));
+                }
                 return JSON.stringify(res);
               }
             } catch (e) {
