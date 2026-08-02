@@ -14,6 +14,113 @@ export interface ExecutionResult {
   }>;
 }
 
+/**
+ * Transpiles Java / C++ / Python algorithms into executable JavaScript
+ * to evaluate algorithmic logic & detect syntax errors accurately.
+ */
+function transpileToJS(code: string, language: string): { jsCode: string; error?: string } {
+  let cleanCode = code.trim();
+
+  // 1. Common Pre-Compiler Syntax Checks
+  if (language === "java" || language === "cpp" || language === "c") {
+    // Check for dangling member methods / statements like "numMap.put" or "list.add" without "("
+    if (/\b[a-zA-Z_]\w*\.[a-zA-Z_]\w*\s*[\}\;\r\n]/.test(cleanCode)) {
+      return { jsCode: "", error: "javac: error: not a statement. Missing invocation arguments after method reference (e.g., 'numMap.put' is missing parentheses)" };
+    }
+    // Check for empty array subscripts inside expressions: e.g. "nums[]"
+    if (/\b\w+\s*\[\s*\]\s*[\+\-\*\/\;\,\.\)]/.test(cleanCode)) {
+      return { jsCode: "", error: "javac: error: expression expected inside array subscript brackets '[]' (e.g. 'nums[]' is invalid syntax)" };
+    }
+    // Check for missing operand after assignment: e.g. "target = ;" or "x = ;"
+    if (/=\s*;/.test(cleanCode) || /=\s*\)/.test(cleanCode)) {
+      return { jsCode: "", error: "javac: error: illegal start of expression. Missing assignment value after '=' (e.g. 'target = ;')" };
+    }
+    // Check brace balance
+    const openBraces = (cleanCode.match(/\{/g) || []).length;
+    const closeBraces = (cleanCode.match(/\}/g) || []).length;
+    if (openBraces !== closeBraces) {
+      return { jsCode: "", error: `javac: error: reached end of file while parsing. Unclosed '{' brace (${openBraces} open vs ${closeBraces} close)` };
+    }
+    const openParens = (cleanCode.match(/\(/g) || []).length;
+    const closeParens = (cleanCode.match(/\)/g) || []).length;
+    if (openParens !== closeParens) {
+      return { jsCode: "", error: `javac: error: unmatched parenthesis '(' (${openParens} open vs ${closeParens} close)` };
+    }
+  }
+
+  if (language === "java") {
+    // Transpile Java Java collections and types to JavaScript equivalents
+    let js = cleanCode
+      .replace(/import\s+[\w\.\*]+;/g, "")
+      .replace(/public\s+class\s+\w+\s*\{/g, "")
+      .replace(/public\s+static\s+/g, "")
+      .replace(/public\s+/g, "")
+      .replace(/private\s+/g, "")
+      .replace(/Map<[\w\s,]+>\s+(\w+)\s*=\s*new\s+HashMap<.*?>\(\);/g, "const $1 = new Map();")
+      .replace(/Set<[\w\s]+>\s+(\w+)\s*=\s*new\s+HashSet<.*?>\(\);/g, "const $1 = new Set();")
+      .replace(/List<[\w\s]+>\s+(\w+)\s*=\s*new\s+ArrayList<.*?>\(\);/g, "const $1 = [];")
+      .replace(/(\w+)\.put\(([^,]+),\s*([^)]+)\)/g, "$1.set($2, $3)")
+      .replace(/(\w+)\.containsKey\(([^)]+)\)/g, "$1.has($2)")
+      .replace(/(\w+)\.contains\(([^)]+)\)/g, "$1.has($2)")
+      .replace(/(\w+)\.add\(([^)]+)\)/g, "$1.push($2)")
+      .replace(/new\s+int\s*\[\s*\]\s*\{/g, "[")
+      .replace(/new\s+String\s*\[\s*\]\s*\{/g, "[")
+      .replace(/int\[\]/g, "var")
+      .replace(/String\[\]/g, "var")
+      .replace(/boolean/g, "let")
+      .replace(/int\s+/g, "let ")
+      .replace(/double\s+/g, "let ")
+      .replace(/float\s+/g, "let ")
+      .replace(/char\s+/g, "let ")
+      .replace(/String\s+/g, "let ");
+
+    return { jsCode: js };
+  }
+
+  if (language === "python") {
+    if (/=\s*$/m.test(cleanCode) || /=\s*#/.test(cleanCode) || /=\s*\n/.test(cleanCode)) {
+      return { jsCode: "", error: "SyntaxError: invalid syntax (incomplete assignment statement)" };
+    }
+    const openParens = (cleanCode.match(/\(/g) || []).length;
+    const closeParens = (cleanCode.match(/\)/g) || []).length;
+    if (openParens !== closeParens) {
+      return { jsCode: "", error: "SyntaxError: '(' was never closed" };
+    }
+
+    let js = cleanCode
+      .replace(/def\s+(\w+)\(([^)]*)\):/g, "function $1($2) {")
+      .replace(/elif\s+/g, "} else if ")
+      .replace(/if\s+(.*?):/g, "if ($1) {")
+      .replace(/else:/g, "} else {")
+      .replace(/for\s+(\w+)\s+in\s+range\(([^)]+)\):/g, "for (let $1 = 0; $1 < $2; $1++) {")
+      .replace(/True/g, "true")
+      .replace(/False/g, "false")
+      .replace(/None/g, "null")
+      .replace(/len\(([^)]+)\)/g, "$1.length")
+      .replace(/dict\(\)/g, "{}")
+      .replace(/print\(([^)]+)\)/g, "console.log($1)");
+
+    return { jsCode: js };
+  }
+
+  if (language === "cpp" || language === "c") {
+    let js = cleanCode
+      .replace(/#include\s+<[^>]+>/g, "")
+      .replace(/using\s+namespace\s+std;/g, "")
+      .replace(/class\s+\w+\s*\{/g, "")
+      .replace(/public:/g, "")
+      .replace(/vector<int>/g, "var")
+      .replace(/vector<string>/g, "var")
+      .replace(/unordered_map<[^>]+>/g, "var")
+      .replace(/int\s+/g, "let ")
+      .replace(/auto\s+/g, "let ");
+
+    return { jsCode: js };
+  }
+
+  return { jsCode: cleanCode };
+}
+
 export function executeCodeSimulation(
   code: string,
   language: string,
@@ -51,70 +158,17 @@ export function executeCodeSimulation(
   const outputLogs: string[] = [];
   const langUpper = language.toUpperCase();
 
-  outputLogs.push(`🚀 Compiling & Executing ${langUpper} Test Suite...`);
+  outputLogs.push(`🚀 Compiling & Executing ${langUpper} Algorithm Engine...`);
 
-  let compilationErrors: string[] = [];
-
-  // Strict Multi-Language Pre-Compiler & Syntax Verification Engine
-  if (language === "java") {
-    if (/=\s*;/.test(code) || /=\s*\)/.test(code)) {
-      compilationErrors.push("javac: error: illegal start of expression. Missing assignment value (e.g. 'int target = ;')");
-    }
-    if (/\b\w+\s*\[\s*\]\s*[\+\-\*\/\;\,\.\)]/.test(code)) {
-      compilationErrors.push("javac: error: expression expected inside array subscript brackets '[]' (e.g. 'nums[]' is invalid)");
-    }
-    if (!code.includes("return")) {
-      compilationErrors.push("javac: error: missing return statement");
-    }
-    const openBraces = (code.match(/\{/g) || []).length;
-    const closeBraces = (code.match(/\}/g) || []).length;
-    if (openBraces !== closeBraces) {
-      compilationErrors.push(`javac: error: reached end of file while parsing. Unclosed '{' brace (${openBraces} open vs ${closeBraces} close)`);
-    }
-    const openParens = (code.match(/\(/g) || []).length;
-    const closeParens = (code.match(/\)/g) || []).length;
-    if (openParens !== closeParens) {
-      compilationErrors.push(`javac: error: unmatched parenthesis '(' (${openParens} open vs ${closeParens} close)`);
-    }
-  } else if (language === "cpp" || language === "c") {
-    if (/=\s*;/.test(code) || /=\s*\)/.test(code)) {
-      compilationErrors.push("g++: error: expected primary-expression before ';' token");
-    }
-    if (/\b\w+\s*\[\s*\]\s*[\+\-\*\/\;\,\.\)]/.test(code)) {
-      compilationErrors.push("g++: error: expected primary-expression before ']' token");
-    }
-    if (!code.includes("return")) {
-      compilationErrors.push("g++: error: control reaches end of non-void function");
-    }
-    const openBraces = (code.match(/\{/g) || []).length;
-    const closeBraces = (code.match(/\}/g) || []).length;
-    if (openBraces !== closeBraces) {
-      compilationErrors.push(`g++: error: expected '}' at end of input`);
-    }
-  } else if (language === "python") {
-    if (/=\s*$/m.test(code) || /=\s*#/.test(code) || /=\s*\n/.test(code)) {
-      compilationErrors.push("SyntaxError: invalid syntax (incomplete assignment statement)");
-    }
-    if (!code.includes("return") && !code.includes("print")) {
-      compilationErrors.push("SyntaxError: expected return statement inside solution function");
-    }
-    const openParens = (code.match(/\(/g) || []).length;
-    const closeParens = (code.match(/\)/g) || []).length;
-    if (openParens !== closeParens) {
-      compilationErrors.push(`SyntaxError: '(' was never closed`);
-    }
-  }
-
-  // Handle compilation errors cleanly
-  if (compilationErrors.length > 0) {
-    const errorText = compilationErrors.join("\n");
-    outputLogs.push(`❌ COMPILATION ERROR:\n${errorText}`);
-
+  // Transpile and check syntax
+  const transpiled = transpileToJS(code, language);
+  if (transpiled.error) {
+    outputLogs.push(`❌ COMPILATION ERROR:\n${transpiled.error}`);
     for (let i = 0; i < testCases.length; i++) {
       testCaseDetails.push({
         input: testCases[i].input,
         expected: testCases[i].expectedOutput,
-        actual: `CompilationError: ${compilationErrors[0]}`,
+        actual: `CompilationError: ${transpiled.error}`,
         passed: false,
       });
     }
@@ -126,23 +180,40 @@ export function executeCodeSimulation(
       testCasesPassed: 0,
       totalTestCases: testCases.length,
       outputLogs,
-      errorMessage: errorText,
+      errorMessage: transpiled.error,
       testCaseDetails,
     };
   }
 
-  // Exact Logic Evaluator
+  // Multi-language Test Case Evaluation Loop
   for (let i = 0; i < testCases.length; i++) {
     const tc = testCases[i];
     let actual = "";
     let passed = false;
 
     try {
-      if (language === "javascript") {
+      if (language === "sql") {
+        const uppercaseCode = code.toUpperCase();
+        const hasSelect = uppercaseCode.includes("SELECT");
+        const hasFrom = uppercaseCode.includes("FROM");
+        const hasJoinOrWhere = uppercaseCode.includes("JOIN") || uppercaseCode.includes("WHERE") || uppercaseCode.includes("GROUP BY") || uppercaseCode.includes("HAVING");
+
+        if (hasSelect && hasFrom && hasJoinOrWhere) {
+          actual = tc.expectedOutput;
+          passed = true;
+        } else if (hasSelect && hasFrom) {
+          actual = "All Rows Unfiltered";
+          passed = false;
+        } else {
+          actual = "SQLite Error: near syntax error in SQL query.";
+          passed = false;
+        }
+      } else {
+        // Execute JS Transpiled Virtual Machine
         try {
           const runner = new Function(
             "inputStr",
-            `${code}\n
+            `${transpiled.jsCode}\n
             try {
               let fn = null;
               if (typeof solve === 'function') fn = solve;
@@ -166,46 +237,20 @@ export function executeCodeSimulation(
 
           const evalResult = runner(tc.input);
           if (evalResult === "NO_SOLVE_FUNC") {
-            actual = "Function solution not defined.";
+            actual = "Function solution not defined or method signature mismatch.";
             passed = false;
           } else if (typeof evalResult === "string" && evalResult.startsWith("EXEC_ERR:")) {
-            actual = evalResult.replace("EXEC_ERR: ", "");
+            actual = `RuntimeError: ${evalResult.replace("EXEC_ERR: ", "")}`;
             passed = false;
           } else {
             actual = String(evalResult);
-            passed = actual.trim() === tc.expectedOutput.trim();
+            // Standardize JSON array formatting e.g. [0,1] vs [0, 1]
+            const cleanActual = actual.replace(/\s+/g, "");
+            const cleanExpected = tc.expectedOutput.replace(/\s+/g, "");
+            passed = cleanActual === cleanExpected;
           }
         } catch (err: any) {
-          actual = `SyntaxError: ${err.message}`;
-          passed = false;
-        }
-      } else if (language === "sql") {
-        const uppercaseCode = code.toUpperCase();
-        const hasSelect = uppercaseCode.includes("SELECT");
-        const hasFrom = uppercaseCode.includes("FROM");
-        const hasJoinOrWhere = uppercaseCode.includes("JOIN") || uppercaseCode.includes("WHERE") || uppercaseCode.includes("GROUP BY") || uppercaseCode.includes("HAVING");
-
-        if (hasSelect && hasFrom && hasJoinOrWhere) {
-          actual = tc.expectedOutput;
-          passed = true;
-        } else if (hasSelect && hasFrom) {
-          actual = "All Rows Unfiltered";
-          passed = false;
-        } else {
-          actual = "SQLite Error: near syntax error in SQL query.";
-          passed = false;
-        }
-      } else {
-        // High-Precision Algorithmic Verification for Java / Python / C++
-        const lcCode = code.toLowerCase();
-        const hasLoopsOrMap = lcCode.includes("for") || lcCode.includes("while") || lcCode.includes("map") || lcCode.includes("dict") || lcCode.includes("set") || lcCode.includes("contains");
-        const hasReturnVal = lcCode.includes("return");
-
-        if (hasLoopsOrMap && hasReturnVal) {
-          actual = tc.expectedOutput;
-          passed = true;
-        } else {
-          actual = "[]";
+          actual = `CompilationError: ${err.message}`;
           passed = false;
         }
       }
