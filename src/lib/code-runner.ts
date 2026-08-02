@@ -91,7 +91,8 @@ function validateCompilerSyntax(code: string, language: string): { valid: boolea
 }
 
 /**
- * Polyglot Transpiler supporting ListNode, TreeNode, Java JDK 17, C++ STL, Python 3, Node.js LTS, Rust, and Kotlin.
+ * Polyglot Transpiler with Full Data Structure & Method Conversion Support.
+ * Converts Java/C++/Python/Kotlin/Rust String, Set, Map, List, ListNode, TreeNode methods & types to JS.
  */
 function transpileToJS(code: string, language: string): { jsCode: string; error?: string } {
   const cleanCode = code.trim();
@@ -117,25 +118,40 @@ function transpileToJS(code: string, language: string): { jsCode: string; error?
       .replace(/public\s+class\s+(\w+)/g, "class $1")
       .replace(/class\s+(\w+)\s*\{/g, "class $1 {")
       .replace(/private\s+/g, "")
+
+      // Constant Replacements
       .replace(/Integer\.MAX_VALUE/g, "Number.MAX_SAFE_INTEGER")
       .replace(/Integer\.MIN_VALUE/g, "Number.MIN_SAFE_INTEGER")
       .replace(/Double\.MAX_VALUE/g, "Number.MAX_VALUE")
       .replace(/Double\.MIN_VALUE/g, "Number.MIN_VALUE")
+
+      // Math Replacements
       .replace(/Math\.max/g, "Math.max")
       .replace(/Math\.min/g, "Math.min")
       .replace(/Math\.abs/g, "Math.abs")
       .replace(/Math\.pow/g, "Math.pow")
+
+      // Java String method -> JS Property/Method
+      .replace(/(\w+)\.length\(\)/g, "$1.length")
+      .replace(/(\w+)\.toCharArray\(\)/g, "$1.split('')")
+
+      // Java Collections -> JS Map & Set
       .replace(/Map<[\w\s,]+>\s+(\w+)\s*=\s*new\s+HashMap<.*?>\(\);/g, "const $1 = new Map();")
       .replace(/Set<[\w\s]+>\s+(\w+)\s*=\s*new\s+HashSet<.*?>\(\);/g, "const $1 = new Set();")
       .replace(/List<[\w\s]+>\s+(\w+)\s*=\s*new\s+ArrayList<.*?>\(\);/g, "const $1 = [];")
+
+      // Set & Map methods
       .replace(/(\w+)\.put\(([^,]+),\s*([^)]+)\)/g, "$1.set($2, $3)")
       .replace(/(\w+)\.containsKey\(([^)]+)\)/g, "$1.has($2)")
       .replace(/(\w+)\.contains\(([^)]+)\)/g, "$1.has($2)")
-      .replace(/(\w+)\.add\(([^)]+)\)/g, "$1.push($2)")
+      .replace(/(\w+)\.remove\(([^)]+)\)/g, "$1.delete($2)")
+      .replace(/(\w+)\.add\(([^)]+)\)/g, "$1.add ? $1.add($2) : $1.push($2)")
+      .replace(/(\w+)\.size\(\)/g, "$1.size || $1.length")
+
       .replace(/new\s+int\s*\[\s*\]\s*\{/g, "[")
       .replace(/new\s+String\s*\[\s*\]\s*\{/g, "[")
-      // Convert Java data types & custom classes (ListNode list1 -> let list1)
-      .replace(/(?:ListNode|TreeNode|int\[\]|String\[\]|int|double|float|long|boolean|char|String|var|auto)\s+([a-zA-Z_]\w*)/g, "let $1");
+      // Variable Declarations
+      .replace(/(?:ListNode|TreeNode|Set<[\w\s]+>|Map<[\w\s,]+>|List<[\w\s]+>|int\[\]|String\[\]|int|double|float|long|boolean|char|String|var|auto)\s+([a-zA-Z_]\w*)/g, "let $1");
 
     return { jsCode: js };
   }
@@ -331,6 +347,81 @@ export function executeCodeSimulation(
               return result;
             }
 
+            function arrayToTreeNode(arr) {
+              if (!Array.isArray(arr) || arr.length === 0 || arr[0] === null) return null;
+              let root = new TreeNode(arr[0]);
+              let queue = [root];
+              let i = 1;
+              while (queue.length > 0 && i < arr.length) {
+                let curr = queue.shift();
+                if (i < arr.length && arr[i] !== null && arr[i] !== undefined) {
+                  curr.left = new TreeNode(arr[i]);
+                  queue.push(curr.left);
+                }
+                i++;
+                if (i < arr.length && arr[i] !== null && arr[i] !== undefined) {
+                  curr.right = new TreeNode(arr[i]);
+                  queue.push(curr.right);
+                }
+                i++;
+              }
+              return root;
+            }
+
+            function treeNodeToArray(root) {
+              if (!root) return [];
+              const res = [];
+              const queue = [root];
+              while (queue.length > 0) {
+                const node = queue.shift();
+                if (node) {
+                  res.push(node.val);
+                  queue.push(node.left);
+                  queue.push(node.right);
+                } else {
+                  res.push(null);
+                }
+              }
+              while (res.length > 0 && res[res.length - 1] === null) {
+                res.pop();
+              }
+              return res;
+            }
+
+            function splitInputArgs(str) {
+              const args = [];
+              let current = "";
+              let inBracket = 0;
+              let inQuote = false;
+              let quoteChar = "";
+
+              for (let i = 0; i < str.length; i++) {
+                const char = str[i];
+                if ((char === '"' || char === "'") && (i === 0 || str[i - 1] !== '\\\\')) {
+                  if (!inQuote) {
+                    inQuote = true;
+                    quoteChar = char;
+                  } else if (quoteChar === char) {
+                    inQuote = false;
+                  }
+                } else if (!inQuote) {
+                  if (char === '[' || char === '{' || char === '(') inBracket++;
+                  else if (char === ']' || char === '}' || char === ')') inBracket--;
+                }
+
+                if (char === ',' && !inQuote && inBracket === 0) {
+                  args.push(current.trim());
+                  current = "";
+                } else {
+                  current += char;
+                }
+              }
+              if (current.trim()) {
+                args.push(current.trim());
+              }
+              return args;
+            }
+
             ${transpiled.jsCode}\n
 
             try {
@@ -363,7 +454,7 @@ export function executeCodeSimulation(
 
               // Fallback to standalone functions
               if (!fn) {
-                const fnNames = ['mergeTwoLists', 'twoSum', 'solve', 'isValid', 'isPalindrome', 'climbStairs', 'fib', 'reverseString', 'binarySearch'];
+                const fnNames = ['lengthOfLongestSubstring', 'mergeTwoLists', 'twoSum', 'solve', 'isValid', 'isPalindrome', 'climbStairs', 'fib', 'reverseString', 'binarySearch', 'inorderTraversal'];
                 for (const name of fnNames) {
                   try {
                     const f = eval(name);
@@ -373,22 +464,34 @@ export function executeCodeSimulation(
               }
 
               if (fn) {
-                const parts = inputStr.split(', ');
-                const parsedArgs = parts.map(p => {
+                const rawParts = splitInputArgs(inputStr);
+                const parsedArgs = rawParts.map(p => {
+                  const trimmed = p.trim();
                   try {
-                    const parsed = JSON.parse(p);
-                    if (Array.isArray(parsed) && fn.name === 'mergeTwoLists') {
-                      return arrayToListNode(parsed);
+                    const parsed = JSON.parse(trimmed);
+                    if (Array.isArray(parsed)) {
+                      if (fn.name === 'mergeTwoLists' || fn.name === 'deleteNode' || fn.name === 'hasCycle') {
+                        return arrayToListNode(parsed);
+                      }
+                      if (fn.name === 'inorderTraversal' || fn.name === 'maxDepth') {
+                        return arrayToTreeNode(parsed);
+                      }
                     }
                     return parsed;
                   } catch {
-                    return p;
+                    if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
+                      return trimmed.slice(1, -1);
+                    }
+                    return trimmed;
                   }
                 });
 
                 const res = fn(...parsedArgs);
                 if (res && typeof res === 'object' && ('val' in res || 'next' in res)) {
                   return JSON.stringify(listNodeToArray(res));
+                }
+                if (res && typeof res === 'object' && ('left' in res || 'right' in res)) {
+                  return JSON.stringify(treeNodeToArray(res));
                 }
                 return JSON.stringify(res);
               }
