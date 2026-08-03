@@ -82,26 +82,18 @@ function splitInputArgs(str: string): string[] {
   return args;
 }
 
-/**
- * Strongly Typed Java Main.java Driver Code Generator.
- * Generates strongly typed Java variables directly without regex string parsing inside Java.
- */
+/* ========================================================================== */
+/* DEDICATED LANGUAGE WRAPPER GENERATORS                                      */
+/* ========================================================================== */
+
 function formatJavaSubmissionCode(code: string, stdinInput: string): string {
   const trimmed = code.trim();
+  if (/public\s+static\s+void\s+main\s*\(/i.test(trimmed)) return trimmed;
 
-  // If user code already defines main entrypoint, return as is
-  if (/public\s+static\s+void\s+main\s*\(/i.test(trimmed)) {
-    return trimmed;
-  }
-
-  // Ensure Solution class is not public so we can declare public class Main
   let cleanCode = trimmed.replace(/public\s+class\s+Solution/g, "class Solution");
-
-  // Discover Solution method name
   const methodMatch = cleanCode.match(/public\s+([\w<>\[\]]+)\s+(\w+)\s*\(([^)]*)\)/);
   const methodName = methodMatch ? methodMatch[2] : "twoSum";
 
-  // Parse stdin arguments cleanly in Node.js
   const rawArgs = splitInputArgs(stdinInput);
   const javaVarDecls: string[] = [];
   const callArgs: string[] = [];
@@ -115,18 +107,14 @@ function formatJavaSubmissionCode(code: string, stdinInput: string): string {
       const parsed = JSON.parse(trimmedArg);
       if (Array.isArray(parsed)) {
         if (parsed.length > 0 && Array.isArray(parsed[0])) {
-          // 2D Array
           const rowStrings = parsed.map((row) => `new int[]{${row.join(", ")}}`).join(", ");
           javaVarDecls.push(`int[][] ${varName} = new int[][]{${rowStrings}};`);
         } else if (methodName === "mergeTwoLists" || methodName === "deleteNode" || methodName === "hasCycle") {
-          // Linked List
           javaVarDecls.push(`ListNode ${varName} = arrayToListNode(new int[]{${parsed.join(", ")}});`);
         } else if (typeof parsed[0] === "string") {
-          // String array
           const strElements = parsed.map((s) => `"${s.replace(/"/g, '\\"')}"`).join(", ");
           javaVarDecls.push(`String[] ${varName} = new String[]{${strElements}};`);
         } else {
-          // int array
           javaVarDecls.push(`int[] ${varName} = new int[]{${parsed.join(", ")}};`);
         }
       } else if (typeof parsed === "string") {
@@ -134,21 +122,13 @@ function formatJavaSubmissionCode(code: string, stdinInput: string): string {
       } else if (typeof parsed === "boolean") {
         javaVarDecls.push(`boolean ${varName} = ${parsed};`);
       } else if (typeof parsed === "number") {
-        if (Number.isInteger(parsed)) {
-          javaVarDecls.push(`int ${varName} = ${parsed};`);
-        } else {
-          javaVarDecls.push(`double ${varName} = ${parsed};`);
-        }
+        if (Number.isInteger(parsed)) javaVarDecls.push(`int ${varName} = ${parsed};`);
+        else javaVarDecls.push(`double ${varName} = ${parsed};`);
       } else {
         javaVarDecls.push(`String ${varName} = "${trimmedArg.replace(/"/g, '\\"')}";`);
       }
     } catch {
-      if ((trimmedArg.startsWith('"') && trimmedArg.endsWith('"')) || (trimmedArg.startsWith("'") && trimmedArg.endsWith("'"))) {
-        const strVal = trimmedArg.slice(1, -1).replace(/"/g, '\\"');
-        javaVarDecls.push(`String ${varName} = "${strVal}";`);
-      } else {
-        javaVarDecls.push(`String ${varName} = "${trimmedArg.replace(/"/g, '\\"')}";`);
-      }
+      javaVarDecls.push(`String ${varName} = "${trimmedArg.replace(/"/g, '\\"')}";`);
     }
   });
 
@@ -160,15 +140,6 @@ class ListNode {
     ListNode() {}
     ListNode(int val) { this.val = val; }
     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
-}
-
-class TreeNode {
-    int val;
-    TreeNode left;
-    TreeNode right;
-    TreeNode() {}
-    TreeNode(int val) { this.val = val; }
-    TreeNode(int val, TreeNode left, TreeNode right) { this.val = val; this.left = left; this.right = right; }
 }
 
 public class Main {
@@ -209,6 +180,387 @@ public class Main {
 `;
 
   return cleanCode + javaMainDriver;
+}
+
+function formatCppSubmissionCode(code: string, stdinInput: string): string {
+  const trimmed = code.trim();
+  if (/int\s+main\s*\(/i.test(trimmed)) return trimmed;
+
+  let cleanCode = trimmed;
+  const methodMatch = cleanCode.match(/public:\s*[\w<>\[\]\*]+\s+(\w+)\s*\(([^)]*)\)/) || cleanCode.match(/[\w<>\[\]\*]+\s+(\w+)\s*\(([^)]*)\)/);
+  const methodName = methodMatch ? methodMatch[1] : "twoSum";
+
+  const rawArgs = splitInputArgs(stdinInput);
+  const varDecls: string[] = [];
+  const callArgs: string[] = [];
+
+  rawArgs.forEach((argStr, idx) => {
+    const varName = `arg${idx}`;
+    const trimmedArg = argStr.trim();
+    callArgs.push(varName);
+
+    try {
+      const parsed = JSON.parse(trimmedArg);
+      if (Array.isArray(parsed)) {
+        if (parsed.length > 0 && Array.isArray(parsed[0])) {
+          const rows = parsed.map((r) => `{${r.join(", ")}}`).join(", ");
+          varDecls.push(`vector<vector<int>> ${varName} = {${rows}};`);
+        } else if (typeof parsed[0] === "string") {
+          const strEls = parsed.map((s) => `"${s.replace(/"/g, '\\"')}"`).join(", ");
+          varDecls.push(`vector<string> ${varName} = {${strEls}};`);
+        } else {
+          varDecls.push(`vector<int> ${varName} = {${parsed.join(", ")}};`);
+        }
+      } else if (typeof parsed === "string") {
+        varDecls.push(`string ${varName} = "${parsed.replace(/"/g, '\\"')}";`);
+      } else if (typeof parsed === "boolean") {
+        varDecls.push(`bool ${varName} = ${parsed ? "true" : "false"};`);
+      } else if (typeof parsed === "number") {
+        if (Number.isInteger(parsed)) varDecls.push(`int ${varName} = ${parsed};`);
+        else varDecls.push(`double ${varName} = ${parsed};`);
+      } else {
+        varDecls.push(`string ${varName} = "${trimmedArg.replace(/"/g, '\\"')}";`);
+      }
+    } catch {
+      varDecls.push(`string ${varName} = "${trimmedArg.replace(/"/g, '\\"')}";`);
+    }
+  });
+
+  const cppMain = `
+
+#include <iostream>
+#include <vector>
+#include <string>
+#include <unordered_map>
+#include <algorithm>
+using namespace std;
+
+void printAns(int val) { cout << val << endl; }
+void printAns(double val) { cout << val << endl; }
+void printAns(bool val) { cout << (val ? "true" : "false") << endl; }
+void printAns(const string& val) { cout << val << endl; }
+void printAns(const vector<int>& vec) {
+    cout << "[";
+    for (size_t i = 0; i < vec.size(); i++) {
+        cout << vec[i] << (i + 1 < vec.size() ? "," : "");
+    }
+    cout << "]" << endl;
+}
+void printAns(const vector<string>& vec) {
+    cout << "[";
+    for (size_t i = 0; i < vec.size(); i++) {
+        cout << "\\"" << vec[i] << "\\"" << (i + 1 < vec.size() ? "," : "");
+    }
+    cout << "]" << endl;
+}
+
+int main() {
+    Solution sol;
+    ${varDecls.join("\n    ")}
+    auto ans = sol.${methodName}(${callArgs.join(", ")});
+    printAns(ans);
+    return 0;
+}
+`;
+
+  return cleanCode + cppMain;
+}
+
+function formatPythonSubmissionCode(code: string, stdinInput: string): string {
+  const trimmed = code.trim();
+  if (trimmed.includes("if __name__ ==")) return trimmed;
+
+  const methodMatch = trimmed.match(/def\s+(\w+)\s*\(/);
+  const methodName = methodMatch ? methodMatch[1] : "twoSum";
+
+  const rawArgs = splitInputArgs(stdinInput);
+  const callArgs: string[] = [];
+
+  rawArgs.forEach((argStr) => {
+    callArgs.push(argStr.trim());
+  });
+
+  const pyMain = `
+
+import json
+
+if __name__ == "__main__":
+    sol = Solution()
+    ans = sol.${methodName}(${callArgs.join(", ")})
+    if isinstance(ans, (list, dict)):
+        print(json.dumps(ans))
+    elif isinstance(ans, bool):
+        print(str(ans).lower())
+    else:
+        print(ans)
+`;
+
+  return trimmed + pyMain;
+}
+
+function formatJSSubmissionCode(code: string, stdinInput: string): string {
+  const trimmed = code.trim();
+  if (trimmed.includes("console.log")) return trimmed;
+
+  const methodMatch = trimmed.match(/(?:function|const|let|var)\s+(\w+)\s*\(/) || trimmed.match(/(\w+)\s*\([^)]*\)\s*\{/);
+  const methodName = methodMatch ? methodMatch[1] : "twoSum";
+
+  const rawArgs = splitInputArgs(stdinInput);
+  const callArgs = rawArgs.map((a) => a.trim());
+
+  const jsMain = `
+
+try {
+  let solObj = null;
+  if (typeof Solution === 'function') {
+    solObj = new Solution();
+  }
+  let fn = solObj && typeof solObj.${methodName} === 'function' ? solObj.${methodName}.bind(solObj) : (typeof ${methodName} === 'function' ? ${methodName} : null);
+  if (fn) {
+    const ans = fn(${callArgs.join(", ")});
+    console.log(typeof ans === 'object' ? JSON.stringify(ans) : ans);
+  }
+} catch (e) {
+  console.error(e.message);
+}
+`;
+
+  return trimmed + jsMain;
+}
+
+function formatGoSubmissionCode(code: string, stdinInput: string): string {
+  const trimmed = code.trim();
+  if (/func\s+main\s*\(/i.test(trimmed)) return trimmed;
+
+  const methodMatch = trimmed.match(/func\s+(\w+)\s*\(/);
+  const methodName = methodMatch ? methodMatch[1] : "twoSum";
+
+  const rawArgs = splitInputArgs(stdinInput);
+  const varDecls: string[] = [];
+  const callArgs: string[] = [];
+
+  rawArgs.forEach((argStr, idx) => {
+    const varName = `arg${idx}`;
+    const trimmedArg = argStr.trim();
+    callArgs.push(varName);
+
+    try {
+      const parsed = JSON.parse(trimmedArg);
+      if (Array.isArray(parsed)) {
+        varDecls.push(`${varName} := []int{${parsed.join(", ")}}`);
+      } else if (typeof parsed === "string") {
+        varDecls.push(`${varName} := "${parsed.replace(/"/g, '\\"')}"`);
+      } else if (typeof parsed === "number") {
+        varDecls.push(`${varName} := ${parsed}`);
+      } else {
+        varDecls.push(`${varName} := ${trimmedArg}`);
+      }
+    } catch {
+      varDecls.push(`${varName} := "${trimmedArg.replace(/"/g, '\\"')}"`);
+    }
+  });
+
+  const goMain = `
+
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+func main() {
+	${varDecls.join("\n\t")}
+	ans := ${methodName}(${callArgs.join(", ")})
+	bytes, err := json.Marshal(ans)
+	if err == nil {
+		fmt.Println(string(bytes))
+	} else {
+		fmt.Println(ans)
+	}
+}
+`;
+
+  return trimmed.startsWith("package main") ? trimmed + goMain : "package main\n\n" + trimmed + goMain;
+}
+
+function formatRustSubmissionCode(code: string, stdinInput: string): string {
+  const trimmed = code.trim();
+  if (/fn\s+main\s*\(/i.test(trimmed)) return trimmed;
+
+  const methodMatch = trimmed.match(/(?:pub\s+)?fn\s+(\w+)\s*\(/);
+  const methodName = methodMatch ? methodMatch[1] : "two_sum";
+
+  const rawArgs = splitInputArgs(stdinInput);
+  const varDecls: string[] = [];
+  const callArgs: string[] = [];
+
+  rawArgs.forEach((argStr, idx) => {
+    const varName = `arg${idx}`;
+    const trimmedArg = argStr.trim();
+    callArgs.push(varName);
+
+    try {
+      const parsed = JSON.parse(trimmedArg);
+      if (Array.isArray(parsed)) {
+        varDecls.push(`let ${varName} = vec![${parsed.join(", ")}];`);
+      } else if (typeof parsed === "string") {
+        varDecls.push(`let ${varName} = "${parsed.replace(/"/g, '\\"')}".to_string();`);
+      } else if (typeof parsed === "number") {
+        varDecls.push(`let ${varName} = ${parsed};`);
+      } else {
+        varDecls.push(`let ${varName} = ${trimmedArg};`);
+      }
+    } catch {
+      varDecls.push(`let ${varName} = "${trimmedArg.replace(/"/g, '\\"')}".to_string();`);
+    }
+  });
+
+  const rustMain = `
+
+fn main() {
+    ${varDecls.join("\n    ")}
+    let ans = Solution::${methodName}(${callArgs.join(", ")});
+    println!("{:?}", ans);
+}
+`;
+
+  return trimmed + rustMain;
+}
+
+function formatKotlinSubmissionCode(code: string, stdinInput: string): string {
+  const trimmed = code.trim();
+  if (/fun\s+main\s*\(/i.test(trimmed)) return trimmed;
+
+  const methodMatch = trimmed.match(/fun\s+(\w+)\s*\(/);
+  const methodName = methodMatch ? methodMatch[1] : "twoSum";
+
+  const rawArgs = splitInputArgs(stdinInput);
+  const varDecls: string[] = [];
+  const callArgs: string[] = [];
+
+  rawArgs.forEach((argStr, idx) => {
+    const varName = `arg${idx}`;
+    const trimmedArg = argStr.trim();
+    callArgs.push(varName);
+
+    try {
+      const parsed = JSON.parse(trimmedArg);
+      if (Array.isArray(parsed)) {
+        varDecls.push(`val ${varName} = intArrayOf(${parsed.join(", ")})`);
+      } else if (typeof parsed === "string") {
+        varDecls.push(`val ${varName} = "${parsed.replace(/"/g, '\\"')}"`);
+      } else if (typeof parsed === "number") {
+        varDecls.push(`val ${varName} = ${parsed}`);
+      } else {
+        varDecls.push(`val ${varName} = ${trimmedArg}`);
+      }
+    } catch {
+      varDecls.push(`val ${varName} = "${trimmedArg.replace(/"/g, '\\"')}"`);
+    }
+  });
+
+  const ktMain = `
+
+fun main() {
+    val sol = Solution()
+    ${varDecls.join("\n    ")}
+    val ans = sol.${methodName}(${callArgs.join(", ")})
+    if (ans is IntArray) {
+        println(ans.joinToString(",", "[", "]"))
+    } else {
+        println(ans)
+    }
+}
+`;
+
+  return trimmed + ktMain;
+}
+
+function formatCSubmissionCode(code: string, stdinInput: string): string {
+  const trimmed = code.trim();
+  if (/int\s+main\s*\(/i.test(trimmed)) return trimmed;
+
+  const methodMatch = trimmed.match(/[\w\*]+\s+(\w+)\s*\(([^)]*)\)/);
+  const methodName = methodMatch ? methodMatch[1] : "twoSum";
+
+  const rawArgs = splitInputArgs(stdinInput);
+  const varDecls: string[] = [];
+  const callArgs: string[] = [];
+
+  rawArgs.forEach((argStr, idx) => {
+    const varName = `arg${idx}`;
+    const trimmedArg = argStr.trim();
+
+    try {
+      const parsed = JSON.parse(trimmedArg);
+      if (Array.isArray(parsed)) {
+        varDecls.push(`int ${varName}[] = {${parsed.join(", ")}};`);
+        varDecls.push(`int ${varName}Size = ${parsed.length};`);
+        callArgs.push(varName);
+        callArgs.push(`${varName}Size`);
+      } else if (typeof parsed === "number") {
+        varDecls.push(`int ${varName} = ${parsed};`);
+        callArgs.push(varName);
+      } else {
+        varDecls.push(`int ${varName} = ${trimmedArg};`);
+        callArgs.push(varName);
+      }
+    } catch {
+      varDecls.push(`char ${varName}[] = "${trimmedArg.replace(/"/g, '\\"')}";`);
+      callArgs.push(varName);
+    }
+  });
+
+  const cMain = `
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main() {
+    ${varDecls.join("\n    ")}
+    int returnSize = 0;
+    int* ans = ${methodName}(${callArgs.join(", ")}, &returnSize);
+    if (ans != NULL && returnSize > 0) {
+        printf("[");
+        for (int i = 0; i < returnSize; i++) {
+            printf("%d%s", ans[i], (i + 1 < returnSize) ? "," : "");
+        }
+        printf("]\\n");
+    }
+    return 0;
+}
+`;
+
+  return trimmed + cMain;
+}
+
+export function formatSubmissionCode(code: string, language: string, stdinInput: string): string {
+  const lang = language.toLowerCase();
+  switch (lang) {
+    case "java":
+      return formatJavaSubmissionCode(code, stdinInput);
+    case "c":
+      return formatCSubmissionCode(code, stdinInput);
+    case "cpp":
+    case "c++":
+      return formatCppSubmissionCode(code, stdinInput);
+    case "python":
+    case "python3":
+      return formatPythonSubmissionCode(code, stdinInput);
+    case "javascript":
+    case "js":
+      return formatJSSubmissionCode(code, stdinInput);
+    case "go":
+      return formatGoSubmissionCode(code, stdinInput);
+    case "rust":
+      return formatRustSubmissionCode(code, stdinInput);
+    case "kotlin":
+      return formatKotlinSubmissionCode(code, stdinInput);
+    default:
+      return code;
+  }
 }
 
 /**
@@ -327,8 +679,8 @@ export async function executeJudge0Submission(
     let actual = "";
     let passed = false;
 
-    // Format strongly typed Java code per testcase
-    const finalCode = language.toLowerCase() === "java" ? formatJavaSubmissionCode(code, tc.input) : code;
+    // Format strongly typed code per language and testcase
+    const finalCode = formatSubmissionCode(code, language, tc.input);
 
     outputLogs.push(`🚀 [Test ${i + 1}/${testCases.length}] Input: ${tc.input} | Expected: ${tc.expectedOutput}`);
 
