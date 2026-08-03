@@ -126,7 +126,6 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
   const [bottomTab, setBottomTab] = useState<"testcase" | "result">("testcase");
   const [selectedCaseIdx, setSelectedCaseIdx] = useState(0);
   const [isBottomPanelOpen, setIsBottomPanelOpen] = useState(true);
-  const resultsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchProblemDetail();
@@ -237,11 +236,6 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
             await refreshUserData();
           }
         }
-
-        // Auto Scroll to Test Result Panel
-        setTimeout(() => {
-          resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-        }, 100);
       }
     } catch (err: any) {
       alert("Execution error: " + err.message);
@@ -253,11 +247,11 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
   const parsedExamples = problem?.examples ? JSON.parse(problem.examples) : [];
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#070913] text-white">
+    <div className="h-screen flex flex-col bg-[#070913] text-white overflow-hidden">
       <Navbar />
 
       {/* Top Workspace Bar */}
-      <div className="bg-slate-950 border-b border-slate-800 px-4 py-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <div className="bg-slate-950 border-b border-slate-800 px-4 py-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shrink-0">
         <div className="flex items-center gap-3">
           <Link href="/problems" className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:text-purple-400 text-gray-400 transition-colors">
             <ChevronLeft className="w-4 h-4" />
@@ -283,7 +277,7 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
           </div>
         </div>
 
-        {/* Action Run / Submit Buttons */}
+        {/* Action Run / Submit Buttons & Permanent Language Selector */}
         <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
           <button
             onClick={() => handleRunCode(false)}
@@ -291,7 +285,7 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
             className="px-4 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-gray-200 text-xs font-bold transition-all flex items-center gap-1.5 border border-slate-700 disabled:opacity-50"
           >
             <Play className="w-3.5 h-3.5 text-emerald-400 fill-emerald-400" />
-            <span>{executing ? "Running Testcases..." : "Run Test Cases"}</span>
+            <span>{executing ? "Running..." : "Run Test Cases"}</span>
           </button>
           <button
             onClick={() => handleRunCode(true)}
@@ -306,14 +300,14 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
 
       {/* Accepted Banner */}
       {showSuccessBanner && (
-        <div className="bg-emerald-950/90 border-b border-emerald-500/40 px-6 py-3 flex items-center justify-between animate-in slide-in-from-top-2">
+        <div className="bg-emerald-950/90 border-b border-emerald-500/40 px-6 py-2.5 flex items-center justify-between shrink-0 animate-in slide-in-from-top-2">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-emerald-500 text-slate-950 flex items-center justify-center font-bold">
+            <div className="w-7 h-7 rounded-full bg-emerald-500 text-slate-950 flex items-center justify-center font-bold text-xs">
               🏆
             </div>
             <div>
-              <h4 className="text-sm font-bold text-emerald-300">Accepted! Solution Passed All Testcases</h4>
-              <p className="text-xs text-emerald-400/80">XP, Coins & Leaderboard rank updated automatically.</p>
+              <h4 className="text-xs font-bold text-emerald-300">Accepted! Solution Passed All Testcases</h4>
+              <p className="text-[10px] text-emerald-400/80">XP, Coins & Leaderboard rank updated automatically.</p>
             </div>
           </div>
           <button onClick={() => setShowSuccessBanner(false)} className="text-emerald-400 hover:text-white">
@@ -325,8 +319,8 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
       {/* Main Workspace Split View */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden">
         {/* Left Column: Problem Description & Submissions */}
-        <div className="lg:col-span-5 border-r border-slate-800/80 flex flex-col bg-slate-950/50">
-          <div className="flex items-center gap-2 border-b border-slate-800 px-4 pt-2">
+        <div className="lg:col-span-5 border-r border-slate-800/80 flex flex-col bg-slate-950/50 overflow-hidden">
+          <div className="flex items-center gap-2 border-b border-slate-800 px-4 pt-2 shrink-0">
             <button
               onClick={() => setActiveTab("description")}
               className={`px-3 py-2 text-xs font-bold border-b-2 transition-all flex items-center gap-1.5 ${
@@ -443,14 +437,14 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
 
         {/* Right Column: Code Editor & LeetCode Bottom Workspace */}
         <div className="lg:col-span-7 flex flex-col bg-[#0b0f19] relative overflow-hidden">
-          {/* Editor Header Bar */}
-          <div className="bg-slate-950 border-b border-slate-800 px-4 py-2 flex items-center justify-between shrink-0">
+          {/* Editor Header Bar with Permanent Language Selector */}
+          <div className="bg-slate-950 border-b border-slate-800 px-4 py-2 flex items-center justify-between shrink-0 z-20">
             <div className="flex items-center gap-2">
               <Code2 className="w-4 h-4 text-purple-400" />
               <select
                 value={language}
                 onChange={(e) => handleLanguageChange(e.target.value)}
-                className="bg-slate-900 border border-slate-800 text-xs font-bold text-purple-300 rounded-xl px-3 py-1.5 focus:outline-none"
+                className="bg-slate-900 border border-slate-800 text-xs font-bold text-purple-300 rounded-xl px-3 py-1.5 focus:outline-none hover:border-purple-500/50 transition-colors"
               >
                 <option value="sql">SQL Query</option>
                 <option value="c">C Language</option>
@@ -481,7 +475,7 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
           </div>
 
           {/* Code Editor Window */}
-          <div className="flex-1 min-h-[260px] relative">
+          <div className="flex-1 relative overflow-hidden">
             <Editor
               height="100%"
               language={language === "c" || language === "cpp" ? "cpp" : language}
@@ -504,9 +498,8 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
 
           {/* LEETCODE-STYLE INTERACTIVE TESTCASE & TEST RESULT BOTTOM PANEL */}
           <div
-            ref={resultsRef}
             className={`border-t border-slate-800 bg-[#090d16] flex flex-col transition-all duration-300 shrink-0 ${
-              isBottomPanelOpen ? "h-64 sm:h-72" : "h-10"
+              isBottomPanelOpen ? "h-56 sm:h-64" : "h-10"
             }`}
           >
             {/* LeetCode Bottom Tab Bar */}
