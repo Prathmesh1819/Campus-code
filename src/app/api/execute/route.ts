@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { executeCodeSimulation } from "@/lib/code-runner";
+import { executeJudge0Submission } from "@/lib/code-runner";
 import { calculateAndUpdateStreak } from "@/lib/streak";
 
 export async function POST(req: Request) {
@@ -20,8 +20,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Problem not found" }, { status: 404 });
     }
 
-    // Execute code against test cases
-    const result = executeCodeSimulation(code, language, problem.testCases);
+    // Execute code via Judge0 CE API Engine
+    const result = await executeJudge0Submission(code, language, problem.testCases);
 
     let submissionRecord = null;
 
