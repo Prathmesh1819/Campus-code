@@ -627,7 +627,7 @@ function deepEqual(a: any, b: any): boolean {
 
 /**
  * Pure Judge0 CE Execution Engine.
- * Executes user code strictly through Judge0 CE API.
+ * Executes user code strictly through Judge0 CE API with zero caching.
  */
 export async function executeJudge0Submission(
   code: string,
@@ -636,8 +636,15 @@ export async function executeJudge0Submission(
 ): Promise<ExecutionResult> {
   const languageId = getJudge0LanguageId(language);
   const langUpper = language.toUpperCase();
+  const timestamp = new Date().toISOString();
+  const codeHash = Math.abs(code.split("").reduce((a, b) => ((a << 5) - a + b.charCodeAt(0)) | 0, 0)).toString(16);
+  const codeSnippet = code.trim().slice(0, 100).replace(/\n/g, " ");
+
   const outputLogs: string[] = [];
 
+  outputLogs.push(`⏱️ Execution Timestamp: ${timestamp}`);
+  outputLogs.push(`🔑 Source Code Hash: #${codeHash} (Length: ${code.length} chars)`);
+  outputLogs.push(`📝 Code Snippet: "${codeSnippet}"`);
   outputLogs.push(`🌐 Language Selected: ${langUpper}`);
   outputLogs.push(`🆔 Judge0 CE Language ID: ${languageId}`);
 
@@ -687,8 +694,10 @@ export async function executeJudge0Submission(
     try {
       const response = await fetch(`${judge0Host}/submissions?base64_encoded=false&wait=true`, {
         method: "POST",
+        cache: "no-store",
         headers: {
           "Content-Type": "application/json",
+          "Cache-Control": "no-cache, no-store, must-revalidate",
         },
         body: JSON.stringify({
           source_code: finalCode,
@@ -705,11 +714,20 @@ export async function executeJudge0Submission(
       const compileOutput = (data.compile_output || "").trim();
       const statusId = data.status?.id || 3;
       const statusDesc = data.status?.description || "Accepted";
+      const token = data.token || `sub_${Date.now()}_${i}`;
 
       const timeMs = Math.round(parseFloat(data.time || "0.015") * 1000);
       const memoryKb = data.memory || 14200;
       maxTimeMs = Math.max(maxTimeMs, timeMs);
       maxMemoryKb = Math.max(maxMemoryKb, memoryKb);
+
+      outputLogs.push(`  ├ Token: ${token} | Status: ${statusDesc} (ID: ${statusId}) | CPU Time: ${timeMs}ms | RAM: ${memoryKb}KB`);
+      if (compileOutput) {
+        outputLogs.push(`  ├ Compiler Output: ${compileOutput}`);
+      }
+      if (stderr) {
+        outputLogs.push(`  ├ Stderr: ${stderr}`);
+      }
 
       // Judge0 Status ID Mapping: 3=Accepted (Run Clean), 4=Wrong Answer, 5=Time Limit Exceeded, 6=Compilation Error, 7-12=Runtime Error
       if (statusId === 3) {
@@ -739,7 +757,7 @@ export async function executeJudge0Submission(
         actual = `RuntimeError:\n${firstErrorMessage}`;
       }
 
-      outputLogs.push(`  ├ Judge0 Output: "${actual}" | Comparison: ${passed ? "MATCH ✅" : "MISMATCH ❌"}`);
+      outputLogs.push(`  ├ Judge0 Stdout: "${actual}" | Comparison: ${passed ? "MATCH ✅" : "MISMATCH ❌"}`);
 
       testCaseDetails.push({
         input: tc.input,

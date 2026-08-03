@@ -3,6 +3,10 @@ import { prisma } from "@/lib/prisma";
 import { executeJudge0Submission } from "@/lib/code-runner";
 import { calculateAndUpdateStreak } from "@/lib/streak";
 
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+export const revalidate = 0;
+
 export async function POST(req: Request) {
   try {
     const { problemId, userId, code, language, isSubmit } = await req.json();
@@ -20,7 +24,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Problem not found" }, { status: 404 });
     }
 
-    // Execute code via Judge0 CE API Engine
+    // Execute code via pure Judge0 CE API Engine
     const result = await executeJudge0Submission(code, language, problem.testCases);
 
     let submissionRecord = null;
@@ -59,6 +63,12 @@ export async function POST(req: Request) {
     return NextResponse.json({
       result,
       submission: submissionRecord,
+    }, {
+      headers: {
+        "Cache-Control": "no-cache, no-store, must-revalidate, max-age=0",
+        "Pragma": "no-cache",
+        "Expires": "0"
+      }
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || "Code execution failed" }, { status: 500 });

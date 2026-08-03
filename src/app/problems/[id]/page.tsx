@@ -113,9 +113,10 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"description" | "editorial" | "submissions">("description");
 
-  // Code Editor state
+  // Code Editor state & Live Monaco Ref
   const [language, setLanguage] = useState("javascript");
   const [code, setCode] = useState(starterCodeTemplates.javascript);
+  const editorRef = useRef<any>(null);
   const [executing, setExecuting] = useState(false);
   const [executionResult, setExecutionResult] = useState<any>(null);
   const [showSuccessBanner, setShowSuccessBanner] = useState(false);
@@ -179,7 +180,11 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
 
   const handleLanguageChange = (newLang: string) => {
     setLanguage(newLang);
-    setCode(starterCodeTemplates[newLang] || starterCodeTemplates.javascript);
+    const template = starterCodeTemplates[newLang] || starterCodeTemplates.javascript;
+    setCode(template);
+    if (editorRef.current) {
+      editorRef.current.setValue(template);
+    }
     setExecutionResult(null);
   };
 
@@ -190,15 +195,22 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
     setIsBottomPanelOpen(true);
     setBottomTab("result");
 
+    // Read instantaneous code buffer directly from Monaco Editor ref
+    const currentCode = editorRef.current ? editorRef.current.getValue() : code;
+
     try {
       const resolvedParams = await params;
       const res = await fetch("/api/execute", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+        },
+        cache: "no-store",
         body: JSON.stringify({
           problemId: problem?.id || resolvedParams.id || "two-sum-target-pair",
           userId: user?.id,
-          code,
+          code: currentCode,
           language,
           isSubmit,
         }),
@@ -300,21 +312,21 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
               🏆
             </div>
             <div>
-              <h4 className="text-xs font-bold text-emerald-300">Congratulations! Solution Accepted! 🎉</h4>
-              <p className="text-[10px] text-emerald-200">You earned +50 XP & +10 Coins! Keep building your streak!</p>
+              <h4 className="text-sm font-bold text-emerald-300">Accepted! Solution Passed All Testcases</h4>
+              <p className="text-xs text-emerald-400/80">XP, Coins & Leaderboard rank updated automatically.</p>
             </div>
           </div>
-          <button onClick={() => setShowSuccessBanner(false)} className="text-emerald-400 hover:text-white text-xs font-bold">
-            Dismiss
+          <button onClick={() => setShowSuccessBanner(false)} className="text-emerald-400 hover:text-white">
+            <X className="w-4 h-4" />
           </button>
         </div>
       )}
 
-      {/* Main Split Layout */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-0 overflow-hidden h-[calc(100vh-115px)]">
-        {/* Left Column: Problem Tabs */}
-        <div className="lg:col-span-5 border-r border-slate-800 flex flex-col bg-slate-950/60 overflow-y-auto">
-          <div className="flex items-center gap-1 border-b border-slate-800 px-4 pt-2 bg-slate-950 sticky top-0 z-10">
+      {/* Main Workspace Split View */}
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden">
+        {/* Left Column: Problem Description & Submissions */}
+        <div className="lg:col-span-5 border-r border-slate-800/80 flex flex-col bg-slate-950/50">
+          <div className="flex items-center gap-2 border-b border-slate-800 px-4 pt-2">
             <button
               onClick={() => setActiveTab("description")}
               className={`px-3 py-2 text-xs font-bold border-b-2 transition-all flex items-center gap-1.5 ${
@@ -326,6 +338,16 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
               <BookOpen className="w-3.5 h-3.5" /> Description
             </button>
             <button
+              onClick={() => setActiveTab("editorial")}
+              className={`px-3 py-2 text-xs font-bold border-b-2 transition-all flex items-center gap-1.5 ${
+                activeTab === "editorial"
+                  ? "border-purple-500 text-purple-400"
+                  : "border-transparent text-gray-400 hover:text-gray-200"
+              }`}
+            >
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Editorial
+            </button>
+            <button
               onClick={() => setActiveTab("submissions")}
               className={`px-3 py-2 text-xs font-bold border-b-2 transition-all flex items-center gap-1.5 ${
                 activeTab === "submissions"
@@ -335,68 +357,50 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
             >
               <History className="w-3.5 h-3.5" /> Submissions ({submissionsHistory.length})
             </button>
-            <button
-              onClick={() => setActiveTab("editorial")}
-              className={`px-3 py-2 text-xs font-bold border-b-2 transition-all flex items-center gap-1.5 ${
-                activeTab === "editorial"
-                  ? "border-purple-500 text-purple-400"
-                  : "border-transparent text-gray-400 hover:text-gray-200"
-              }`}
-            >
-              <Sparkles className="w-3.5 h-3.5" /> Editorial
-            </button>
           </div>
 
-          <div className="p-6 space-y-6 flex-1">
+          <div className="p-6 flex-1 overflow-y-auto custom-scrollbar">
             {activeTab === "description" && (
-              <>
-                <div className="prose prose-invert max-w-none text-xs leading-relaxed text-gray-300">
-                  <p className="whitespace-pre-line">{problem?.description}</p>
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-xl font-extrabold text-white mb-2">{problem?.title || "Two Sum Target Pair"}</h2>
+                  <p className="text-xs text-gray-300 leading-relaxed whitespace-pre-line">
+                    {problem?.description || "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target."}
+                  </p>
                 </div>
 
-                <div className="space-y-3">
-                  <h4 className="text-xs font-bold text-gray-200 uppercase tracking-wider">Examples</h4>
-                  {parsedExamples.map((ex: any, idx: number) => (
-                    <div key={idx} className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 space-y-1.5 font-mono text-xs">
-                      <div>
-                        <span className="text-purple-400 font-bold">Input:</span>{" "}
-                        <span className="text-gray-300">{ex.input}</span>
+                {parsedExamples.length > 0 && (
+                  <div className="space-y-4">
+                    <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Examples</h3>
+                    {parsedExamples.map((ex: any, i: number) => (
+                      <div key={i} className="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800/80 space-y-1.5 text-xs font-mono">
+                        <div><span className="text-purple-400 font-bold">Input:</span> <span className="text-gray-200">{ex.input}</span></div>
+                        <div><span className="text-emerald-400 font-bold">Output:</span> <span className="text-gray-200">{ex.output}</span></div>
+                        {ex.explanation && (
+                          <div className="text-[11px] text-gray-400 font-sans mt-1">
+                            <span className="font-semibold text-gray-300">Explanation:</span> {ex.explanation}
+                          </div>
+                        )}
                       </div>
-                      <div>
-                        <span className="text-emerald-400 font-bold">Output:</span>{" "}
-                        <span className="text-gray-300">{ex.output}</span>
-                      </div>
-                      {ex.explanation && (
-                        <div className="text-gray-400 text-[11px]">
-                          <span className="text-gray-500">Explanation:</span> {ex.explanation}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
 
                 {problem?.constraints && (
                   <div className="space-y-2">
-                    <h4 className="text-xs font-bold text-gray-200 uppercase tracking-wider">Constraints</h4>
-                    <pre className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-[11px] font-mono text-gray-400 whitespace-pre-line">
+                    <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Constraints</h3>
+                    <pre className="p-3.5 rounded-2xl bg-slate-900/50 border border-slate-800 text-xs text-gray-300 font-mono whitespace-pre-line">
                       {problem.constraints}
                     </pre>
                   </div>
                 )}
-              </>
+              </div>
             )}
 
             {activeTab === "submissions" && (
               <div className="space-y-3">
-                <h3 className="text-sm font-bold text-white flex items-center justify-between">
-                  <span>My Submissions History</span>
-                  <span className="text-xs text-purple-400 font-normal">{submissionsHistory.length} total attempts</span>
-                </h3>
-
                 {submissionsHistory.length === 0 ? (
-                  <div className="p-8 text-center text-xs text-gray-500 font-medium">
-                    No submission history found for this problem yet. Submit your code to build your attempt history!
-                  </div>
+                  <div className="text-center py-12 text-gray-500 text-xs">No submission history yet.</div>
                 ) : (
                   submissionsHistory.map((sub: any, idx: number) => (
                     <div key={sub.id || idx} className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-between text-xs font-mono">
@@ -462,7 +466,13 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
 
             <div className="flex items-center gap-3">
               <button
-                onClick={() => setCode(starterCodeTemplates[language] || starterCodeTemplates.sql)}
+                onClick={() => {
+                  const tmpl = starterCodeTemplates[language] || starterCodeTemplates.sql;
+                  setCode(tmpl);
+                  if (editorRef.current) {
+                    editorRef.current.setValue(tmpl);
+                  }
+                }}
                 className="text-[11px] font-semibold text-gray-400 hover:text-white flex items-center gap-1"
               >
                 <RotateCcw className="w-3.5 h-3.5" /> Reset Code
@@ -477,6 +487,9 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
               language={language === "c" || language === "cpp" ? "cpp" : language}
               theme="vs-dark"
               value={code}
+              onMount={(editor) => {
+                editorRef.current = editor;
+              }}
               onChange={(value) => setCode(value || "")}
               options={{
                 fontSize: 13,
@@ -519,49 +532,48 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
                     setBottomTab("result");
                     setIsBottomPanelOpen(true);
                   }}
-                  className={`px-3 py-1.5 text-xs font-bold rounded-t-lg transition-all flex items-center gap-1.5 relative ${
+                  className={`px-3 py-1.5 text-xs font-bold rounded-t-lg transition-all flex items-center gap-1.5 ${
                     bottomTab === "result"
                       ? "bg-[#090d16] text-purple-400 border-t-2 border-purple-500"
                       : "text-gray-400 hover:text-white"
                   }`}
                 >
-                  <Terminal className="w-3.5 h-3.5 text-purple-400" />
+                  <Terminal className="w-3.5 h-3.5 text-cyan-400" />
                   <span>Test Result</span>
-                  {executing && <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />}
                   {executionResult && (
                     <span
-                      className={`w-2.5 h-2.5 rounded-full ${
-                        executionResult.status === "ACCEPTED" ? "bg-emerald-400" : "bg-rose-500"
+                      className={`w-2 h-2 rounded-full ${
+                        executionResult.status === "ACCEPTED" ? "bg-emerald-400" : "bg-rose-400"
                       }`}
                     />
                   )}
                 </button>
               </div>
 
-              <button
-                onClick={() => setIsBottomPanelOpen(!isBottomPanelOpen)}
-                className="text-gray-400 hover:text-white p-1 rounded-lg hover:bg-slate-900 transition-colors flex items-center gap-1 text-[11px]"
-              >
-                <span className="hidden sm:inline font-semibold">{isBottomPanelOpen ? "Console Collapse" : "Console Expand"}</span>
-                {isBottomPanelOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setIsBottomPanelOpen(!isBottomPanelOpen)}
+                  className="p-1 rounded text-gray-400 hover:text-white hover:bg-slate-900"
+                >
+                  {isBottomPanelOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
+                </button>
+              </div>
             </div>
 
-            {/* Bottom Content Body */}
+            {/* Bottom Content Area */}
             {isBottomPanelOpen && (
-              <div className="flex-1 p-4 overflow-y-auto space-y-3 font-mono text-xs">
-                {/* TAB 1: TESTCASE INPUTS */}
+              <div className="p-4 flex-1 overflow-y-auto text-xs font-mono custom-scrollbar">
                 {bottomTab === "testcase" && (
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2 overflow-x-auto pb-1">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2">
                       {parsedExamples.map((_: any, idx: number) => (
                         <button
                           key={idx}
                           onClick={() => setSelectedCaseIdx(idx)}
-                          className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
+                          className={`px-3 py-1 rounded-lg border text-xs font-bold transition-all ${
                             selectedCaseIdx === idx
-                              ? "bg-purple-600/20 text-purple-300 border border-purple-500/40"
-                              : "bg-slate-900 text-gray-400 hover:text-white border border-slate-800"
+                              ? "bg-purple-600/20 text-purple-300 border-purple-500/50"
+                              : "bg-slate-900 text-gray-400 border-slate-800 hover:text-gray-200"
                           }`}
                         >
                           Case {idx + 1}
@@ -570,122 +582,126 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
                     </div>
 
                     {parsedExamples[selectedCaseIdx] && (
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         <div>
-                          <span className="text-gray-400 text-[11px] font-semibold block mb-1">Input:</span>
-                          <pre className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-gray-200">
+                          <div className="text-[10px] font-bold text-gray-500 uppercase mb-1">Input</div>
+                          <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-gray-200">
                             {parsedExamples[selectedCaseIdx].input}
-                          </pre>
+                          </div>
                         </div>
                         <div>
-                          <span className="text-gray-400 text-[11px] font-semibold block mb-1">Expected Output:</span>
-                          <pre className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-emerald-400">
+                          <div className="text-[10px] font-bold text-gray-500 uppercase mb-1">Expected Output</div>
+                          <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-emerald-400 font-bold">
                             {parsedExamples[selectedCaseIdx].output}
-                          </pre>
+                          </div>
                         </div>
                       </div>
                     )}
                   </div>
                 )}
 
-                {/* TAB 2: TEST RESULT */}
                 {bottomTab === "result" && (
-                  <div className="space-y-3">
-                    {executing ? (
-                      <div className="p-6 text-center text-xs text-amber-400 flex items-center justify-center gap-2 animate-pulse">
-                        <Sparkles className="w-4 h-4 animate-spin" />
-                        <span>Running test cases against solution sandbox...</span>
+                  <div>
+                    {!executionResult && !executing && (
+                      <div className="text-gray-500 flex flex-col items-center justify-center py-10 gap-2 font-sans">
+                        <Terminal className="w-8 h-8 opacity-40 text-purple-400" />
+                        <p>Click "Run Test Cases" or "Submit Solution" to view Judge0 execution results.</p>
                       </div>
-                    ) : !executionResult ? (
-                      <div className="p-6 text-center text-xs text-gray-500">
-                        Click <strong className="text-emerald-400">"Run Test Cases"</strong> or <strong className="text-purple-400">"Submit Solution"</strong> to see testcase results here!
+                    )}
+
+                    {executing && (
+                      <div className="flex items-center gap-3 text-purple-400 py-8 font-sans">
+                        <div className="w-5 h-5 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+                        <span>Sending source code payload directly to Judge0 CE sandbox...</span>
                       </div>
-                    ) : (
-                      <>
+                    )}
+
+                    {executionResult && !executing && (
+                      <div className="space-y-4">
                         {/* Status Header */}
-                        <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
+                        <div className="flex items-center justify-between bg-slate-950 p-3 rounded-xl border border-slate-800">
                           <div className="flex items-center gap-2">
                             {executionResult.status === "ACCEPTED" ? (
-                              <h3 className="text-base font-black text-emerald-400 flex items-center gap-1.5">
-                                <CheckCircle2 className="w-5 h-5 text-emerald-400" /> Accepted
-                              </h3>
+                              <span className="text-emerald-400 font-black text-sm flex items-center gap-1.5">
+                                <CheckCircle2 className="w-4 h-4" /> ACCEPTED
+                              </span>
                             ) : (
-                              <h3 className="text-base font-black text-rose-400 flex items-center gap-1.5">
-                                <XCircle className="w-5 h-5 text-rose-400" /> {executionResult.status}
-                              </h3>
+                              <span className="text-rose-400 font-black text-sm flex items-center gap-1.5">
+                                <XCircle className="w-4 h-4" /> {executionResult.status}
+                              </span>
                             )}
                           </div>
-
-                          <div className="flex items-center gap-3 text-xs text-gray-400 font-semibold">
-                            <span>⏱️ Runtime: <strong className="text-white">{executionResult.executionTimeMs} ms</strong></span>
-                            <span>💾 Memory: <strong className="text-white">{(executionResult.memoryUsageKb / 1024).toFixed(1)} MB</strong></span>
+                          <div className="flex items-center gap-4 text-gray-400 text-[11px]">
+                            <span className="flex items-center gap-1">
+                              <Clock className="w-3.5 h-3.5 text-purple-400" /> {executionResult.executionTimeMs} ms
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Cpu className="w-3.5 h-3.5 text-cyan-400" /> {(executionResult.memoryUsageKb / 1024).toFixed(1)} MB
+                            </span>
                           </div>
                         </div>
 
-                        {/* Test Case Pills */}
-                        {executionResult.testCaseDetails && executionResult.testCaseDetails.length > 0 && (
+                        {/* Logs */}
+                        {executionResult.outputLogs?.length > 0 && (
+                          <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
+                            <div className="text-[10px] font-bold text-gray-500 uppercase mb-1">Judge0 CE Execution Diagnostics</div>
+                            {executionResult.outputLogs.map((log: string, idx: number) => (
+                              <div key={idx} className="text-[11px] text-gray-300 font-mono whitespace-pre-wrap">
+                                {log}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Test Case Selectors */}
+                        {executionResult.testCaseDetails?.length > 0 && (
                           <div className="space-y-3">
-                            <div className="flex items-center gap-2 overflow-x-auto pb-1">
+                            <div className="flex items-center gap-2">
                               {executionResult.testCaseDetails.map((tc: any, idx: number) => (
                                 <button
                                   key={idx}
                                   onClick={() => setSelectedCaseIdx(idx)}
-                                  className={`px-3 py-1 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
+                                  className={`px-3 py-1.5 rounded-lg border text-xs font-bold flex items-center gap-1.5 transition-all ${
                                     selectedCaseIdx === idx
-                                      ? tc.passed
-                                        ? "bg-emerald-950/40 text-emerald-300 border border-emerald-500/40"
-                                        : "bg-rose-950/40 text-rose-300 border border-rose-500/40"
-                                      : "bg-slate-900 text-gray-400 border border-slate-800"
+                                      ? "bg-slate-900 border-purple-500 text-white"
+                                      : "bg-slate-950 border-slate-800 text-gray-400"
                                   }`}
                                 >
-                                  <span className={`w-2 h-2 rounded-full ${tc.passed ? "bg-emerald-400" : "bg-rose-500"}`} />
+                                  {tc.passed ? (
+                                    <span className="text-emerald-400">●</span>
+                                  ) : (
+                                    <span className="text-rose-400">●</span>
+                                  )}
                                   <span>Case {idx + 1}</span>
                                 </button>
                               ))}
                             </div>
 
-                            {/* Selected Case Detail */}
                             {executionResult.testCaseDetails[selectedCaseIdx] && (
-                              <div className="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 space-y-2 text-xs">
+                              <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
                                 <div>
-                                  <span className="text-gray-400 text-[11px] font-semibold block mb-0.5">Input:</span>
-                                  <pre className="p-2.5 rounded-xl bg-slate-900 text-gray-200 border border-slate-800">
-                                    {executionResult.testCaseDetails[selectedCaseIdx].input}
-                                  </pre>
+                                  <div className="text-[10px] font-bold text-gray-500 uppercase mb-1">Input</div>
+                                  <div className="text-gray-200 bg-slate-900 p-2.5 rounded-lg">{executionResult.testCaseDetails[selectedCaseIdx].input}</div>
                                 </div>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                  <div>
-                                    <span className="text-gray-400 text-[11px] font-semibold block mb-0.5">Expected Output:</span>
-                                    <pre className="p-2.5 rounded-xl bg-slate-900 text-emerald-400 border border-slate-800">
-                                      {executionResult.testCaseDetails[selectedCaseIdx].expected}
-                                    </pre>
+                                <div>
+                                  <div className="text-[10px] font-bold text-gray-500 uppercase mb-1">Output</div>
+                                  <div
+                                    className={`p-2.5 rounded-lg font-bold ${
+                                      executionResult.testCaseDetails[selectedCaseIdx].passed ? "text-emerald-400 bg-slate-900" : "text-rose-400 bg-rose-950/20 border border-rose-900/50"
+                                    }`}
+                                  >
+                                    {executionResult.testCaseDetails[selectedCaseIdx].actual}
                                   </div>
-                                  <div>
-                                    <span className="text-gray-400 text-[11px] font-semibold block mb-0.5">Your Code Output:</span>
-                                    <pre className={`p-2.5 rounded-xl bg-slate-900 border border-slate-800 ${
-                                      executionResult.testCaseDetails[selectedCaseIdx].passed ? "text-emerald-300" : "text-rose-400 font-bold"
-                                    }`}>
-                                      {executionResult.testCaseDetails[selectedCaseIdx].actual}
-                                    </pre>
-                                  </div>
+                                </div>
+                                <div>
+                                  <div className="text-[10px] font-bold text-gray-500 uppercase mb-1">Expected</div>
+                                  <div className="text-emerald-400 bg-slate-900 p-2.5 rounded-lg">{executionResult.testCaseDetails[selectedCaseIdx].expected}</div>
                                 </div>
                               </div>
                             )}
                           </div>
                         )}
-
-                        {/* Execution Logs */}
-                        {executionResult.outputLogs && executionResult.outputLogs.length > 0 && (
-                          <div className="space-y-1">
-                            <span className="text-gray-400 text-[11px] font-semibold block">Stdout / Execution Logs:</span>
-                            <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-gray-300 space-y-1 text-xs">
-                              {executionResult.outputLogs.map((log: string, idx: number) => (
-                                <p key={idx}>{log}</p>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </>
+                      </div>
                     )}
                   </div>
                 )}
