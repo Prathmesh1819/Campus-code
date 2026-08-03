@@ -46,75 +46,161 @@ export function getJudge0LanguageId(language: string): number {
 }
 
 /**
- * Java LeetCode Solution Class Driver Wrapper.
- * Automatically detects whether the submission contains a main entrypoint or pure Solution class,
- * and generates a Main driver launcher for Judge0 execution.
+ * Bracket and quote-aware input argument splitter on Node server side
  */
-function formatJavaSubmissionCode(code: string): string {
+function splitInputArgs(str: string): string[] {
+  const args: string[] = [];
+  let current = "";
+  let inBracket = 0;
+  let inQuote = false;
+  let quoteChar = "";
+
+  for (let i = 0; i < str.length; i++) {
+    const char = str[i];
+    if ((char === '"' || char === "'") && (i === 0 || str[i - 1] !== "\\")) {
+      if (!inQuote) {
+        inQuote = true;
+        quoteChar = char;
+      } else if (quoteChar === char) {
+        inQuote = false;
+      }
+    } else if (!inQuote) {
+      if (char === "[" || char === "{" || char === "(") inBracket++;
+      else if (char === "]" || char === "}" || char === ")") inBracket--;
+    }
+
+    if (char === "," && !inQuote && inBracket === 0) {
+      args.push(current.trim());
+      current = "";
+    } else {
+      current += char;
+    }
+  }
+  if (current.trim()) {
+    args.push(current.trim());
+  }
+  return args;
+}
+
+/**
+ * Strongly Typed Java Main.java Driver Code Generator.
+ * Generates strongly typed Java variables directly without regex string parsing inside Java.
+ */
+function formatJavaSubmissionCode(code: string, stdinInput: string): string {
   const trimmed = code.trim();
 
-  // If submission already defines a main entrypoint method, return directly
+  // If user code already defines main entrypoint, return as is
   if (/public\s+static\s+void\s+main\s*\(/i.test(trimmed)) {
     return trimmed;
   }
 
-  // Remove 'public' access modifier from Solution class so we can declare 'public class Main'
+  // Ensure Solution class is not public so we can declare public class Main
   let cleanCode = trimmed.replace(/public\s+class\s+Solution/g, "class Solution");
+
+  // Discover Solution method name
+  const methodMatch = cleanCode.match(/public\s+([\w<>\[\]]+)\s+(\w+)\s*\(([^)]*)\)/);
+  const methodName = methodMatch ? methodMatch[2] : "twoSum";
+
+  // Parse stdin arguments cleanly in Node.js
+  const rawArgs = splitInputArgs(stdinInput);
+  const javaVarDecls: string[] = [];
+  const callArgs: string[] = [];
+
+  rawArgs.forEach((argStr, idx) => {
+    const varName = `arg${idx}`;
+    const trimmedArg = argStr.trim();
+    callArgs.push(varName);
+
+    try {
+      const parsed = JSON.parse(trimmedArg);
+      if (Array.isArray(parsed)) {
+        if (parsed.length > 0 && Array.isArray(parsed[0])) {
+          // 2D Array
+          const rowStrings = parsed.map((row) => `new int[]{${row.join(", ")}}`).join(", ");
+          javaVarDecls.push(`int[][] ${varName} = new int[][]{${rowStrings}};`);
+        } else if (methodName === "mergeTwoLists" || methodName === "deleteNode" || methodName === "hasCycle") {
+          // Linked List
+          javaVarDecls.push(`ListNode ${varName} = arrayToListNode(new int[]{${parsed.join(", ")}});`);
+        } else if (typeof parsed[0] === "string") {
+          // String array
+          const strElements = parsed.map((s) => `"${s.replace(/"/g, '\\"')}"`).join(", ");
+          javaVarDecls.push(`String[] ${varName} = new String[]{${strElements}};`);
+        } else {
+          // int array
+          javaVarDecls.push(`int[] ${varName} = new int[]{${parsed.join(", ")}};`);
+        }
+      } else if (typeof parsed === "string") {
+        javaVarDecls.push(`String ${varName} = "${parsed.replace(/"/g, '\\"')}";`);
+      } else if (typeof parsed === "boolean") {
+        javaVarDecls.push(`boolean ${varName} = ${parsed};`);
+      } else if (typeof parsed === "number") {
+        if (Number.isInteger(parsed)) {
+          javaVarDecls.push(`int ${varName} = ${parsed};`);
+        } else {
+          javaVarDecls.push(`double ${varName} = ${parsed};`);
+        }
+      } else {
+        javaVarDecls.push(`String ${varName} = "${trimmedArg.replace(/"/g, '\\"')}";`);
+      }
+    } catch {
+      if ((trimmedArg.startsWith('"') && trimmedArg.endsWith('"')) || (trimmedArg.startsWith("'") && trimmedArg.endsWith("'"))) {
+        const strVal = trimmedArg.slice(1, -1).replace(/"/g, '\\"');
+        javaVarDecls.push(`String ${varName} = "${strVal}";`);
+      } else {
+        javaVarDecls.push(`String ${varName} = "${trimmedArg.replace(/"/g, '\\"')}";`);
+      }
+    }
+  });
 
   const javaMainDriver = `
 
+class ListNode {
+    int val;
+    ListNode next;
+    ListNode() {}
+    ListNode(int val) { this.val = val; }
+    ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+}
+
+class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+    TreeNode() {}
+    TreeNode(int val) { this.val = val; }
+    TreeNode(int val, TreeNode left, TreeNode right) { this.val = val; this.left = left; this.right = right; }
+}
+
 public class Main {
+    private static ListNode arrayToListNode(int[] arr) {
+        if (arr == null || arr.length == 0) return null;
+        ListNode dummy = new ListNode(0);
+        ListNode curr = dummy;
+        for (int v : arr) {
+            curr.next = new ListNode(v);
+            curr = curr.next;
+        }
+        return dummy.next;
+    }
+
+    private static String listNodeToString(ListNode head) {
+        java.util.List<Integer> list = new java.util.ArrayList<>();
+        ListNode curr = head;
+        while (curr != null) {
+            list.add(curr.val);
+            curr = curr.next;
+        }
+        return list.toString();
+    }
+
     public static void main(String[] args) throws Exception {
-        java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(System.in));
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            sb.append(line).append(" ");
-        }
-        String inputStr = sb.toString().trim();
-        if (inputStr.isEmpty()) return;
-
-        Solution sol = new Solution();
-        java.lang.reflect.Method targetMethod = null;
-        for (java.lang.reflect.Method m : Solution.class.getDeclaredMethods()) {
-            if (java.lang.reflect.Modifier.isPublic(m.getModifiers()) && !m.getName().equals("main")) {
-                targetMethod = m;
-                break;
-            }
-        }
-
-        if (targetMethod == null) return;
-
-        Class<?>[] paramTypes = targetMethod.getParameterTypes();
-        Object[] parsedArgs = new Object[paramTypes.length];
-        String[] rawArgs = inputStr.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
-
-        for (int i = 0; i < paramTypes.length; i++) {
-            String argStr = i < rawArgs.length ? rawArgs[i].trim() : "";
-            Class<?> pType = paramTypes[i];
-
-            if (pType == int[].class) {
-                String cleanArr = argStr.replaceAll("[\\[\\]\\s]", "");
-                if (cleanArr.isEmpty()) {
-                    parsedArgs[i] = new int[0];
-                } else {
-                    String[] parts = cleanArr.split(",");
-                    int[] arr = new int[parts.length];
-                    for (int j = 0; j < parts.length; j++) arr[j] = Integer.parseInt(parts[j].trim());
-                    parsedArgs[i] = arr;
-                }
-            } else if (pType == int.class || pType == Integer.class) {
-                parsedArgs[i] = Integer.parseInt(argStr.replaceAll("[^0-9-]", ""));
-            } else if (pType == String.class) {
-                parsedArgs[i] = argStr.replace("\"", "");
-            } else {
-                parsedArgs[i] = argStr;
-            }
-        }
-
-        Object result = targetMethod.invoke(sol, parsedArgs);
+        Solution solution = new Solution();
+        ${javaVarDecls.join("\n        ")}
+        Object result = solution.${methodName}(${callArgs.join(", ")});
         if (result instanceof int[]) {
             System.out.println(java.util.Arrays.toString((int[]) result));
+        } else if (result instanceof ListNode) {
+            System.out.println(listNodeToString((ListNode) result));
         } else {
             System.out.println(result);
         }
@@ -200,9 +286,6 @@ export async function executeJudge0Submission(
   const langUpper = language.toUpperCase();
   const outputLogs: string[] = [];
 
-  // Format code for Java if needed
-  const finalCode = language.toLowerCase() === "java" ? formatJavaSubmissionCode(code) : code;
-
   outputLogs.push(`🌐 Language Selected: ${langUpper}`);
   outputLogs.push(`🆔 Judge0 CE Language ID: ${languageId}`);
 
@@ -243,6 +326,9 @@ export async function executeJudge0Submission(
     const tc = testCases[i];
     let actual = "";
     let passed = false;
+
+    // Format strongly typed Java code per testcase
+    const finalCode = language.toLowerCase() === "java" ? formatJavaSubmissionCode(code, tc.input) : code;
 
     outputLogs.push(`🚀 [Test ${i + 1}/${testCases.length}] Input: ${tc.input} | Expected: ${tc.expectedOutput}`);
 
