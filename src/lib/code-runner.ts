@@ -712,8 +712,8 @@ export async function executeJudge0Submission(
       const stdout = (data.stdout || "").trim();
       const stderr = (data.stderr || "").trim();
       const compileOutput = (data.compile_output || "").trim();
-      const statusId = data.status?.id || 3;
-      const statusDesc = data.status?.description || "Accepted";
+      const statusId = data.status?.id || 13;
+      const statusDesc = data.status?.description || "Unknown Status";
       const token = data.token || `sub_${Date.now()}_${i}`;
 
       const timeMs = Math.round(parseFloat(data.time || "0.015") * 1000);
@@ -721,7 +721,9 @@ export async function executeJudge0Submission(
       maxTimeMs = Math.max(maxTimeMs, timeMs);
       maxMemoryKb = Math.max(maxMemoryKb, memoryKb);
 
+      outputLogs.push(`  ├ Raw Judge0 JSON: ${JSON.stringify(data)}`);
       outputLogs.push(`  ├ Token: ${token} | Status: ${statusDesc} (ID: ${statusId}) | CPU Time: ${timeMs}ms | RAM: ${memoryKb}KB`);
+
       if (compileOutput) {
         outputLogs.push(`  ├ Compiler Output: ${compileOutput}`);
       }
@@ -729,9 +731,10 @@ export async function executeJudge0Submission(
         outputLogs.push(`  ├ Stderr: ${stderr}`);
       }
 
+      actual = stdout;
+
       // Judge0 Status ID Mapping: 3=Accepted (Run Clean), 4=Wrong Answer, 5=Time Limit Exceeded, 6=Compilation Error, 7-12=Runtime Error
       if (statusId === 3) {
-        actual = stdout || tc.expectedOutput;
         passed = compareJudgeOutputs(actual, tc.expectedOutput);
         if (passed) passedCount++;
         else {
@@ -757,7 +760,7 @@ export async function executeJudge0Submission(
         actual = `RuntimeError:\n${firstErrorMessage}`;
       }
 
-      outputLogs.push(`  ├ Judge0 Stdout: "${actual}" | Comparison: ${passed ? "MATCH ✅" : "MISMATCH ❌"}`);
+      outputLogs.push(`  ├ Judge0 Output: "${actual}" | Comparison: ${passed ? "MATCH ✅" : "MISMATCH ❌"}`);
 
       testCaseDetails.push({
         input: tc.input,
