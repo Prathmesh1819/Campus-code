@@ -46,6 +46,86 @@ export function getJudge0LanguageId(language: string): number {
 }
 
 /**
+ * Java LeetCode Solution Class Driver Wrapper.
+ * Automatically detects whether the submission contains a main entrypoint or pure Solution class,
+ * and generates a Main driver launcher for Judge0 execution.
+ */
+function formatJavaSubmissionCode(code: string): string {
+  const trimmed = code.trim();
+
+  // If submission already defines a main entrypoint method, return directly
+  if (/public\s+static\s+void\s+main\s*\(/i.test(trimmed)) {
+    return trimmed;
+  }
+
+  // Remove 'public' access modifier from Solution class so we can declare 'public class Main'
+  let cleanCode = trimmed.replace(/public\s+class\s+Solution/g, "class Solution");
+
+  const javaMainDriver = `
+
+public class Main {
+    public static void main(String[] args) throws Exception {
+        java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(System.in));
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            sb.append(line).append(" ");
+        }
+        String inputStr = sb.toString().trim();
+        if (inputStr.isEmpty()) return;
+
+        Solution sol = new Solution();
+        java.lang.reflect.Method targetMethod = null;
+        for (java.lang.reflect.Method m : Solution.class.getDeclaredMethods()) {
+            if (java.lang.reflect.Modifier.isPublic(m.getModifiers()) && !m.getName().equals("main")) {
+                targetMethod = m;
+                break;
+            }
+        }
+
+        if (targetMethod == null) return;
+
+        Class<?>[] paramTypes = targetMethod.getParameterTypes();
+        Object[] parsedArgs = new Object[paramTypes.length];
+        String[] rawArgs = inputStr.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
+
+        for (int i = 0; i < paramTypes.length; i++) {
+            String argStr = i < rawArgs.length ? rawArgs[i].trim() : "";
+            Class<?> pType = paramTypes[i];
+
+            if (pType == int[].class) {
+                String cleanArr = argStr.replaceAll("[\\[\\]\\s]", "");
+                if (cleanArr.isEmpty()) {
+                    parsedArgs[i] = new int[0];
+                } else {
+                    String[] parts = cleanArr.split(",");
+                    int[] arr = new int[parts.length];
+                    for (int j = 0; j < parts.length; j++) arr[j] = Integer.parseInt(parts[j].trim());
+                    parsedArgs[i] = arr;
+                }
+            } else if (pType == int.class || pType == Integer.class) {
+                parsedArgs[i] = Integer.parseInt(argStr.replaceAll("[^0-9-]", ""));
+            } else if (pType == String.class) {
+                parsedArgs[i] = argStr.replace("\"", "");
+            } else {
+                parsedArgs[i] = argStr;
+            }
+        }
+
+        Object result = targetMethod.invoke(sol, parsedArgs);
+        if (result instanceof int[]) {
+            System.out.println(java.util.Arrays.toString((int[]) result));
+        } else {
+            System.out.println(result);
+        }
+    }
+}
+`;
+
+  return cleanCode + javaMainDriver;
+}
+
+/**
  * LeetCode-Grade Deep Output Normalizer & Evaluator
  */
 function compareJudgeOutputs(actualStr: string, expectedStr: string): boolean {
@@ -110,7 +190,6 @@ function deepEqual(a: any, b: any): boolean {
 /**
  * Pure Judge0 CE Execution Engine.
  * Executes user code strictly through Judge0 CE API.
- * Contains ZERO transpilation, ZERO JS simulation, ZERO eval, and ZERO local fallback.
  */
 export async function executeJudge0Submission(
   code: string,
@@ -120,6 +199,9 @@ export async function executeJudge0Submission(
   const languageId = getJudge0LanguageId(language);
   const langUpper = language.toUpperCase();
   const outputLogs: string[] = [];
+
+  // Format code for Java if needed
+  const finalCode = language.toLowerCase() === "java" ? formatJavaSubmissionCode(code) : code;
 
   outputLogs.push(`🌐 Language Selected: ${langUpper}`);
   outputLogs.push(`🆔 Judge0 CE Language ID: ${languageId}`);
@@ -171,7 +253,7 @@ export async function executeJudge0Submission(
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          source_code: code,
+          source_code: finalCode,
           language_id: languageId,
           stdin: tc.input,
           cpu_time_limit: 5.0,
