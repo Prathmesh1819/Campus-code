@@ -4,6 +4,98 @@ import path from "path";
 import os from "os";
 import { execSync } from "child_process";
 
+export interface ParameterMetadata {
+  name: string;
+  type: "int" | "long" | "bool" | "double" | "string" | "char" | "int[]" | "long[]" | "string[]" | "ListNode" | "TreeNode";
+}
+
+export interface ProblemMetadata {
+  id: string;
+  title: string;
+  functionName: string;
+  returnType: "int" | "long" | "bool" | "double" | "string" | "char" | "int[]" | "long[]" | "string[]" | "ListNode" | "TreeNode" | "void";
+  parameters: ParameterMetadata[];
+}
+
+/**
+ * Problem Metadata Registry (Metadata-Driven Architecture)
+ */
+export const PROBLEM_METADATA_REGISTRY: Record<string, ProblemMetadata> = {
+  "two-sum-target-pair": {
+    id: "two-sum-target-pair",
+    title: "Two Sum Target Pair",
+    functionName: "twoSum",
+    returnType: "int[]",
+    parameters: [
+      { name: "nums", type: "int[]" },
+      { name: "target", type: "int" },
+    ],
+  },
+  "two-sum": {
+    id: "two-sum",
+    title: "Two Sum",
+    functionName: "twoSum",
+    returnType: "int[]",
+    parameters: [
+      { name: "nums", type: "int[]" },
+      { name: "target", type: "int" },
+    ],
+  },
+  "valid-palindrome": {
+    id: "valid-palindrome",
+    title: "Valid Palindrome",
+    functionName: "isPalindrome",
+    returnType: "bool",
+    parameters: [
+      { name: "s", type: "string" },
+    ],
+  },
+  "best-time-to-buy-and-sell-stock": {
+    id: "best-time-to-buy-and-sell-stock",
+    title: "Best Time to Buy and Sell Stock",
+    functionName: "maxProfit",
+    returnType: "int",
+    parameters: [
+      { name: "prices", type: "int[]" },
+    ],
+  },
+  "climbing-stairs": {
+    id: "climbing-stairs",
+    title: "Climbing Stairs",
+    functionName: "climbStairs",
+    returnType: "int",
+    parameters: [
+      { name: "n", type: "int" },
+    ],
+  },
+};
+
+export function resolveProblemMetadata(problemId?: string, problemTitle?: string): ProblemMetadata {
+  if (problemId && PROBLEM_METADATA_REGISTRY[problemId]) {
+    return PROBLEM_METADATA_REGISTRY[problemId];
+  }
+
+  const slug = (problemId || "").toLowerCase();
+  if (slug.includes("palindrome")) {
+    return PROBLEM_METADATA_REGISTRY["valid-palindrome"];
+  }
+  if (slug.includes("stock") || slug.includes("profit")) {
+    return PROBLEM_METADATA_REGISTRY["best-time-to-buy-and-sell-stock"];
+  }
+
+  // Fallback metadata schema default
+  return {
+    id: problemId || "two-sum-target-pair",
+    title: problemTitle || "Two Sum Target Pair",
+    functionName: "twoSum",
+    returnType: "int[]",
+    parameters: [
+      { name: "nums", type: "int[]" },
+      { name: "target", type: "int" },
+    ],
+  };
+}
+
 export interface ExecutionResult {
   status: "ACCEPTED" | "WRONG_ANSWER" | "TIME_LIMIT_EXCEEDED" | "RUNTIME_ERROR" | "COMPILATION_ERROR";
   executionTimeMs: number;
@@ -125,7 +217,7 @@ function validateSyntaxLocally(finalCode: string, language: string): { valid: bo
       }
     }
   } catch (e) {
-    // If local compiler tools are unavailable, fall through gracefully to Judge0
+    // Fall through gracefully to Judge0 if local tools are absent
   }
 
   return { valid: true };
@@ -169,22 +261,22 @@ function splitInputArgs(str: string): string[] {
 }
 
 /* ========================================================================== */
-/* DEDICATED LANGUAGE WRAPPER GENERATORS (DYNAMICALLY TYPED PER PROBLEM)     */
+/* METADATA-DRIVEN LANGUAGE WRAPPER GENERATORS (ZERO USER CODE PARSING)       */
 /* ========================================================================== */
 
-function formatJavaSubmissionCode(code: string, stdinInput: string): string {
+function formatJavaSubmissionCode(code: string, stdinInput: string, metadata: ProblemMetadata): string {
   const trimmed = code.trim();
   if (/public\s+static\s+void\s+main\s*\(/i.test(trimmed)) return trimmed;
 
   let cleanCode = trimmed.replace(/public\s+class\s+Solution/g, "class Solution");
-  const methodMatch = cleanCode.match(/public\s+([\w<>\[\]]+)\s+(\w+)\s*\(([^)]*)\)/);
-  const methodName = methodMatch ? methodMatch[2] : "twoSum";
+  const methodName = metadata.functionName;
 
   const rawArgs = splitInputArgs(stdinInput);
   const javaVarDecls: string[] = [];
   const callArgs: string[] = [];
 
   rawArgs.forEach((argStr, idx) => {
+    const paramMeta = metadata.parameters[idx] || { name: `arg${idx}`, type: "string" };
     const varName = `arg${idx}`;
     const trimmedArg = argStr.trim();
     callArgs.push(varName);
@@ -195,7 +287,7 @@ function formatJavaSubmissionCode(code: string, stdinInput: string): string {
         if (parsed.length > 0 && Array.isArray(parsed[0])) {
           const rowStrings = parsed.map((row) => `new int[]{${row.join(", ")}}`).join(", ");
           javaVarDecls.push(`int[][] ${varName} = new int[][]{${rowStrings}};`);
-        } else if (methodName === "mergeTwoLists" || methodName === "deleteNode" || methodName === "hasCycle") {
+        } else if (paramMeta.type === "ListNode") {
           javaVarDecls.push(`ListNode ${varName} = arrayToListNode(new int[]{${parsed.join(", ")}});`);
         } else if (typeof parsed[0] === "string") {
           const strElements = parsed.map((s) => `"${s.replace(/"/g, '\\"')}"`).join(", ");
@@ -214,7 +306,7 @@ function formatJavaSubmissionCode(code: string, stdinInput: string): string {
         javaVarDecls.push(`String ${varName} = "${trimmedArg.replace(/"/g, '\\"')}";`);
       }
     } catch {
-      javaVarDecls.push(`String ${varName} = "${trimmedArg.replace(/"/g, '\\"')}";`);
+      javaVarDecls.push(`String ${varName} = "${trimmedArg.replace(/^"|"$/g, '').replace(/"/g, '\\"')}";`);
     }
   });
 
@@ -268,14 +360,11 @@ public class Main {
   return cleanCode + javaMainDriver;
 }
 
-function formatCppSubmissionCode(code: string, stdinInput: string): string {
+function formatCppSubmissionCode(code: string, stdinInput: string, metadata: ProblemMetadata): string {
   const trimmed = code.trim();
   if (/int\s+main\s*\(/i.test(trimmed)) return trimmed;
 
-  let cleanCode = trimmed;
-  const methodMatch = cleanCode.match(/public:\s*[\w<>\[\]\*]+\s+(\w+)\s*\(([^)]*)\)/) || cleanCode.match(/[\w<>\[\]\*]+\s+(\w+)\s*\(([^)]*)\)/);
-  const methodName = methodMatch ? methodMatch[1] : "twoSum";
-
+  const methodName = metadata.functionName;
   const rawArgs = splitInputArgs(stdinInput);
   const varDecls: string[] = [];
   const callArgs: string[] = [];
@@ -308,7 +397,7 @@ function formatCppSubmissionCode(code: string, stdinInput: string): string {
         varDecls.push(`string ${varName} = "${trimmedArg.replace(/"/g, '\\"')}";`);
       }
     } catch {
-      varDecls.push(`string ${varName} = "${trimmedArg.replace(/"/g, '\\"')}";`);
+      varDecls.push(`string ${varName} = "${trimmedArg.replace(/^"|"$/g, '').replace(/"/g, '\\"')}";`);
     }
   });
 
@@ -332,13 +421,6 @@ void printAns(const vector<int>& vec) {
     }
     cout << "]" << endl;
 }
-void printAns(const vector<string>& vec) {
-    cout << "[";
-    for (size_t i = 0; i < vec.size(); i++) {
-        cout << "\\"" << vec[i] << "\\"" << (i + 1 < vec.size() ? "," : "");
-    }
-    cout << "]" << endl;
-}
 
 int main() {
     Solution sol;
@@ -349,22 +431,16 @@ int main() {
 }
 `;
 
-  return cleanCode + cppMain;
+  return trimmed + cppMain;
 }
 
-function formatPythonSubmissionCode(code: string, stdinInput: string): string {
+function formatPythonSubmissionCode(code: string, stdinInput: string, metadata: ProblemMetadata): string {
   const trimmed = code.trim();
   if (trimmed.includes("if __name__ ==")) return trimmed;
 
-  const methodMatch = trimmed.match(/def\s+(\w+)\s*\(/);
-  const methodName = methodMatch ? methodMatch[1] : "twoSum";
-
+  const methodName = metadata.functionName;
   const rawArgs = splitInputArgs(stdinInput);
-  const callArgs: string[] = [];
-
-  rawArgs.forEach((argStr) => {
-    callArgs.push(argStr.trim());
-  });
+  const callArgs = rawArgs.map((a) => a.trim());
 
   const pyMain = `
 
@@ -394,13 +470,11 @@ if __name__ == "__main__":
   return trimmed + pyMain;
 }
 
-function formatJSSubmissionCode(code: string, stdinInput: string): string {
+function formatJSSubmissionCode(code: string, stdinInput: string, metadata: ProblemMetadata): string {
   const trimmed = code.trim();
   if (trimmed.includes("console.log")) return trimmed;
 
-  const methodMatch = trimmed.match(/(?:function|const|let|var)\s+(\w+)\s*\(/) || trimmed.match(/(\w+)\s*\([^)]*\)\s*\{/);
-  const methodName = methodMatch ? methodMatch[1] : "twoSum";
-
+  const methodName = metadata.functionName;
   const rawArgs = splitInputArgs(stdinInput);
   const callArgs = rawArgs.map((a) => a.trim());
 
@@ -421,13 +495,11 @@ if (typeof Solution === 'function') {
   return trimmed + jsMain;
 }
 
-function formatGoSubmissionCode(code: string, stdinInput: string): string {
+function formatGoSubmissionCode(code: string, stdinInput: string, metadata: ProblemMetadata): string {
   const trimmed = code.trim();
   if (/func\s+main\s*\(/i.test(trimmed)) return trimmed;
 
-  const methodMatch = trimmed.match(/func\s+(\w+)\s*\(/);
-  const methodName = methodMatch ? methodMatch[1] : "twoSum";
-
+  const methodName = metadata.functionName;
   const rawArgs = splitInputArgs(stdinInput);
   const varDecls: string[] = [];
   const callArgs: string[] = [];
@@ -477,13 +549,11 @@ func main() {
   return trimmed.startsWith("package main") ? trimmed + goMain : "package main\n\n" + trimmed + goMain;
 }
 
-function formatRustSubmissionCode(code: string, stdinInput: string): string {
+function formatRustSubmissionCode(code: string, stdinInput: string, metadata: ProblemMetadata): string {
   const trimmed = code.trim();
   if (/fn\s+main\s*\(/i.test(trimmed)) return trimmed;
 
-  const methodMatch = trimmed.match(/(?:pub\s+)?fn\s+(\w+)\s*\(/);
-  const methodName = methodMatch ? methodMatch[1] : "two_sum";
-
+  const methodName = metadata.functionName;
   const rawArgs = splitInputArgs(stdinInput);
   const varDecls: string[] = [];
   const callArgs: string[] = [];
@@ -521,13 +591,11 @@ fn main() {
   return trimmed + rustMain;
 }
 
-function formatKotlinSubmissionCode(code: string, stdinInput: string): string {
+function formatKotlinSubmissionCode(code: string, stdinInput: string, metadata: ProblemMetadata): string {
   const trimmed = code.trim();
   if (/fun\s+main\s*\(/i.test(trimmed)) return trimmed;
 
-  const methodMatch = trimmed.match(/fun\s+(\w+)\s*\(/);
-  const methodName = methodMatch ? methodMatch[1] : "twoSum";
-
+  const methodName = metadata.functionName;
   const rawArgs = splitInputArgs(stdinInput);
   const varDecls: string[] = [];
   const callArgs: string[] = [];
@@ -570,19 +638,19 @@ fun main() {
   return trimmed + ktMain;
 }
 
-function formatCSubmissionCode(code: string, stdinInput: string): string {
+function formatCSubmissionCode(code: string, stdinInput: string, metadata: ProblemMetadata): string {
   const trimmed = code.trim();
   if (/int\s+main\s*\(/i.test(trimmed)) return trimmed;
 
-  const methodMatch = trimmed.match(/([\w\*]+)\s+(\w+)\s*\(([^)]*)\)/);
-  const returnType = methodMatch ? methodMatch[1].trim() : "int*";
-  const methodName = methodMatch ? methodMatch[2].trim() : "twoSum";
+  const methodName = metadata.functionName;
+  const returnType = metadata.returnType;
 
   const rawArgs = splitInputArgs(stdinInput);
   const varDecls: string[] = [];
   const callArgs: string[] = [];
 
   rawArgs.forEach((argStr, idx) => {
+    const paramMeta = metadata.parameters[idx] || { name: `arg${idx}`, type: "string" };
     const varName = `arg${idx}`;
     const trimmedArg = argStr.trim();
 
@@ -616,7 +684,7 @@ function formatCSubmissionCode(code: string, stdinInput: string): string {
 
   let driverBody = "";
 
-  if (returnType === "bool" || returnType === "_Bool") {
+  if (returnType === "bool") {
     driverBody = `
     bool ans = ${methodName}(${callArgs.join(", ")});
     printf(ans ? "true\\n" : "false\\n");
@@ -626,18 +694,18 @@ function formatCSubmissionCode(code: string, stdinInput: string): string {
     int ans = ${methodName}(${callArgs.join(", ")});
     printf("%d\\n", ans);
 `;
-  } else if (returnType === "double" || returnType === "float") {
+  } else if (returnType === "double") {
     driverBody = `
     double ans = ${methodName}(${callArgs.join(", ")});
     printf("%f\\n", ans);
 `;
-  } else if (returnType === "char*") {
+  } else if (returnType === "string" || returnType === "char") {
     driverBody = `
     char* ans = ${methodName}(${callArgs.join(", ")});
     if (ans == NULL) printf("NULL\\n");
     else printf("%s\\n", ans);
 `;
-  } else if (returnType === "int*" || returnType === "int[]") {
+  } else if (returnType === "int[]" || returnType === "long[]") {
     driverBody = `
     int returnSize = 0;
     int* ans = ${methodName}(${callArgs.join(", ")}, &returnSize);
@@ -678,28 +746,34 @@ int main() {
   return trimmed + "\n" + cMain;
 }
 
-export function formatSubmissionCode(code: string, language: string, stdinInput: string): string {
+export function formatSubmissionCode(
+  code: string,
+  language: string,
+  stdinInput: string,
+  problemMetadata?: ProblemMetadata
+): string {
+  const meta = problemMetadata || resolveProblemMetadata();
   const lang = language.toLowerCase();
   switch (lang) {
     case "java":
-      return formatJavaSubmissionCode(code, stdinInput);
+      return formatJavaSubmissionCode(code, stdinInput, meta);
     case "c":
-      return formatCSubmissionCode(code, stdinInput);
+      return formatCSubmissionCode(code, stdinInput, meta);
     case "cpp":
     case "c++":
-      return formatCppSubmissionCode(code, stdinInput);
+      return formatCppSubmissionCode(code, stdinInput, meta);
     case "python":
     case "python3":
-      return formatPythonSubmissionCode(code, stdinInput);
+      return formatPythonSubmissionCode(code, stdinInput, meta);
     case "javascript":
     case "js":
-      return formatJSSubmissionCode(code, stdinInput);
+      return formatJSSubmissionCode(code, stdinInput, meta);
     case "go":
-      return formatGoSubmissionCode(code, stdinInput);
+      return formatGoSubmissionCode(code, stdinInput, meta);
     case "rust":
-      return formatRustSubmissionCode(code, stdinInput);
+      return formatRustSubmissionCode(code, stdinInput, meta);
     case "kotlin":
-      return formatKotlinSubmissionCode(code, stdinInput);
+      return formatKotlinSubmissionCode(code, stdinInput, meta);
     default:
       return code;
   }
@@ -770,8 +844,10 @@ function deepEqual(a: any, b: any): boolean {
 export async function executeJudge0Submission(
   code: string,
   language: string,
-  testCases: Array<{ input: string; expectedOutput: string }>
+  testCases: Array<{ input: string; expectedOutput: string }>,
+  problemMetadata?: ProblemMetadata
 ): Promise<ExecutionResult> {
+  const meta = problemMetadata || resolveProblemMetadata();
   const languageId = getJudge0LanguageId(language);
   const langUpper = language.toUpperCase();
   const timestamp = new Date().toISOString();
@@ -799,8 +875,8 @@ export async function executeJudge0Submission(
     let actual = "";
     let passed = false;
 
-    // Format strongly typed code per language and testcase
-    const finalCode = formatSubmissionCode(code, language, tc.input);
+    // Format strongly typed code strictly using problem metadata schema
+    const finalCode = formatSubmissionCode(code, language, tc.input, meta);
     const sha256Hash = crypto.createHash("sha256").update(finalCode).digest("hex");
 
     // TASK 8: WRAPPER VALIDATION LOGS
@@ -811,7 +887,7 @@ export async function executeJudge0Submission(
     outputLogs.push("==================================================");
 
     outputLogs.push("==================================================");
-    outputLogs.push("FINAL MERGED SOURCE SENT TO JUDGE0");
+    outputLogs.push(`FINAL MERGED SOURCE SENT TO JUDGE0 (Problem: ${meta.title} | ${meta.functionName})`);
     outputLogs.push("==================================================");
     outputLogs.push(finalCode);
     outputLogs.push(`Source Length: ${finalCode.length} characters`);

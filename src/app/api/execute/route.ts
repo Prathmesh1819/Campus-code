@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { executeJudge0Submission } from "@/lib/code-runner";
+import { executeJudge0Submission, resolveProblemMetadata } from "@/lib/code-runner";
 import { calculateAndUpdateStreak } from "@/lib/streak";
 
 export const dynamic = "force-dynamic";
@@ -24,8 +24,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Problem not found" }, { status: 404 });
     }
 
-    // Execute code via pure Judge0 CE API Engine
-    const result = await executeJudge0Submission(code, language, problem.testCases);
+    // Resolve exact metadata schema for problem
+    const metadata = resolveProblemMetadata(problem.id, problem.title);
+
+    // Execute code via Metadata-Driven Judge0 CE Execution Engine
+    const result = await executeJudge0Submission(code, language, problem.testCases, metadata);
 
     let submissionRecord = null;
 
