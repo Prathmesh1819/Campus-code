@@ -626,8 +626,8 @@ function deepEqual(a: any, b: any): boolean {
 }
 
 /**
- * Pure Judge0 CE Execution Engine.
- * Executes user code strictly through Judge0 CE API with zero caching.
+ * Pure Official Compiler Execution Engine via Judge0 CE API.
+ * Delegates 100% of syntax validation and compilation to official compiler/interpreters.
  */
 export async function executeJudge0Submission(
   code: string,
@@ -647,24 +647,6 @@ export async function executeJudge0Submission(
   outputLogs.push(`📝 Code Snippet: "${codeSnippet}"`);
   outputLogs.push(`🌐 Language Selected: ${langUpper}`);
   outputLogs.push(`🆔 Judge0 CE Language ID: ${languageId}`);
-
-  if (!code.trim() || code.includes("// TODO") || code.includes("# TODO") || code.includes("-- TODO")) {
-    return {
-      status: "WRONG_ANSWER",
-      executionTimeMs: 14,
-      memoryUsageKb: 14200,
-      testCasesPassed: 0,
-      totalTestCases: testCases.length,
-      outputLogs: [`❌ Warning: Starter template detected. Please implement your solution in ${langUpper}.`],
-      errorMessage: "Test Failed: Function / Query not implemented.",
-      testCaseDetails: testCases.map((tc) => ({
-        input: tc.input,
-        expected: tc.expectedOutput,
-        actual: "null (Not Implemented)",
-        passed: false,
-      })),
-    };
-  }
 
   const testCaseDetails: Array<{
     input: string;
@@ -733,7 +715,12 @@ export async function executeJudge0Submission(
 
       actual = stdout;
 
-      // Judge0 Status ID Mapping: 3=Accepted (Run Clean), 4=Wrong Answer, 5=Time Limit Exceeded, 6=Compilation Error, 7-12=Runtime Error
+      // Judge0 Official Compiler Status ID Mapping:
+      // 3 = Accepted
+      // 4 = Wrong Answer
+      // 5 = Time Limit Exceeded
+      // 6 = Compilation Error (JDK, GCC, G++, Rustc, Go, etc.)
+      // 7-12 = Runtime Error (Exception, Segfault, Non-zero Exit Code)
       if (statusId === 3) {
         passed = compareJudgeOutputs(actual, tc.expectedOutput);
         if (passed) passedCount++;
@@ -760,7 +747,7 @@ export async function executeJudge0Submission(
         actual = `RuntimeError:\n${firstErrorMessage}`;
       }
 
-      outputLogs.push(`  ├ Judge0 Output: "${actual}" | Comparison: ${passed ? "MATCH ✅" : "MISMATCH ❌"}`);
+      outputLogs.push(`  ├ Judge0 Output: "${actual}" | Evaluation: ${passed ? "MATCH ✅" : "MISMATCH ❌"}`);
 
       testCaseDetails.push({
         input: tc.input,
