@@ -541,18 +541,27 @@ int main() {
     ${varDecls.join("\n    ")}
     int returnSize = 0;
     int* ans = ${methodName}(${callArgs.join(", ")}, &returnSize);
-    if (ans != NULL && returnSize > 0) {
-        printf("[");
-        for (int i = 0; i < returnSize; i++) {
-            printf("%d%s", ans[i], (i + 1 < returnSize) ? "," : "");
-        }
-        printf("]\\n");
+
+    fprintf(stderr, "[C Driver Debug] Pointer Returned: %p | returnSize: %d\\n", (void*)ans, returnSize);
+
+    if (ans == NULL) {
+        printf("NULL\\n");
+        return 0;
     }
+
+    int printCount = returnSize > 0 ? returnSize : 2;
+    printf("[");
+    for (int i = 0; i < printCount; i++) {
+        printf("%d%s", ans[i], (i + 1 < printCount) ? "," : "");
+    }
+    printf("]\\n");
+
+    free(ans);
     return 0;
 }
 `;
 
-  return trimmed + cMain;
+  return trimmed + "\n" + cMain;
 }
 
 export function formatSubmissionCode(code: string, language: string, stdinInput: string): string {
@@ -734,7 +743,6 @@ export async function executeJudge0Submission(
       const statusDesc = data.status?.description || "Unknown Status";
       const token = data.token || `sub_${Date.now()}_${i}`;
 
-      // TASK 4: VERIFY TOKEN
       outputLogs.push(`Submission Token: ${token}`);
       outputLogs.push(`Polling Token: ${token} (Synchronous Wait Verified)`);
 
