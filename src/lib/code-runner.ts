@@ -169,7 +169,7 @@ function splitInputArgs(str: string): string[] {
 }
 
 /* ========================================================================== */
-/* DEDICATED LANGUAGE WRAPPER GENERATORS (PREPEND/APPEND ONLY, NEVER DISCARD) */
+/* DEDICATED LANGUAGE WRAPPER GENERATORS (DYNAMICALLY TYPED PER PROBLEM)     */
 /* ========================================================================== */
 
 function formatJavaSubmissionCode(code: string, stdinInput: string): string {
@@ -574,8 +574,9 @@ function formatCSubmissionCode(code: string, stdinInput: string): string {
   const trimmed = code.trim();
   if (/int\s+main\s*\(/i.test(trimmed)) return trimmed;
 
-  const methodMatch = trimmed.match(/[\w\*]+\s+(\w+)\s*\(([^)]*)\)/);
-  const methodName = methodMatch ? methodMatch[1] : "twoSum";
+  const methodMatch = trimmed.match(/([\w\*]+)\s+(\w+)\s*\(([^)]*)\)/);
+  const returnType = methodMatch ? methodMatch[1].trim() : "int*";
+  const methodName = methodMatch ? methodMatch[2].trim() : "twoSum";
 
   const rawArgs = splitInputArgs(stdinInput);
   const varDecls: string[] = [];
@@ -593,44 +594,83 @@ function formatCSubmissionCode(code: string, stdinInput: string): string {
         callArgs.push(varName);
         callArgs.push(`${varName}Size`);
       } else if (typeof parsed === "number") {
-        varDecls.push(`int ${varName} = ${parsed};`);
+        if (Number.isInteger(parsed)) varDecls.push(`int ${varName} = ${parsed};`);
+        else varDecls.push(`double ${varName} = ${parsed};`);
+        callArgs.push(varName);
+      } else if (typeof parsed === "boolean") {
+        varDecls.push(`bool ${varName} = ${parsed ? "true" : "false"};`);
+        callArgs.push(varName);
+      } else if (typeof parsed === "string") {
+        varDecls.push(`char* ${varName} = "${parsed.replace(/"/g, '\\"')}";`);
         callArgs.push(varName);
       } else {
         varDecls.push(`int ${varName} = ${trimmedArg};`);
         callArgs.push(varName);
       }
     } catch {
-      varDecls.push(`char ${varName}[] = "${trimmedArg.replace(/"/g, '\\"')}";`);
+      const cleanStr = trimmedArg.replace(/^"|"$/g, '').replace(/"/g, '\\"');
+      varDecls.push(`char* ${varName} = "${cleanStr}";`);
       callArgs.push(varName);
     }
   });
 
-  const cMain = `
+  let driverBody = "";
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-int main() {
-    ${varDecls.join("\n    ")}
+  if (returnType === "bool" || returnType === "_Bool") {
+    driverBody = `
+    bool ans = ${methodName}(${callArgs.join(", ")});
+    printf(ans ? "true\\n" : "false\\n");
+`;
+  } else if (returnType === "int" || returnType === "long") {
+    driverBody = `
+    int ans = ${methodName}(${callArgs.join(", ")});
+    printf("%d\\n", ans);
+`;
+  } else if (returnType === "double" || returnType === "float") {
+    driverBody = `
+    double ans = ${methodName}(${callArgs.join(", ")});
+    printf("%f\\n", ans);
+`;
+  } else if (returnType === "char*") {
+    driverBody = `
+    char* ans = ${methodName}(${callArgs.join(", ")});
+    if (ans == NULL) printf("NULL\\n");
+    else printf("%s\\n", ans);
+`;
+  } else if (returnType === "int*" || returnType === "int[]") {
+    driverBody = `
     int returnSize = 0;
     int* ans = ${methodName}(${callArgs.join(", ")}, &returnSize);
-
     fprintf(stderr, "[C Driver Debug] Pointer Returned: %p | returnSize: %d\\n", (void*)ans, returnSize);
-
     if (ans == NULL) {
         printf("NULL\\n");
         return 0;
     }
-
     int printCount = returnSize > 0 ? returnSize : 2;
     printf("[");
     for (int i = 0; i < printCount; i++) {
         printf("%d%s", ans[i], (i + 1 < printCount) ? "," : "");
     }
     printf("]\\n");
-
     free(ans);
+`;
+  } else {
+    driverBody = `
+    int ans = ${methodName}(${callArgs.join(", ")});
+    printf("%d\\n", ans);
+`;
+  }
+
+  const cMain = `
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+
+int main() {
+    ${varDecls.join("\n    ")}
+    ${driverBody.trim()}
     return 0;
 }
 `;
