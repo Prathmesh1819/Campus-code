@@ -1,3 +1,5 @@
+import crypto from "crypto";
+
 export interface ExecutionResult {
   status: "ACCEPTED" | "WRONG_ANSWER" | "TIME_LIMIT_EXCEEDED" | "RUNTIME_ERROR" | "COMPILATION_ERROR";
   executionTimeMs: number;
@@ -12,6 +14,16 @@ export interface ExecutionResult {
     actual: string;
     passed: boolean;
   }>;
+  debugInfo?: {
+    editorCode: string;
+    finalGeneratedSource: string;
+    sha256: string;
+    sourceLength: number;
+    judge0RequestPayload: any;
+    rawJudge0ResponseJSON: any;
+    outputComparison: string;
+    verdict: string;
+  };
 }
 
 /**
@@ -83,7 +95,7 @@ function splitInputArgs(str: string): string[] {
 }
 
 /* ========================================================================== */
-/* DEDICATED LANGUAGE WRAPPER GENERATORS                                      */
+/* DEDICATED LANGUAGE WRAPPER GENERATORS (PREPEND/APPEND ONLY, NEVER DISCARD) */
 /* ========================================================================== */
 
 function formatJavaSubmissionCode(code: string, stdinInput: string): string {
@@ -285,14 +297,24 @@ function formatPythonSubmissionCode(code: string, stdinInput: string): string {
 import json
 
 if __name__ == "__main__":
-    sol = Solution()
-    ans = sol.${methodName}(${callArgs.join(", ")})
-    if isinstance(ans, (list, dict)):
-        print(json.dumps(ans))
-    elif isinstance(ans, bool):
-        print(str(ans).lower())
-    else:
-        print(ans)
+    if 'Solution' in globals():
+        sol = Solution()
+        if hasattr(sol, '${methodName}'):
+            ans = getattr(sol, '${methodName}')(${callArgs.join(", ")})
+            if isinstance(ans, (list, dict)):
+                print(json.dumps(ans))
+            elif isinstance(ans, bool):
+                print(str(ans).lower())
+            else:
+                print(ans)
+    elif '${methodName}' in globals():
+        ans = globals()['${methodName}'](${callArgs.join(", ")})
+        if isinstance(ans, (list, dict)):
+            print(json.dumps(ans))
+        elif isinstance(ans, bool):
+            print(str(ans).lower())
+        else:
+            print(ans)
 `;
 
   return trimmed + pyMain;
@@ -310,18 +332,15 @@ function formatJSSubmissionCode(code: string, stdinInput: string): string {
 
   const jsMain = `
 
-try {
-  let solObj = null;
-  if (typeof Solution === 'function') {
-    solObj = new Solution();
-  }
-  let fn = solObj && typeof solObj.${methodName} === 'function' ? solObj.${methodName}.bind(solObj) : (typeof ${methodName} === 'function' ? ${methodName} : null);
-  if (fn) {
-    const ans = fn(${callArgs.join(", ")});
+if (typeof Solution === 'function') {
+  const solObj = new Solution();
+  if (typeof solObj.${methodName} === 'function') {
+    const ans = solObj.${methodName}(${callArgs.join(", ")});
     console.log(typeof ans === 'object' ? JSON.stringify(ans) : ans);
   }
-} catch (e) {
-  console.error(e.message);
+} else if (typeof ${methodName} === 'function') {
+  const ans = ${methodName}(${callArgs.join(", ")});
+  console.log(typeof ans === 'object' ? JSON.stringify(ans) : ans);
 }
 `;
 
@@ -567,26 +586,22 @@ export function formatSubmissionCode(code: string, language: string, stdinInput:
  * LeetCode-Grade Deep Output Normalizer & Evaluator
  */
 function compareJudgeOutputs(actualStr: string, expectedStr: string): boolean {
-  // 1. Exact String match after trimming whitespace & trailing newlines
   const normActual = actualStr.trim().replace(/\r\n/g, "\n");
   const normExpected = expectedStr.trim().replace(/\r\n/g, "\n");
 
   if (normActual === normExpected) return true;
 
-  // 2. Standardized Whitespace Removal
   const compactActual = normActual.replace(/\s+/g, "");
   const compactExpected = normExpected.replace(/\s+/g, "");
 
   if (compactActual === compactExpected) return true;
 
-  // 3. Deep JSON / Array / Nested Matrix comparison
   try {
     const jsonActual = JSON.parse(normActual);
     const jsonExpected = JSON.parse(normExpected);
 
     return deepEqual(jsonActual, jsonExpected);
   } catch (e) {
-    // If not JSON, try numeric floating-point comparison with tolerance
     const numActual = parseFloat(normActual);
     const numExpected = parseFloat(normExpected);
     if (!isNaN(numActual) && !isNaN(numExpected)) {
@@ -637,16 +652,8 @@ export async function executeJudge0Submission(
   const languageId = getJudge0LanguageId(language);
   const langUpper = language.toUpperCase();
   const timestamp = new Date().toISOString();
-  const codeHash = Math.abs(code.split("").reduce((a, b) => ((a << 5) - a + b.charCodeAt(0)) | 0, 0)).toString(16);
-  const codeSnippet = code.trim().slice(0, 100).replace(/\n/g, " ");
 
   const outputLogs: string[] = [];
-
-  outputLogs.push(`⏱️ Execution Timestamp: ${timestamp}`);
-  outputLogs.push(`🔑 Source Code Hash: #${codeHash} (Length: ${code.length} chars)`);
-  outputLogs.push(`📝 Code Snippet: "${codeSnippet}"`);
-  outputLogs.push(`🌐 Language Selected: ${langUpper}`);
-  outputLogs.push(`🆔 Judge0 CE Language ID: ${languageId}`);
 
   const testCaseDetails: Array<{
     input: string;
@@ -662,6 +669,7 @@ export async function executeJudge0Submission(
   let firstErrorMessage = "";
 
   const judge0Host = process.env.JUDGE0_API_URL || "https://ce.judge0.com";
+  let firstDebugInfo: ExecutionResult["debugInfo"] | undefined = undefined;
 
   for (let i = 0; i < testCases.length; i++) {
     const tc = testCases[i];
@@ -670,8 +678,34 @@ export async function executeJudge0Submission(
 
     // Format strongly typed code per language and testcase
     const finalCode = formatSubmissionCode(code, language, tc.input);
+    const sha256Hash = crypto.createHash("sha256").update(finalCode).digest("hex");
 
-    outputLogs.push(`🚀 [Test ${i + 1}/${testCases.length}] Input: ${tc.input} | Expected: ${tc.expectedOutput}`);
+    // TASK 1: VERIFY FINAL SOURCE CODE
+    outputLogs.push("==================================================");
+    outputLogs.push("FINAL SOURCE SENT TO JUDGE0");
+    outputLogs.push("==================================================");
+    outputLogs.push(finalCode);
+    outputLogs.push(`Source Length: ${finalCode.length} characters`);
+    outputLogs.push(`SHA256 Hash: ${sha256Hash}`);
+    outputLogs.push("==================================================");
+
+    const postPayload = {
+      source_code: finalCode,
+      language_id: languageId,
+      stdin: tc.input,
+      cpu_time_limit: 5.0,
+      memory_limit: 128000,
+    };
+
+    // TASK 2: VERIFY HTTP REQUEST
+    outputLogs.push("==================================================");
+    outputLogs.push("JUDGE0 HTTP POST REQUEST");
+    outputLogs.push("==================================================");
+    outputLogs.push(`URL: ${judge0Host}/submissions?base64_encoded=false&wait=true`);
+    outputLogs.push(`Method: POST`);
+    outputLogs.push(`Headers: Content-Type: application/json, Cache-Control: no-cache`);
+    outputLogs.push(`Payload:\n${JSON.stringify(postPayload, null, 2)}`);
+    outputLogs.push("==================================================");
 
     try {
       const response = await fetch(`${judge0Host}/submissions?base64_encoded=false&wait=true`, {
@@ -681,16 +715,18 @@ export async function executeJudge0Submission(
           "Content-Type": "application/json",
           "Cache-Control": "no-cache, no-store, must-revalidate",
         },
-        body: JSON.stringify({
-          source_code: finalCode,
-          language_id: languageId,
-          stdin: tc.input,
-          cpu_time_limit: 5.0,
-          memory_limit: 128000,
-        }),
+        body: JSON.stringify(postPayload),
       });
 
       const data = await response.json();
+
+      // TASK 3: VERIFY HTTP RESPONSE
+      outputLogs.push("==================================================");
+      outputLogs.push("RAW JUDGE0 RESPONSE");
+      outputLogs.push("==================================================");
+      outputLogs.push(JSON.stringify(data, null, 2));
+      outputLogs.push("==================================================");
+
       const stdout = (data.stdout || "").trim();
       const stderr = (data.stderr || "").trim();
       const compileOutput = (data.compile_output || "").trim();
@@ -698,24 +734,18 @@ export async function executeJudge0Submission(
       const statusDesc = data.status?.description || "Unknown Status";
       const token = data.token || `sub_${Date.now()}_${i}`;
 
+      // TASK 4: VERIFY TOKEN
+      outputLogs.push(`Submission Token: ${token}`);
+      outputLogs.push(`Polling Token: ${token} (Synchronous Wait Verified)`);
+
       const timeMs = Math.round(parseFloat(data.time || "0.015") * 1000);
       const memoryKb = data.memory || 14200;
       maxTimeMs = Math.max(maxTimeMs, timeMs);
       maxMemoryKb = Math.max(maxMemoryKb, memoryKb);
 
-      outputLogs.push(`  ├ Raw Judge0 JSON: ${JSON.stringify(data)}`);
-      outputLogs.push(`  ├ Token: ${token} | Status: ${statusDesc} (ID: ${statusId}) | CPU Time: ${timeMs}ms | RAM: ${memoryKb}KB`);
-
-      if (compileOutput) {
-        outputLogs.push(`  ├ Compiler Output: ${compileOutput}`);
-      }
-      if (stderr) {
-        outputLogs.push(`  ├ Stderr: ${stderr}`);
-      }
-
       actual = stdout;
 
-      // Judge0 Official Compiler Status ID Mapping:
+      // Judge0 Status ID Mapping:
       // 3 = Accepted
       // 4 = Wrong Answer
       // 5 = Time Limit Exceeded
@@ -747,7 +777,7 @@ export async function executeJudge0Submission(
         actual = `RuntimeError:\n${firstErrorMessage}`;
       }
 
-      outputLogs.push(`  ├ Judge0 Output: "${actual}" | Evaluation: ${passed ? "MATCH ✅" : "MISMATCH ❌"}`);
+      outputLogs.push(`Judge0 Output: "${actual}" | Evaluation: ${passed ? "MATCH ✅" : "MISMATCH ❌"}`);
 
       testCaseDetails.push({
         input: tc.input,
@@ -755,6 +785,19 @@ export async function executeJudge0Submission(
         actual,
         passed,
       });
+
+      if (!firstDebugInfo) {
+        firstDebugInfo = {
+          editorCode: code,
+          finalGeneratedSource: finalCode,
+          sha256: sha256Hash,
+          sourceLength: finalCode.length,
+          judge0RequestPayload: postPayload,
+          rawJudge0ResponseJSON: data,
+          outputComparison: `Actual: "${actual}" vs Expected: "${tc.expectedOutput}" (${passed ? "MATCH" : "MISMATCH"})`,
+          verdict: overallStatus,
+        };
+      }
 
       if (statusId === 6) break;
     } catch (err: any) {
@@ -794,5 +837,6 @@ export async function executeJudge0Submission(
     outputLogs,
     errorMessage: firstErrorMessage || undefined,
     testCaseDetails,
+    debugInfo: firstDebugInfo,
   };
 }
