@@ -1,4 +1,8 @@
 import crypto from "crypto";
+import fs from "fs";
+import path from "path";
+import os from "os";
+import { execSync } from "child_process";
 
 export interface ExecutionResult {
   status: "ACCEPTED" | "WRONG_ANSWER" | "TIME_LIMIT_EXCEEDED" | "RUNTIME_ERROR" | "COMPILATION_ERROR";
@@ -55,6 +59,76 @@ export function getJudge0LanguageId(language: string): number {
     default:
       return 63;
   }
+}
+
+/**
+ * Local compiler syntax validator
+ */
+function validateSyntaxLocally(finalCode: string, language: string): { valid: boolean; error?: string } {
+  const tmpDir = os.tmpdir();
+  const lang = language.toLowerCase();
+
+  try {
+    if (lang === "javascript" || lang === "js") {
+      const filePath = path.join(tmpDir, `temp_${Date.now()}.js`);
+      fs.writeFileSync(filePath, finalCode, "utf8");
+      try {
+        execSync(`node --check "${filePath}"`, { stdio: "pipe", timeout: 3000 });
+        return { valid: true };
+      } catch (err: any) {
+        const errorMsg = err.stderr ? err.stderr.toString() : err.message;
+        return { valid: false, error: errorMsg };
+      } finally {
+        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+      }
+    }
+
+    if (lang === "python" || lang === "python3") {
+      const filePath = path.join(tmpDir, `temp_${Date.now()}.py`);
+      fs.writeFileSync(filePath, finalCode, "utf8");
+      try {
+        execSync(`python3 -m py_compile "${filePath}"`, { stdio: "pipe", timeout: 3000 });
+        return { valid: true };
+      } catch (err: any) {
+        const errorMsg = err.stderr ? err.stderr.toString() : err.message;
+        return { valid: false, error: errorMsg };
+      } finally {
+        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+      }
+    }
+
+    if (lang === "c") {
+      const filePath = path.join(tmpDir, `temp_${Date.now()}.c`);
+      fs.writeFileSync(filePath, finalCode, "utf8");
+      try {
+        execSync(`gcc -fsyntax-only "${filePath}"`, { stdio: "pipe", timeout: 3000 });
+        return { valid: true };
+      } catch (err: any) {
+        const errorMsg = err.stderr ? err.stderr.toString() : err.message;
+        return { valid: false, error: errorMsg };
+      } finally {
+        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+      }
+    }
+
+    if (lang === "cpp" || lang === "c++") {
+      const filePath = path.join(tmpDir, `temp_${Date.now()}.cpp`);
+      fs.writeFileSync(filePath, finalCode, "utf8");
+      try {
+        execSync(`g++ -fsyntax-only "${filePath}"`, { stdio: "pipe", timeout: 3000 });
+        return { valid: true };
+      } catch (err: any) {
+        const errorMsg = err.stderr ? err.stderr.toString() : err.message;
+        return { valid: false, error: errorMsg };
+      } finally {
+        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+      }
+    }
+  } catch (e) {
+    // If local compiler tools are unavailable, fall through gracefully to Judge0
+  }
+
+  return { valid: true };
 }
 
 /**
@@ -689,14 +763,55 @@ export async function executeJudge0Submission(
     const finalCode = formatSubmissionCode(code, language, tc.input);
     const sha256Hash = crypto.createHash("sha256").update(finalCode).digest("hex");
 
-    // TASK 1: VERIFY FINAL SOURCE CODE
+    // TASK 8: WRAPPER VALIDATION LOGS
     outputLogs.push("==================================================");
-    outputLogs.push("FINAL SOURCE SENT TO JUDGE0");
+    outputLogs.push("USER SOURCE CODE");
+    outputLogs.push("==================================================");
+    outputLogs.push(code);
+    outputLogs.push("==================================================");
+
+    outputLogs.push("==================================================");
+    outputLogs.push("FINAL MERGED SOURCE SENT TO JUDGE0");
     outputLogs.push("==================================================");
     outputLogs.push(finalCode);
     outputLogs.push(`Source Length: ${finalCode.length} characters`);
     outputLogs.push(`SHA256 Hash: ${sha256Hash}`);
     outputLogs.push("==================================================");
+
+    // TASK 7: PRE-SUBMISSION LOCAL COMPILATION SYNTAX CHECK
+    const localValidation = validateSyntaxLocally(finalCode, language);
+    outputLogs.push(`Compiler validation result: ${localValidation.valid ? "PASS ✅" : "FAIL ❌"}`);
+
+    if (!localValidation.valid) {
+      const syntaxErrorMsg = localValidation.error || "Local Compiler Syntax Validation Failed";
+      outputLogs.push(`❌ Pre-submission Compiler Error:\n${syntaxErrorMsg}`);
+
+      return {
+        status: "COMPILATION_ERROR",
+        executionTimeMs: 0,
+        memoryUsageKb: 0,
+        testCasesPassed: 0,
+        totalTestCases: testCases.length,
+        outputLogs,
+        errorMessage: syntaxErrorMsg,
+        testCaseDetails: testCases.map((caseItem) => ({
+          input: caseItem.input,
+          expected: caseItem.expectedOutput,
+          actual: `CompilationError:\n${syntaxErrorMsg}`,
+          passed: false,
+        })),
+        debugInfo: {
+          editorCode: code,
+          finalGeneratedSource: finalCode,
+          sha256: sha256Hash,
+          sourceLength: finalCode.length,
+          judge0RequestPayload: { note: "Skipped Judge0 submission due to local compiler validation failure" },
+          rawJudge0ResponseJSON: { error: syntaxErrorMsg },
+          outputComparison: "Compilation Error (Pre-submission failure)",
+          verdict: "COMPILATION_ERROR",
+        },
+      };
+    }
 
     const postPayload = {
       source_code: finalCode,
@@ -706,7 +821,6 @@ export async function executeJudge0Submission(
       memory_limit: 128000,
     };
 
-    // TASK 2: VERIFY HTTP REQUEST
     outputLogs.push("==================================================");
     outputLogs.push("JUDGE0 HTTP POST REQUEST");
     outputLogs.push("==================================================");
@@ -729,7 +843,6 @@ export async function executeJudge0Submission(
 
       const data = await response.json();
 
-      // TASK 3: VERIFY HTTP RESPONSE
       outputLogs.push("==================================================");
       outputLogs.push("RAW JUDGE0 RESPONSE");
       outputLogs.push("==================================================");
