@@ -1,0 +1,16 @@
+{
+  "id": "two-sum",
+  "title": "Two Sum",
+  "functionName": "twoSum",
+  "returnType": "int[]",
+  "parameters": [
+    {
+      "name": "nums",
+      "type": "int[]"
+    },
+    {
+      "name": "target",
+      "type": "int"
+    }
+  ]
+}

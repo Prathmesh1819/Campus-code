@@ -1,0 +1,12 @@
+{
+  "id": "valid-palindrome",
+  "title": "Valid Palindrome",
+  "functionName": "isPalindrome",
+  "returnType": "bool",
+  "parameters": [
+    {
+      "name": "s",
+      "type": "string"
+    }
+  ]
+}

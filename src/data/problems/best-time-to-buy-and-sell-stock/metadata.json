@@ -1,0 +1,12 @@
+{
+  "id": "best-time-to-buy-and-sell-stock",
+  "title": "Best Time to Buy and Sell Stock",
+  "functionName": "maxProfit",
+  "returnType": "int",
+  "parameters": [
+    {
+      "name": "prices",
+      "type": "int[]"
+    }
+  ]
+}

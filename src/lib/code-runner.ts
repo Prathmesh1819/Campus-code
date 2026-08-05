@@ -71,8 +71,27 @@ export const PROBLEM_METADATA_REGISTRY: Record<string, ProblemMetadata> = {
 };
 
 export function resolveProblemMetadata(problemId?: string, problemTitle?: string): ProblemMetadata {
-  if (problemId && PROBLEM_METADATA_REGISTRY[problemId]) {
-    return PROBLEM_METADATA_REGISTRY[problemId];
+  if (problemId) {
+    const cleanId = problemId.toLowerCase().replace(/[^a-z0-9-]+/g, "-");
+    const possibleDiskPaths = [
+      path.join(process.cwd(), "src", "data", "problems", problemId, "metadata.json"),
+      path.join(process.cwd(), "src", "data", "problems", cleanId, "metadata.json"),
+    ];
+
+    for (const diskPath of possibleDiskPaths) {
+      if (fs.existsSync(diskPath)) {
+        try {
+          const content = fs.readFileSync(diskPath, "utf8");
+          return JSON.parse(content) as ProblemMetadata;
+        } catch (e) {
+          // ignore error
+        }
+      }
+    }
+
+    if (PROBLEM_METADATA_REGISTRY[problemId]) {
+      return PROBLEM_METADATA_REGISTRY[problemId];
+    }
   }
 
   const slug = (problemId || "").toLowerCase();
