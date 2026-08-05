@@ -1,8 +1,6 @@
 import crypto from "crypto";
 import fs from "fs";
 import path from "path";
-import os from "os";
-import { execSync } from "child_process";
 
 export interface ParameterMetadata {
   name: string;
@@ -173,76 +171,6 @@ export function getJudge0LanguageId(language: string): number {
 }
 
 /**
- * Local compiler syntax validator
- */
-function validateSyntaxLocally(finalCode: string, language: string): { valid: boolean; error?: string } {
-  const tmpDir = os.tmpdir();
-  const lang = language.toLowerCase();
-
-  try {
-    if (lang === "javascript" || lang === "js") {
-      const filePath = path.join(tmpDir, `temp_${Date.now()}.js`);
-      fs.writeFileSync(filePath, finalCode, "utf8");
-      try {
-        execSync(`node --check "${filePath}"`, { stdio: "pipe", timeout: 3000 });
-        return { valid: true };
-      } catch (err: any) {
-        const errorMsg = err.stderr ? err.stderr.toString() : err.message;
-        return { valid: false, error: errorMsg };
-      } finally {
-        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-      }
-    }
-
-    if (lang === "python" || lang === "python3") {
-      const filePath = path.join(tmpDir, `temp_${Date.now()}.py`);
-      fs.writeFileSync(filePath, finalCode, "utf8");
-      try {
-        execSync(`python3 -m py_compile "${filePath}"`, { stdio: "pipe", timeout: 3000 });
-        return { valid: true };
-      } catch (err: any) {
-        const errorMsg = err.stderr ? err.stderr.toString() : err.message;
-        return { valid: false, error: errorMsg };
-      } finally {
-        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-      }
-    }
-
-    if (lang === "c") {
-      const filePath = path.join(tmpDir, `temp_${Date.now()}.c`);
-      fs.writeFileSync(filePath, finalCode, "utf8");
-      try {
-        execSync(`gcc -fsyntax-only "${filePath}"`, { stdio: "pipe", timeout: 3000 });
-        return { valid: true };
-      } catch (err: any) {
-        const errorMsg = err.stderr ? err.stderr.toString() : err.message;
-        return { valid: false, error: errorMsg };
-      } finally {
-        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-      }
-    }
-
-    if (lang === "cpp" || lang === "c++") {
-      const filePath = path.join(tmpDir, `temp_${Date.now()}.cpp`);
-      fs.writeFileSync(filePath, finalCode, "utf8");
-      try {
-        execSync(`g++ -fsyntax-only "${filePath}"`, { stdio: "pipe", timeout: 3000 });
-        return { valid: true };
-      } catch (err: any) {
-        const errorMsg = err.stderr ? err.stderr.toString() : err.message;
-        return { valid: false, error: errorMsg };
-      } finally {
-        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-      }
-    }
-  } catch (e) {
-    // Fall through gracefully to Judge0 if local tools are absent
-  }
-
-  return { valid: true };
-}
-
-/**
  * Bracket and quote-aware input argument splitter on Node server side
  */
 function splitInputArgs(str: string): string[] {
@@ -279,8 +207,12 @@ function splitInputArgs(str: string): string[] {
   return args;
 }
 
+function toSnakeCase(str: string): string {
+  return str.replace(/([a-z0-9])([A-Z])/g, "$1_$2").toLowerCase();
+}
+
 /* ========================================================================== */
-/* METADATA-DRIVEN LANGUAGE WRAPPER GENERATORS (ZERO USER CODE PARSING)       */
+/* METADATA-DRIVEN LANGUAGE WRAPPER GENERATORS                               */
 /* ========================================================================== */
 
 function formatJavaSubmissionCode(code: string, stdinInput: string, metadata: ProblemMetadata): string {
@@ -426,10 +358,13 @@ function formatCppSubmissionCode(code: string, stdinInput: string, metadata: Pro
 #include <vector>
 #include <string>
 #include <unordered_map>
+#include <map>
 #include <algorithm>
+#include <cmath>
 using namespace std;
 
 void printAns(int val) { cout << val << endl; }
+void printAns(long long val) { cout << val << endl; }
 void printAns(double val) { cout << val << endl; }
 void printAns(bool val) { cout << (val ? "true" : "false") << endl; }
 void printAns(const string& val) { cout << val << endl; }
@@ -437,6 +372,13 @@ void printAns(const vector<int>& vec) {
     cout << "[";
     for (size_t i = 0; i < vec.size(); i++) {
         cout << vec[i] << (i + 1 < vec.size() ? "," : "");
+    }
+    cout << "]" << endl;
+}
+void printAns(const vector<string>& vec) {
+    cout << "[";
+    for (size_t i = 0; i < vec.size(); i++) {
+        cout << "\\"" << vec[i] << "\\"" << (i + 1 < vec.size() ? "," : "");
     }
     cout << "]" << endl;
 }
@@ -515,7 +457,7 @@ if (typeof Solution === 'function') {
 }
 
 function formatGoSubmissionCode(code: string, stdinInput: string, metadata: ProblemMetadata): string {
-  const trimmed = code.trim();
+  let trimmed = code.trim();
   if (/func\s+main\s*\(/i.test(trimmed)) return trimmed;
 
   const methodName = metadata.functionName;
@@ -546,13 +488,6 @@ function formatGoSubmissionCode(code: string, stdinInput: string, metadata: Prob
 
   const goMain = `
 
-package main
-
-import (
-	"encoding/json"
-	"fmt"
-)
-
 func main() {
 	${varDecls.join("\n\t")}
 	ans := ${methodName}(${callArgs.join(", ")})
@@ -565,7 +500,23 @@ func main() {
 }
 `;
 
-  return trimmed.startsWith("package main") ? trimmed + goMain : "package main\n\n" + trimmed + goMain;
+  let cleanUserCode = trimmed;
+  if (cleanUserCode.startsWith("package main")) {
+    cleanUserCode = cleanUserCode.replace(/^package\s+main\s*/, "").trim();
+  }
+
+  return `package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"sort"
+	"strings"
+)
+
+${cleanUserCode}
+
+${goMain}`;
 }
 
 function formatRustSubmissionCode(code: string, stdinInput: string, metadata: ProblemMetadata): string {
@@ -573,6 +524,7 @@ function formatRustSubmissionCode(code: string, stdinInput: string, metadata: Pr
   if (/fn\s+main\s*\(/i.test(trimmed)) return trimmed;
 
   const methodName = metadata.functionName;
+  const snakeMethodName = toSnakeCase(methodName);
   const rawArgs = splitInputArgs(stdinInput);
   const varDecls: string[] = [];
   const callArgs: string[] = [];
@@ -602,12 +554,18 @@ function formatRustSubmissionCode(code: string, stdinInput: string, metadata: Pr
 
 fn main() {
     ${varDecls.join("\n    ")}
-    let ans = Solution::${methodName}(${callArgs.join(", ")});
+    let ans = Solution::${snakeMethodName}(${callArgs.join(", ")});
     println!("{:?}", ans);
 }
 `;
 
-  return trimmed + rustMain;
+  return `use std::collections::HashMap;
+
+struct Solution;
+
+${trimmed}
+
+${rustMain}`;
 }
 
 function formatKotlinSubmissionCode(code: string, stdinInput: string, metadata: ProblemMetadata): string {
@@ -868,9 +826,6 @@ export async function executeJudge0Submission(
 ): Promise<ExecutionResult> {
   const meta = problemMetadata || resolveProblemMetadata();
   const languageId = getJudge0LanguageId(language);
-  const langUpper = language.toUpperCase();
-  const timestamp = new Date().toISOString();
-
   const outputLogs: string[] = [];
 
   const testCaseDetails: Array<{
@@ -898,7 +853,6 @@ export async function executeJudge0Submission(
     const finalCode = formatSubmissionCode(code, language, tc.input, meta);
     const sha256Hash = crypto.createHash("sha256").update(finalCode).digest("hex");
 
-    // TASK 8: WRAPPER VALIDATION LOGS
     outputLogs.push("==================================================");
     outputLogs.push("USER SOURCE CODE");
     outputLogs.push("==================================================");
@@ -906,47 +860,12 @@ export async function executeJudge0Submission(
     outputLogs.push("==================================================");
 
     outputLogs.push("==================================================");
-    outputLogs.push(`FINAL MERGED SOURCE SENT TO JUDGE0 (Problem: ${meta.title} | ${meta.functionName})`);
+    outputLogs.push(`FINAL MERGED SOURCE SENT TO JUDGE0 (Lang ID: ${languageId} | Problem: ${meta.title} | ${meta.functionName})`);
     outputLogs.push("==================================================");
     outputLogs.push(finalCode);
     outputLogs.push(`Source Length: ${finalCode.length} characters`);
     outputLogs.push(`SHA256 Hash: ${sha256Hash}`);
     outputLogs.push("==================================================");
-
-    // TASK 7: PRE-SUBMISSION LOCAL COMPILATION SYNTAX CHECK
-    const localValidation = validateSyntaxLocally(finalCode, language);
-    outputLogs.push(`Compiler validation result: ${localValidation.valid ? "PASS ✅" : "FAIL ❌"}`);
-
-    if (!localValidation.valid) {
-      const syntaxErrorMsg = localValidation.error || "Local Compiler Syntax Validation Failed";
-      outputLogs.push(`❌ Pre-submission Compiler Error:\n${syntaxErrorMsg}`);
-
-      return {
-        status: "COMPILATION_ERROR",
-        executionTimeMs: 0,
-        memoryUsageKb: 0,
-        testCasesPassed: 0,
-        totalTestCases: testCases.length,
-        outputLogs,
-        errorMessage: syntaxErrorMsg,
-        testCaseDetails: testCases.map((caseItem) => ({
-          input: caseItem.input,
-          expected: caseItem.expectedOutput,
-          actual: `CompilationError:\n${syntaxErrorMsg}`,
-          passed: false,
-        })),
-        debugInfo: {
-          editorCode: code,
-          finalGeneratedSource: finalCode,
-          sha256: sha256Hash,
-          sourceLength: finalCode.length,
-          judge0RequestPayload: { note: "Skipped Judge0 submission due to local compiler validation failure" },
-          rawJudge0ResponseJSON: { error: syntaxErrorMsg },
-          outputComparison: "Compilation Error (Pre-submission failure)",
-          verdict: "COMPILATION_ERROR",
-        },
-      };
-    }
 
     const postPayload = {
       source_code: finalCode,
@@ -957,11 +876,10 @@ export async function executeJudge0Submission(
     };
 
     outputLogs.push("==================================================");
-    outputLogs.push("JUDGE0 HTTP POST REQUEST");
+    outputLogs.push("RAW JUDGE0 REQUEST PAYLOAD");
     outputLogs.push("==================================================");
     outputLogs.push(`URL: ${judge0Host}/submissions?base64_encoded=false&wait=true`);
     outputLogs.push(`Method: POST`);
-    outputLogs.push(`Headers: Content-Type: application/json, Cache-Control: no-cache`);
     outputLogs.push(`Payload:\n${JSON.stringify(postPayload, null, 2)}`);
     outputLogs.push("==================================================");
 
@@ -991,8 +909,10 @@ export async function executeJudge0Submission(
       const statusDesc = data.status?.description || "Unknown Status";
       const token = data.token || `sub_${Date.now()}_${i}`;
 
+      outputLogs.push(`Compiler Output:\n${compileOutput || "(none)"}`);
+      outputLogs.push(`Runtime Output:\n${stdout || "(none)"}`);
+      outputLogs.push(`Stderr:\n${stderr || "(none)"}`);
       outputLogs.push(`Submission Token: ${token}`);
-      outputLogs.push(`Polling Token: ${token} (Synchronous Wait Verified)`);
 
       const timeMs = Math.round(parseFloat(data.time || "0.015") * 1000);
       const memoryKb = data.memory || 14200;
@@ -1001,12 +921,6 @@ export async function executeJudge0Submission(
 
       actual = stdout;
 
-      // Judge0 Status ID Mapping:
-      // 3 = Accepted
-      // 4 = Wrong Answer
-      // 5 = Time Limit Exceeded
-      // 6 = Compilation Error (JDK, GCC, G++, Rustc, Go, etc.)
-      // 7-12 = Runtime Error (Exception, Segfault, Non-zero Exit Code)
       if (statusId === 3) {
         passed = compareJudgeOutputs(actual, tc.expectedOutput);
         if (passed) passedCount++;
