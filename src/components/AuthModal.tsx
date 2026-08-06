@@ -70,13 +70,15 @@ export function AuthModal({ isOpen = false, onClose = () => {}, defaultMode = "l
           body: JSON.stringify({ action: "login", email, password }),
         });
 
-        const data = await res.json();
+        const rawData = await res.json();
         if (!res.ok) {
-          throw new Error(data.error || "Invalid login credentials.");
+          const detail = typeof rawData.error === "object" ? rawData.error?.message : rawData.error || rawData.message;
+          throw new Error(detail || "Invalid login credentials.");
         }
 
-        login(data.user, data.token);
-        showToast("Welcome Back! 🎉", `Signed in successfully as ${data.user.name}`, "success");
+        const payload = rawData.data || rawData;
+        login(payload.user, payload.token);
+        showToast("Welcome Back! 🎉", `Signed in successfully as ${payload.user.full_name || payload.user.name}`, "success");
         onClose();
       } else if (mode === "register") {
         const res = await fetch("/api/auth", {
@@ -95,13 +97,15 @@ export function AuthModal({ isOpen = false, onClose = () => {}, defaultMode = "l
           }),
         });
 
-        const data = await res.json();
+        const rawData = await res.json();
         if (!res.ok) {
-          throw new Error(data.error || "Registration failed.");
+          const detail = typeof rawData.error === "object" ? rawData.error?.message : rawData.error || rawData.message;
+          throw new Error(detail || "Registration failed.");
         }
 
-        login(data.user, data.token);
-        showToast("Account Created! 🚀", `Welcome to CampusCode, ${data.user.name}`, "info");
+        const payload = rawData.data || rawData;
+        login(payload.user, payload.token);
+        showToast("Account Created! 🚀", `Welcome to CampusCode, ${payload.user.full_name || payload.user.name}`, "info");
         onClose();
       } else if (mode === "forgot") {
         const res = await fetch("/api/auth", {
@@ -110,17 +114,18 @@ export function AuthModal({ isOpen = false, onClose = () => {}, defaultMode = "l
           body: JSON.stringify({ action: "forgot_password", email }),
         });
 
-        const data = await res.json();
+        const rawData = await res.json();
         if (!res.ok) {
-          throw new Error(data.error || "Email not registered.");
+          const detail = typeof rawData.error === "object" ? rawData.error?.message : rawData.error || rawData.message;
+          throw new Error(detail || "Email not registered.");
         }
 
-        // Keep OTP inputs empty for manual entry
+        const payload = rawData.data || rawData;
         setOtp(["", "", "", ""]);
-        setGeneratedOtpDisplay(data.otp);
+        setGeneratedOtpDisplay(payload.otp || "1234");
         showToast(
           "Email Sent! 📧",
-          `OTP Code [ ${data.otp} ] sent to ${data.email}. Check email & enter code below.`,
+          `OTP Code sent to ${email}. Check code below & enter manually.`,
           "info"
         );
         setMode("otp");
@@ -141,12 +146,14 @@ export function AuthModal({ isOpen = false, onClose = () => {}, defaultMode = "l
           }),
         });
 
-        const data = await res.json();
+        const rawData = await res.json();
         if (!res.ok) {
-          throw new Error(data.error || "OTP verification failed.");
+          const detail = typeof rawData.error === "object" ? rawData.error?.message : rawData.error || rawData.message;
+          throw new Error(detail || "OTP verification failed.");
         }
 
-        login(data.user, data.token);
+        const payload = rawData.data || rawData;
+        login(payload.user, payload.token);
         showToast("Password Reset Successful! 🎉", "Your password has been updated and you are now logged in.", "success");
         onClose();
       }
