@@ -1,33 +1,21 @@
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { supabaseAdmin } from "@/lib/supabase/server";
 
 export async function calculateAndUpdateStreak(userId: string): Promise<number> {
   try {
-    const submissions = await prisma.submission.findMany({
-      where: {
-        userId,
-        status: "ACCEPTED",
-      },
-      select: {
-        createdAt: true,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+    const { data: submissions } = await supabaseAdmin
+      .from("submissions")
+      .select("submitted_at")
+      .eq("user_id", userId)
+      .eq("verdict", "ACCEPTED")
+      .order("submitted_at", { ascending: false });
 
     if (!submissions || submissions.length === 0) {
-      await prisma.user.update({
-        where: { id: userId },
-        data: { streakDays: 0 },
-      });
+      await supabaseAdmin.from("users").update({ streak: 0 }).eq("id", userId);
       return 0;
     }
 
-    // Extract unique active dates in YYYY-MM-DD
     const activeDates = new Set(
-      submissions.map((s) => new Date(s.createdAt).toISOString().split("T")[0])
+      submissions.map((s: any) => new Date(s.submitted_at || Date.now()).toISOString().split("T")[0])
     );
 
     const now = new Date();
@@ -37,16 +25,11 @@ export async function calculateAndUpdateStreak(userId: string): Promise<number> 
     yesterday.setDate(yesterday.getDate() - 1);
     const yesterdayStr = yesterday.toISOString().split("T")[0];
 
-    // If user has NO submission today AND NO submission yesterday, streak is 0!
     if (!activeDates.has(todayStr) && !activeDates.has(yesterdayStr)) {
-      await prisma.user.update({
-        where: { id: userId },
-        data: { streakDays: 0 },
-      });
+      await supabaseAdmin.from("users").update({ streak: 0 }).eq("id", userId);
       return 0;
     }
 
-    // Calculate consecutive active days going backwards
     let streak = 0;
     let curr = activeDates.has(todayStr) ? new Date(now) : yesterday;
 
@@ -60,11 +43,7 @@ export async function calculateAndUpdateStreak(userId: string): Promise<number> 
       }
     }
 
-    await prisma.user.update({
-      where: { id: userId },
-      data: { streakDays: streak },
-    });
-
+    await supabaseAdmin.from("users").update({ streak }).eq("id", userId);
     return streak;
   } catch (error) {
     console.error("Error calculating streak:", error);

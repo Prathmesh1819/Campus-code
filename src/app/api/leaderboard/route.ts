@@ -1,44 +1,34 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { NextRequest } from "next/server";
+import { apiSuccess, apiError } from "@/lib/api/response";
+import { supabaseAdmin } from "@/lib/supabase/server";
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const scope = searchParams.get("scope") || "GLOBAL"; // GLOBAL, COLLEGE, DEPARTMENT, CLASS
-    const period = searchParams.get("period") || "ALL_TIME"; // WEEKLY, MONTHLY, ALL_TIME
+    const scope = searchParams.get("scope") || "GLOBAL";
 
-    const users = await prisma.user.findMany({
-      where: { role: "STUDENT" },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        rollNumber: true,
-        className: true,
-        branch: true,
-        avatar: true,
-        xp: true,
-        level: true,
-        streakDays: true,
-        badges: {
-          include: { badge: true },
-        },
-        _count: {
-          select: { submissions: true, projects: true },
-        },
-      },
-      orderBy: { xp: "desc" },
-    });
+    let query = supabaseAdmin
+      .from("users")
+      .select("id, full_name, email, roll_number, profile_image, xp, level");
 
-    // Add mock rank shifts for animated movement
-    const formattedRankings = users.map((user, idx) => ({
-      ...user,
+    const { data: users, error } = await query.order("xp", { ascending: false });
+
+    if (error) return apiError("Failed to fetch leaderboard", 500, error);
+
+    const rankings = (users || []).map((u: any, idx: number) => ({
+      id: u.id,
+      name: u.full_name,
+      email: u.email,
+      rollNumber: u.roll_number,
+      avatar: u.profile_image,
+      xp: u.xp || 0,
+      level: u.level || 1,
       rank: idx + 1,
-      rankChange: idx === 0 ? 0 : idx % 2 === 0 ? 1 : -1, // +1 (up), -1 (down), 0 (stable)
+      rankChange: 0,
     }));
 
-    return NextResponse.json({ rankings: formattedRankings, total: users.length });
+    return apiSuccess({ rankings, total: rankings.length }, "Leaderboard retrieved successfully");
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Failed to fetch leaderboard" }, { status: 500 });
+    return apiError(error.message || "Failed to fetch leaderboard", 500);
   }
 }

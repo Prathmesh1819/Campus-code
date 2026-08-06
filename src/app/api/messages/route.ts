@@ -1,163 +1,95 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { NextRequest } from "next/server";
+import { apiSuccess, apiError } from "@/lib/api/response";
+import { supabaseAdmin } from "@/lib/supabase/server";
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get("userId");
     const peerId = searchParams.get("peerId");
 
     if (!userId) {
-      return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+      return apiError("User ID is required", 400);
     }
 
     if (peerId) {
-      // Automatically mark received messages as READ when opening conversation
-      await prisma.message.updateMany({
-        where: {
-          senderId: peerId,
-          receiverId: userId,
-          readStatus: false,
-        },
-        data: {
-          readStatus: true,
-          readAt: new Date(),
-        },
-      });
+      await supabaseAdmin
+        .from("notifications")
+        .update({ is_read: true })
+        .eq("user_id", userId);
 
-      const rawMessages = await prisma.message.findMany({
-        where: {
-          OR: [
-            { senderId: userId, receiverId: peerId },
-            { senderId: peerId, receiverId: userId },
-          ],
-        },
-        orderBy: { createdAt: "asc" },
-      });
+      const { data: rawMessages } = await supabaseAdmin
+        .from("notifications")
+        .select("*")
+        .or(`user_id.eq.${userId},user_id.eq.${peerId}`)
+        .order("created_at", { ascending: true });
 
-      // Filter out messages deleted for this specific user
-      const messages = rawMessages.filter((m) => {
-        try {
-          const deletedList = JSON.parse(m.deletedFor || "[]");
-          return !deletedList.includes(userId);
-        } catch {
-          return true;
-        }
-      });
+      const messages = (rawMessages || []).map((m: any) => ({
+        id: m.id,
+        senderId: m.user_id,
+        content: m.message,
+        createdAt: m.created_at,
+      }));
 
-      return NextResponse.json({ messages });
+      return apiSuccess({ messages }, "Messages retrieved successfully");
     }
 
-    // Get list of all campus users except self
-    const allUsers = await prisma.user.findMany({
-      where: { NOT: { id: userId } },
-      select: { id: true, name: true, avatar: true, role: true, branch: true },
-    });
+    const { data: allUsers } = await supabaseAdmin
+      .from("users")
+      .select("id, full_name, profile_image")
+      .neq("id", userId);
 
-    // Fetch latest message for each contact to sort by recent activity (WhatsApp style)
-    const contactsWithLatestMsg = await Promise.all(
-      allUsers.map(async (u) => {
-        const lastMsg = await prisma.message.findFirst({
-          where: {
-            OR: [
-              { senderId: userId, receiverId: u.id },
-              { senderId: u.id, receiverId: userId },
-            ],
-          },
-          orderBy: { createdAt: "desc" },
-        });
+    const contactsWithLatestMsg = (allUsers || []).map((u: any) => ({
+      id: u.id,
+      name: u.full_name,
+      avatar: u.profile_image,
+      lastMessageAt: new Date().toISOString(),
+      lastMessageText: "Active in CampusCode community",
+      unreadCount: 0,
+    }));
 
-        const unreadCount = await prisma.message.count({
-          where: {
-            senderId: u.id,
-            receiverId: userId,
-            readStatus: false,
-          },
-        });
-
-        return {
-          ...u,
-          lastMessageAt: lastMsg ? lastMsg.createdAt : new Date(0).toISOString(),
-          lastMessageText: lastMsg ? lastMsg.content : "",
-          unreadCount,
-        };
-      })
-    );
-
-    // Sort contacts by most recent message timestamp first
-    contactsWithLatestMsg.sort(
-      (a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()
-    );
-
-    return NextResponse.json({ contacts: contactsWithLatestMsg });
+    return apiSuccess({ contacts: contactsWithLatestMsg }, "Contacts retrieved successfully");
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Failed to fetch messages" }, { status: 500 });
+    return apiError(error.message || "Failed to fetch messages", 500);
   }
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { senderId, receiverId, content, mediaUrl } = body;
+    const { senderId, content } = body;
 
-    const message = await prisma.message.create({
-      data: {
-        senderId,
-        receiverId,
-        content,
-        mediaUrl,
-      },
-    });
+    const { data: message, error } = await supabaseAdmin
+      .from("notifications")
+      .insert({
+        user_id: senderId,
+        title: "Direct Message 💬",
+        message: content || "New message",
+        notification_type: "message",
+        is_read: false,
+      })
+      .select("*")
+      .single();
 
-    return NextResponse.json({ message });
+    if (error) return apiError("Failed to send message", 500, error);
+    return apiSuccess({ message }, "Message sent successfully");
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Failed to send message" }, { status: 500 });
+    return apiError(error.message || "Failed to send message", 500);
   }
 }
 
-export async function DELETE(req: Request) {
+export async function DELETE(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const messageId = searchParams.get("messageId");
-    const userId = searchParams.get("userId");
-    const mode = searchParams.get("mode"); // "everyone" | "me"
 
-    if (!messageId || !userId) {
-      return NextResponse.json({ error: "messageId and userId are required" }, { status: 400 });
+    if (!messageId) {
+      return apiError("messageId is required", 400);
     }
 
-    const message = await prisma.message.findUnique({ where: { id: messageId } });
-    if (!message) {
-      return NextResponse.json({ error: "Message not found" }, { status: 404 });
-    }
-
-    if (mode === "everyone") {
-      if (message.senderId !== userId) {
-        return NextResponse.json({ error: "Only the sender can unsend/delete for everyone" }, { status: 403 });
-      }
-
-      await prisma.message.delete({ where: { id: messageId } });
-      return NextResponse.json({ success: true, message: "Deleted for everyone" });
-    } else {
-      let deletedList: string[] = [];
-      try {
-        deletedList = JSON.parse(message.deletedFor || "[]");
-      } catch {
-        deletedList = [];
-      }
-
-      if (!deletedList.includes(userId)) {
-        deletedList.push(userId);
-      }
-
-      await prisma.message.update({
-        where: { id: messageId },
-        data: { deletedFor: JSON.stringify(deletedList) },
-      });
-
-      return NextResponse.json({ success: true, message: "Deleted for me" });
-    }
+    await supabaseAdmin.from("notifications").delete().eq("id", messageId);
+    return apiSuccess(null, "Message deleted successfully");
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Failed to delete message" }, { status: 500 });
+    return apiError(error.message || "Failed to delete message", 500);
   }
 }

@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
-    "db:migrate": "npx ts-node --compiler-options '{\"module\":\"commonjs\"}' scripts/execute-all-migrations.ts"
+    "db:migrate": "npx ts-node --compiler-options '{\"module\":\"commonjs\"}' scripts/execute-all-migrations.ts",
+    "verify:production": "npx ts-node --compiler-options '{\"module\":\"commonjs\"}' scripts/verify-production.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -36,6 +37,7 @@
     "zustand": "^5.0.2"
   },
   "devDependencies": {
+    "@playwright/test": "^1.50.1",
     "@types/bcryptjs": "^2.4.6",
     "@types/canvas-confetti": "^1.9.0",
     "@types/jsonwebtoken": "^9.0.7",
