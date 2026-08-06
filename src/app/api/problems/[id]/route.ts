@@ -1,54 +1,57 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { apiSuccess, apiError } from "@/lib/api/response";
 import { supabaseAdmin } from "@/lib/supabase/server";
+import fs from "fs";
+import path from "path";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+
+  let problem: any = null;
+
   try {
-    const { id } = await params;
-    
-    // Fetch problem by ID or Slug
-    let query = supabaseAdmin.from("problems").select("*");
-    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
-    
-    if (isUuid) {
-      query = query.eq("id", id);
-    } else {
-      query = query.eq("slug", id);
-    }
-
-    const { data: problem, error } = await query.single();
-
-    if (error || !problem) {
-      return apiError("Problem not found", 404);
-    }
-
-    // Fetch problem metadata and test cases
-    const { data: metadata } = await supabaseAdmin
-      .from("problem_metadata")
-      .select("*")
-      .eq("problem_id", problem.id)
-      .single();
-
-    const { data: sampleTestCases } = await supabaseAdmin
-      .from("sample_test_cases")
-      .select("*")
-      .eq("problem_id", problem.id);
-
-    const { data: starterCodes } = await supabaseAdmin
-      .from("starter_codes")
-      .select("*, languages(name, slug, judge0_id)")
-      .eq("problem_id", problem.id);
-
-    return apiSuccess(
-      {
-        problem,
-        metadata: metadata || null,
-        sampleTestCases: sampleTestCases || [],
-        starterCodes: starterCodes || [],
-      },
-      "Problem details fetched successfully"
-    );
-  } catch (error: any) {
-    return apiError(error.message || "Failed to fetch problem", 500);
+    const { data: dbProblem } = await supabaseAdmin.from("problems").select("*").eq("id", id).single();
+    if (dbProblem) problem = dbProblem;
+  } catch {
+    // Ignore error and use local CCPS fallback
   }
+
+  if (!problem) {
+    const ccpsPath = path.join(process.cwd(), "src", "data", "ccps", "problems.json");
+    if (fs.existsSync(ccpsPath)) {
+      const problems: any[] = JSON.parse(fs.readFileSync(ccpsPath, "utf8"));
+      problem = problems.find((p) => p.id === id || p.ccps_id === id || p.slug === id);
+    }
+  }
+
+  if (!problem) {
+    return apiError("Problem not found", 404);
+  }
+
+  // Load starter codes and test cases
+  const scPath = path.join(process.cwd(), "src", "data", "ccps", "starter_codes.json");
+  const tcPath = path.join(process.cwd(), "src", "data", "ccps", "test_cases.json");
+
+  let starterCodes: any[] = [];
+  let testCases: any[] = [];
+
+  if (fs.existsSync(scPath)) {
+    const allSc: any[] = JSON.parse(fs.readFileSync(scPath, "utf8"));
+    starterCodes = allSc.filter((sc) => sc.problem_id === problem.id);
+  }
+  if (fs.existsSync(tcPath)) {
+    const allTc: any[] = JSON.parse(fs.readFileSync(tcPath, "utf8"));
+    testCases = allTc.filter((tc) => tc.problem_id === problem.id);
+  }
+
+  return apiSuccess(
+    {
+      problem: {
+        ...problem,
+        starterCodes,
+        testCases,
+      },
+    },
+    "Problem details retrieved successfully"
+  );
 }

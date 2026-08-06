@@ -4,6 +4,8 @@ import { apiSuccess, apiError } from "@/lib/api/response";
 import { validateBody } from "@/lib/api/validation";
 import { getAuthenticatedUser, authorizeRole } from "@/lib/api/auth-middleware";
 import { supabaseAdmin } from "@/lib/supabase/server";
+import fs from "fs";
+import path from "path";
 
 const createProblemSchema = z.object({
   title: z.string().min(3, "Title is required"),
@@ -21,20 +23,54 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const difficulty = searchParams.get("difficulty");
   const search = searchParams.get("search");
+  const company = searchParams.get("company");
+  const category = searchParams.get("category");
 
-  let query = supabaseAdmin.from("problems").select("*");
+  let problemsList: any[] = [];
 
+  try {
+    let query = supabaseAdmin.from("problems").select("*");
+
+    if (difficulty && difficulty !== "ALL") {
+      query = query.eq("difficulty", difficulty);
+    }
+    if (search) {
+      query = query.ilike("title", `%${search}%`);
+    }
+
+    const { data: dbProblems, error } = await query.order("created_at", { ascending: false });
+
+    if (!error && dbProblems && dbProblems.length > 0) {
+      problemsList = dbProblems;
+    }
+  } catch {
+    // Ignore Supabase connection error and use fallback file dataset below
+  }
+
+  // Fallback to CCPS JSON dataset if database query returns empty
+  if (problemsList.length === 0) {
+    const ccpsPath = path.join(process.cwd(), "src", "data", "ccps", "problems.json");
+    if (fs.existsSync(ccpsPath)) {
+      const fileContent = fs.readFileSync(ccpsPath, "utf8");
+      problemsList = JSON.parse(fileContent);
+    }
+  }
+
+  // Apply filters to problemsList
   if (difficulty && difficulty !== "ALL") {
-    query = query.eq("difficulty", difficulty);
+    problemsList = problemsList.filter((p: any) => p.difficulty?.toUpperCase() === difficulty.toUpperCase());
+  }
+  if (category && category !== "ALL") {
+    problemsList = problemsList.filter((p: any) => p.category?.toLowerCase() === category.toLowerCase());
   }
   if (search) {
-    query = query.ilike("title", `%${search}%`);
+    const lower = search.toLowerCase();
+    problemsList = problemsList.filter(
+      (p: any) => p.title?.toLowerCase().includes(lower) || p.description?.toLowerCase().includes(lower)
+    );
   }
 
-  const { data: problems, error } = await query.order("created_at", { ascending: false });
-
-  if (error) return apiError("Failed to fetch problems from Supabase", 500, error);
-  return apiSuccess({ problems }, "Problems fetched successfully");
+  return apiSuccess({ problems: problemsList }, "Problems fetched successfully");
 }
 
 export async function POST(req: NextRequest) {
