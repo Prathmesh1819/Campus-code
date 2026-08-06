@@ -22,6 +22,7 @@ export async function GET(req: NextRequest) {
   const difficulty = searchParams.get("difficulty");
   const search = searchParams.get("search");
   const category = searchParams.get("category");
+  const company = searchParams.get("company");
 
   try {
     let query = supabaseAdmin.from("problems").select("*");
@@ -32,18 +33,26 @@ export async function GET(req: NextRequest) {
     if (category && category !== "ALL") {
       query = query.ilike("category", category);
     }
-    if (search) {
-      query = query.ilike("title", `%${search}%`);
+    if (company && company !== "ALL") {
+      query = query.ilike("company_tags", `%${company}%`);
+    }
+    if (search && search.trim() !== "") {
+      const cleanSearch = search.trim();
+      query = query.or(
+        `title.ilike.%${cleanSearch}%,description.ilike.%${cleanSearch}%,category.ilike.%${cleanSearch}%,company_tags.ilike.%${cleanSearch}%`
+      );
     }
 
     const { data: dbProblems, error } = await query.order("created_at", { ascending: false });
 
     if (error) {
+      console.error("[PROBLEMS_API_ERROR] Supabase query failed:", error);
       return apiError("Failed to fetch problems from database", 500, error);
     }
 
     return apiSuccess({ problems: dbProblems || [] }, "Problems fetched successfully from Supabase");
   } catch (err: any) {
+    console.error("[PROBLEMS_API_EXCEPTION] Database exception:", err);
     return apiError(`Database connection error: ${err.message}`, 500);
   }
 }
@@ -57,7 +66,7 @@ export async function POST(req: NextRequest) {
   const { data: body, error: valError } = await validateBody(req, createProblemSchema);
   if (valError) return apiError("Validation failed", 400, valError);
 
-  const { title, slug, difficulty, description, constraints } = body!;
+  const { title, slug, difficulty, description, constraints, category, companyTags } = body!;
   const generatedSlug = slug || title.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
 
   const { data: problem, error } = await supabaseAdmin
@@ -66,6 +75,8 @@ export async function POST(req: NextRequest) {
       title,
       slug: generatedSlug,
       difficulty,
+      category: category || "Arrays",
+      company_tags: typeof companyTags === "string" ? companyTags : JSON.stringify(companyTags || ["Google", "Amazon"]),
       description,
       constraints,
       status: "published",

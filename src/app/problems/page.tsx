@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Sidebar } from "@/components/Sidebar";
 import { useAuth } from "@/context/AuthContext";
@@ -55,7 +55,7 @@ export default function ProblemsPage() {
       if (selectedDifficulty !== "ALL") query.append("difficulty", selectedDifficulty);
       if (selectedCategory !== "ALL") query.append("category", selectedCategory);
       if (selectedCompany !== "ALL") query.append("company", selectedCompany);
-      if (search) query.append("search", search);
+      if (search.trim()) query.append("search", search.trim());
 
       const res = await fetch(`/api/problems?${query.toString()}`);
       const rawData = await res.json();
@@ -72,6 +72,41 @@ export default function ProblemsPage() {
       setLoading(false);
     }
   };
+
+  // Instant real-time client-side filter computation
+  const filteredProblems = useMemo(() => {
+    return problems.filter((prob) => {
+      const matchesDifficulty =
+        selectedDifficulty === "ALL" ||
+        prob.difficulty?.toUpperCase() === selectedDifficulty.toUpperCase();
+
+      const matchesCategory =
+        selectedCategory === "ALL" ||
+        prob.category?.toLowerCase() === selectedCategory.toLowerCase();
+
+      const rawCompanyTags = prob.company_tags || prob.companyTags || "";
+      const companyStr =
+        typeof rawCompanyTags === "string"
+          ? rawCompanyTags
+          : Array.isArray(rawCompanyTags)
+          ? rawCompanyTags.join(" ")
+          : "";
+
+      const matchesCompany =
+        selectedCompany === "ALL" ||
+        companyStr.toLowerCase().includes(selectedCompany.toLowerCase());
+
+      const cleanSearch = search.trim().toLowerCase();
+      const matchesSearch =
+        !cleanSearch ||
+        prob.title?.toLowerCase().includes(cleanSearch) ||
+        prob.description?.toLowerCase().includes(cleanSearch) ||
+        prob.category?.toLowerCase().includes(cleanSearch) ||
+        companyStr.toLowerCase().includes(cleanSearch);
+
+      return matchesDifficulty && matchesCategory && matchesCompany && matchesSearch;
+    });
+  }, [problems, selectedDifficulty, selectedCategory, selectedCompany, search]);
 
   const handleCreateProblem = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -164,7 +199,7 @@ export default function ProblemsPage() {
                 <span>COMPANY PAST INTERVIEW QUESTIONS & DSA MODULE</span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-                Company-Wise LeetCode Interview Questions ({problems.length} Problems Available)
+                Company-Wise LeetCode Interview Questions ({filteredProblems.length} Problems Available)
               </h1>
               <p className="text-xs sm:text-sm text-gray-400 mt-1 max-w-2xl">
                 Practice real technical interview questions asked at Google, Meta, Amazon, Microsoft, Apple, Netflix, Uber, and Adobe sorted by interview frequency.
@@ -188,14 +223,22 @@ export default function ProblemsPage() {
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               {/* Search Bar */}
               <div className="relative w-full sm:w-80">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-400" />
                 <input
                   type="text"
                   placeholder="Search title, topic or company (e.g. Google)..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 focus:border-purple-500 rounded-xl py-2 pl-10 pr-4 text-xs text-white placeholder-gray-500 focus:outline-none"
+                  className="w-full bg-slate-900 border border-slate-800 focus:border-purple-500 rounded-xl py-2 pl-10 pr-8 text-xs text-white placeholder-gray-500 focus:outline-none transition-all"
                 />
+                {search && (
+                  <button
+                    onClick={() => setSearch("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
               </div>
 
               {/* Difficulty Tabs */}
@@ -272,21 +315,29 @@ export default function ProblemsPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">
-                  {loading ? (
+                  {loading && filteredProblems.length === 0 ? (
                     <tr>
                       <td colSpan={6} className="text-center py-12 text-gray-500 font-medium">
-                        Loading company interview problems...
+                        Searching company interview problems...
                       </td>
                     </tr>
-                  ) : problems.length === 0 ? (
+                  ) : filteredProblems.length === 0 ? (
                     <tr>
                       <td colSpan={6} className="text-center py-12 text-gray-500 font-medium">
-                        No company problems found matching criteria.
+                        No company problems found matching "{search}".
                       </td>
                     </tr>
                   ) : (
-                    problems.map((prob) => {
-                      const companyList: string[] = typeof prob.companyTags === "string" ? JSON.parse(prob.companyTags) : prob.companyTags || [];
+                    filteredProblems.map((prob) => {
+                      const rawCompanyTags = prob.company_tags || prob.companyTags || "[\"Google\", \"Meta\"]";
+                      let companyList: string[] = [];
+                      try {
+                        companyList = typeof rawCompanyTags === "string"
+                          ? (rawCompanyTags.startsWith("[") ? JSON.parse(rawCompanyTags) : rawCompanyTags.split(",").map((c: string) => c.trim()))
+                          : rawCompanyTags;
+                      } catch {
+                        companyList = ["Google", "Meta"];
+                      }
                       return (
                         <tr key={prob.id} className="hover:bg-slate-800/40 transition-colors group">
                           <td className="px-6 py-4">
