@@ -1,0 +1,352 @@
+[
+  {
+    "id": "sample-CC001",
+    "problem_id": "10000000-0000-4000-8000-000000000001",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC002",
+    "problem_id": "10000000-0000-4000-8000-000000000002",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC003",
+    "problem_id": "10000000-0000-4000-8000-000000000003",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC004",
+    "problem_id": "10000000-0000-4000-8000-000000000004",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC005",
+    "problem_id": "10000000-0000-4000-8000-000000000005",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC006",
+    "problem_id": "10000000-0000-4000-8000-000000000006",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC007",
+    "problem_id": "10000000-0000-4000-8000-000000000007",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC008",
+    "problem_id": "10000000-0000-4000-8000-000000000008",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC009",
+    "problem_id": "10000000-0000-4000-8000-000000000009",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC010",
+    "problem_id": "10000000-0000-4000-8000-000000000010",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC011",
+    "problem_id": "10000000-0000-4000-8000-000000000011",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC012",
+    "problem_id": "10000000-0000-4000-8000-000000000012",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC013",
+    "problem_id": "10000000-0000-4000-8000-000000000013",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC014",
+    "problem_id": "10000000-0000-4000-8000-000000000014",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC015",
+    "problem_id": "10000000-0000-4000-8000-000000000015",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC016",
+    "problem_id": "10000000-0000-4000-8000-000000000016",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC017",
+    "problem_id": "10000000-0000-4000-8000-000000000017",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC018",
+    "problem_id": "10000000-0000-4000-8000-000000000018",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC019",
+    "problem_id": "10000000-0000-4000-8000-000000000019",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC020",
+    "problem_id": "10000000-0000-4000-8000-000000000020",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC021",
+    "problem_id": "10000000-0000-4000-8000-000000000021",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC022",
+    "problem_id": "10000000-0000-4000-8000-000000000022",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC023",
+    "problem_id": "10000000-0000-4000-8000-000000000023",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC024",
+    "problem_id": "10000000-0000-4000-8000-000000000024",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC025",
+    "problem_id": "10000000-0000-4000-8000-000000000025",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC026",
+    "problem_id": "10000000-0000-4000-8000-000000000026",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC027",
+    "problem_id": "10000000-0000-4000-8000-000000000027",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC028",
+    "problem_id": "10000000-0000-4000-8000-000000000028",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC029",
+    "problem_id": "10000000-0000-4000-8000-000000000029",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC030",
+    "problem_id": "10000000-0000-4000-8000-000000000030",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC031",
+    "problem_id": "10000000-0000-4000-8000-000000000031",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC032",
+    "problem_id": "10000000-0000-4000-8000-000000000032",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC033",
+    "problem_id": "10000000-0000-4000-8000-000000000033",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC034",
+    "problem_id": "10000000-0000-4000-8000-000000000034",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC035",
+    "problem_id": "10000000-0000-4000-8000-000000000035",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC036",
+    "problem_id": "10000000-0000-4000-8000-000000000036",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC037",
+    "problem_id": "10000000-0000-4000-8000-000000000037",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC038",
+    "problem_id": "10000000-0000-4000-8000-000000000038",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC039",
+    "problem_id": "10000000-0000-4000-8000-000000000039",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC040",
+    "problem_id": "10000000-0000-4000-8000-000000000040",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC041",
+    "problem_id": "10000000-0000-4000-8000-000000000041",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC042",
+    "problem_id": "10000000-0000-4000-8000-000000000042",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC043",
+    "problem_id": "10000000-0000-4000-8000-000000000043",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC044",
+    "problem_id": "10000000-0000-4000-8000-000000000044",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC045",
+    "problem_id": "10000000-0000-4000-8000-000000000045",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC046",
+    "problem_id": "10000000-0000-4000-8000-000000000046",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC047",
+    "problem_id": "10000000-0000-4000-8000-000000000047",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC048",
+    "problem_id": "10000000-0000-4000-8000-000000000048",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC049",
+    "problem_id": "10000000-0000-4000-8000-000000000049",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC050",
+    "problem_id": "10000000-0000-4000-8000-000000000050",
+    "input": "4\n2 7 11 15\n9",
+    "output": "[0, 1]",
+    "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  }
+]

@@ -1,0 +1,1252 @@
+[
+  {
+    "id": "10000000-0000-4000-8000-000000000001",
+    "ccps_id": "CC001",
+    "title": "CC001: Campus Cafeteria Billing System",
+    "slug": "campus-cafeteria-billing-system",
+    "difficulty": "EASY",
+    "category": "Arrays",
+    "subcategory": "Arrays Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Campus Cafeteria Billing System** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Campus Cafeteria Billing System.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 56,
+    "rating": 1215
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000002",
+    "ccps_id": "CC002",
+    "title": "CC002: Library Book Stacking Order",
+    "slug": "library-book-stacking-order",
+    "difficulty": "EASY",
+    "category": "Strings",
+    "subcategory": "Strings Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Library Book Stacking Order** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Library Book Stacking Order.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 57,
+    "rating": 1230
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000003",
+    "ccps_id": "CC003",
+    "title": "CC003: Campus Bus Seat Reservation",
+    "slug": "campus-bus-seat-reservation",
+    "difficulty": "EASY",
+    "category": "Hash Maps",
+    "subcategory": "Hash Maps Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Campus Bus Seat Reservation** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Campus Bus Seat Reservation.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 58,
+    "rating": 1245
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000004",
+    "ccps_id": "CC004",
+    "title": "CC004: Student ID Hash Verifier",
+    "slug": "student-id-hash-verifier",
+    "difficulty": "EASY",
+    "category": "Two Pointers",
+    "subcategory": "Two Pointers Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Student ID Hash Verifier** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Student ID Hash Verifier.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 59,
+    "rating": 1260
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000005",
+    "ccps_id": "CC005",
+    "title": "CC005: Hostel Room Allocation Preference",
+    "slug": "hostel-room-allocation-preference",
+    "difficulty": "EASY",
+    "category": "Sliding Window",
+    "subcategory": "Sliding Window Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Hostel Room Allocation Preference** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Hostel Room Allocation Preference.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 60,
+    "rating": 1275
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000006",
+    "ccps_id": "CC006",
+    "title": "CC006: Semester GPA Percentile Ranker",
+    "slug": "semester-gpa-percentile-ranker",
+    "difficulty": "EASY",
+    "category": "Binary Search",
+    "subcategory": "Binary Search Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Semester GPA Percentile Ranker** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Semester GPA Percentile Ranker.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 61,
+    "rating": 1290
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000007",
+    "ccps_id": "CC007",
+    "title": "CC007: Exam Hall Seating Plan",
+    "slug": "exam-hall-seating-plan",
+    "difficulty": "EASY",
+    "category": "Sorting",
+    "subcategory": "Sorting Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Exam Hall Seating Plan** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Exam Hall Seating Plan.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 62,
+    "rating": 1305
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000008",
+    "ccps_id": "CC008",
+    "title": "CC008: Campus Wi-Fi Bandwidth Balancer",
+    "slug": "campus-wi-fi-bandwidth-balancer",
+    "difficulty": "EASY",
+    "category": "Greedy",
+    "subcategory": "Greedy Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Campus Wi-Fi Bandwidth Balancer** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Campus Wi-Fi Bandwidth Balancer.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 63,
+    "rating": 1320
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000009",
+    "ccps_id": "CC009",
+    "title": "CC009: Placement Offer Salary Sorter",
+    "slug": "placement-offer-salary-sorter",
+    "difficulty": "EASY",
+    "category": "Stack",
+    "subcategory": "Stack Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Placement Offer Salary Sorter** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Placement Offer Salary Sorter.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 64,
+    "rating": 1335
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000010",
+    "ccps_id": "CC010",
+    "title": "CC010: Lab Equipment Inventory Check",
+    "slug": "lab-equipment-inventory-check",
+    "difficulty": "EASY",
+    "category": "Queue",
+    "subcategory": "Queue Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Lab Equipment Inventory Check** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Lab Equipment Inventory Check.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 65,
+    "rating": 1350
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000011",
+    "ccps_id": "CC011",
+    "title": "CC011: College Event Ticket Reservation",
+    "slug": "college-event-ticket-reservation",
+    "difficulty": "EASY",
+    "category": "Linked List",
+    "subcategory": "Linked List Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **College Event Ticket Reservation** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind College Event Ticket Reservation.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 66,
+    "rating": 1365
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000012",
+    "ccps_id": "CC012",
+    "title": "CC012: Department Library Catalog Search",
+    "slug": "department-library-catalog-search",
+    "difficulty": "EASY",
+    "category": "Trees",
+    "subcategory": "Trees Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Department Library Catalog Search** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Department Library Catalog Search.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 67,
+    "rating": 1380
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000013",
+    "ccps_id": "CC013",
+    "title": "CC013: Student Attendance Streak Counter",
+    "slug": "student-attendance-streak-counter",
+    "difficulty": "EASY",
+    "category": "Binary Search Trees",
+    "subcategory": "Binary Search Trees Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Student Attendance Streak Counter** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Student Attendance Streak Counter.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 68,
+    "rating": 1395
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000014",
+    "ccps_id": "CC014",
+    "title": "CC014: Canteen Discount Combo Finder",
+    "slug": "canteen-discount-combo-finder",
+    "difficulty": "EASY",
+    "category": "Heap",
+    "subcategory": "Heap Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Canteen Discount Combo Finder** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Canteen Discount Combo Finder.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 69,
+    "rating": 1410
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000015",
+    "ccps_id": "CC015",
+    "title": "CC015: Classroom Projector Assignment",
+    "slug": "classroom-projector-assignment",
+    "difficulty": "EASY",
+    "category": "Trie",
+    "subcategory": "Trie Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Classroom Projector Assignment** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Classroom Projector Assignment.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 70,
+    "rating": 1425
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000016",
+    "ccps_id": "CC016",
+    "title": "CC016: Campus Shuttle Frequency Analyzer",
+    "slug": "campus-shuttle-frequency-analyzer",
+    "difficulty": "EASY",
+    "category": "Graphs",
+    "subcategory": "Graphs Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Campus Shuttle Frequency Analyzer** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Campus Shuttle Frequency Analyzer.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 71,
+    "rating": 1440
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000017",
+    "ccps_id": "CC017",
+    "title": "CC017: Sports Meet Medals Tally",
+    "slug": "sports-meet-medals-tally",
+    "difficulty": "EASY",
+    "category": "BFS",
+    "subcategory": "BFS Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Sports Meet Medals Tally** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Sports Meet Medals Tally.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 72,
+    "rating": 1455
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000018",
+    "ccps_id": "CC018",
+    "title": "CC018: Coding Club Pair Programming Matching",
+    "slug": "coding-club-pair-programming-matching",
+    "difficulty": "EASY",
+    "category": "DFS",
+    "subcategory": "DFS Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Coding Club Pair Programming Matching** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Coding Club Pair Programming Matching.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 73,
+    "rating": 1470
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000019",
+    "ccps_id": "CC019",
+    "title": "CC019: Campus Gate Entry Logging",
+    "slug": "campus-gate-entry-logging",
+    "difficulty": "EASY",
+    "category": "Dynamic Programming",
+    "subcategory": "Dynamic Programming Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Campus Gate Entry Logging** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Campus Gate Entry Logging.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 74,
+    "rating": 1485
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000020",
+    "ccps_id": "CC020",
+    "title": "CC020: Faculty Lecture Slot Scheduler",
+    "slug": "faculty-lecture-slot-scheduler",
+    "difficulty": "EASY",
+    "category": "Math",
+    "subcategory": "Math Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Faculty Lecture Slot Scheduler** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Faculty Lecture Slot Scheduler.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 75,
+    "rating": 1500
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000021",
+    "ccps_id": "CC021",
+    "title": "CC021: Library Overdue Fine Calculator",
+    "slug": "library-overdue-fine-calculator",
+    "difficulty": "EASY",
+    "category": "Arrays",
+    "subcategory": "Arrays Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Library Overdue Fine Calculator** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Library Overdue Fine Calculator.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 76,
+    "rating": 1515
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000022",
+    "ccps_id": "CC022",
+    "title": "CC022: Student Project Repository Search",
+    "slug": "student-project-repository-search",
+    "difficulty": "EASY",
+    "category": "Strings",
+    "subcategory": "Strings Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Student Project Repository Search** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Student Project Repository Search.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 77,
+    "rating": 1530
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000023",
+    "ccps_id": "CC023",
+    "title": "CC023: Campus Canteen Token Dispenser",
+    "slug": "campus-canteen-token-dispenser",
+    "difficulty": "EASY",
+    "category": "Hash Maps",
+    "subcategory": "Hash Maps Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Campus Canteen Token Dispenser** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Campus Canteen Token Dispenser.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 78,
+    "rating": 1545
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000024",
+    "ccps_id": "CC024",
+    "title": "CC024: Hostel Laundry Machine Queue",
+    "slug": "hostel-laundry-machine-queue",
+    "difficulty": "EASY",
+    "category": "Two Pointers",
+    "subcategory": "Two Pointers Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Hostel Laundry Machine Queue** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Hostel Laundry Machine Queue.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 79,
+    "rating": 1560
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000025",
+    "ccps_id": "CC025",
+    "title": "CC025: College Fest Main Stage Schedule",
+    "slug": "college-fest-main-stage-schedule",
+    "difficulty": "EASY",
+    "category": "Sliding Window",
+    "subcategory": "Sliding Window Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **College Fest Main Stage Schedule** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind College Fest Main Stage Schedule.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 80,
+    "rating": 1575
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000026",
+    "ccps_id": "CC026",
+    "title": "CC026: Robotics Club Component Inventory",
+    "slug": "robotics-club-component-inventory",
+    "difficulty": "MEDIUM",
+    "category": "Binary Search",
+    "subcategory": "Binary Search Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Robotics Club Component Inventory** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Robotics Club Component Inventory.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 81,
+    "rating": 1590
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000027",
+    "ccps_id": "CC027",
+    "title": "CC027: Placement Resume Keyword Scanner",
+    "slug": "placement-resume-keyword-scanner",
+    "difficulty": "MEDIUM",
+    "category": "Sorting",
+    "subcategory": "Sorting Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Placement Resume Keyword Scanner** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Placement Resume Keyword Scanner.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 82,
+    "rating": 1605
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000028",
+    "ccps_id": "CC028",
+    "title": "CC028: Alumni Donation Target Tracker",
+    "slug": "alumni-donation-target-tracker",
+    "difficulty": "MEDIUM",
+    "category": "Greedy",
+    "subcategory": "Greedy Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Alumni Donation Target Tracker** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Alumni Donation Target Tracker.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 83,
+    "rating": 1620
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000029",
+    "ccps_id": "CC029",
+    "title": "CC029: Campus Cafeteria Calorie Meter",
+    "slug": "campus-cafeteria-calorie-meter",
+    "difficulty": "MEDIUM",
+    "category": "Stack",
+    "subcategory": "Stack Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Campus Cafeteria Calorie Meter** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Campus Cafeteria Calorie Meter.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 84,
+    "rating": 1635
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000030",
+    "ccps_id": "CC030",
+    "title": "CC030: Student Grade Point Boundary Calculator",
+    "slug": "student-grade-point-boundary-calculator",
+    "difficulty": "MEDIUM",
+    "category": "Queue",
+    "subcategory": "Queue Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Student Grade Point Boundary Calculator** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Student Grade Point Boundary Calculator.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 85,
+    "rating": 1650
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000031",
+    "ccps_id": "CC031",
+    "title": "CC031: Library Rare Books Access Audit",
+    "slug": "library-rare-books-access-audit",
+    "difficulty": "MEDIUM",
+    "category": "Linked List",
+    "subcategory": "Linked List Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Library Rare Books Access Audit** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Library Rare Books Access Audit.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 86,
+    "rating": 1665
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000032",
+    "ccps_id": "CC032",
+    "title": "CC032: Campus Bus Route Optimization",
+    "slug": "campus-bus-route-optimization",
+    "difficulty": "MEDIUM",
+    "category": "Trees",
+    "subcategory": "Trees Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Campus Bus Route Optimization** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Campus Bus Route Optimization.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 87,
+    "rating": 1680
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000033",
+    "ccps_id": "CC033",
+    "title": "CC033: Hostel Mess Weekly Menu Planner",
+    "slug": "hostel-mess-weekly-menu-planner",
+    "difficulty": "MEDIUM",
+    "category": "Binary Search Trees",
+    "subcategory": "Binary Search Trees Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Hostel Mess Weekly Menu Planner** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Hostel Mess Weekly Menu Planner.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 88,
+    "rating": 1695
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000034",
+    "ccps_id": "CC034",
+    "title": "CC034: Semester Exam Retake Fee Calculator",
+    "slug": "semester-exam-retake-fee-calculator",
+    "difficulty": "MEDIUM",
+    "category": "Heap",
+    "subcategory": "Heap Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Semester Exam Retake Fee Calculator** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Semester Exam Retake Fee Calculator.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 89,
+    "rating": 1710
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000035",
+    "ccps_id": "CC035",
+    "title": "CC035: Student Hackathon Team Builder",
+    "slug": "student-hackathon-team-builder",
+    "difficulty": "MEDIUM",
+    "category": "Trie",
+    "subcategory": "Trie Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Student Hackathon Team Builder** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Student Hackathon Team Builder.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 55,
+    "rating": 1725
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000036",
+    "ccps_id": "CC036",
+    "title": "CC036: Campus Parking Slot Allocator",
+    "slug": "campus-parking-slot-allocator",
+    "difficulty": "MEDIUM",
+    "category": "Graphs",
+    "subcategory": "Graphs Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Campus Parking Slot Allocator** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Campus Parking Slot Allocator.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 56,
+    "rating": 1740
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000037",
+    "ccps_id": "CC037",
+    "title": "CC037: Department HOD Notice Distribution",
+    "slug": "department-hod-notice-distribution",
+    "difficulty": "MEDIUM",
+    "category": "BFS",
+    "subcategory": "BFS Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Department HOD Notice Distribution** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Department HOD Notice Distribution.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 57,
+    "rating": 1755
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000038",
+    "ccps_id": "CC038",
+    "title": "CC038: College Library Card Renewal Check",
+    "slug": "college-library-card-renewal-check",
+    "difficulty": "MEDIUM",
+    "category": "DFS",
+    "subcategory": "DFS Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **College Library Card Renewal Check** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind College Library Card Renewal Check.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 58,
+    "rating": 1770
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000039",
+    "ccps_id": "CC039",
+    "title": "CC039: Student Gym Equipment Reservation",
+    "slug": "student-gym-equipment-reservation",
+    "difficulty": "MEDIUM",
+    "category": "Dynamic Programming",
+    "subcategory": "Dynamic Programming Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Student Gym Equipment Reservation** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Student Gym Equipment Reservation.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 59,
+    "rating": 1785
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000040",
+    "ccps_id": "CC040",
+    "title": "CC040: Campus Green Energy Monitor",
+    "slug": "campus-green-energy-monitor",
+    "difficulty": "MEDIUM",
+    "category": "Math",
+    "subcategory": "Math Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Campus Green Energy Monitor** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Campus Green Energy Monitor.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 60,
+    "rating": 1800
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000041",
+    "ccps_id": "CC041",
+    "title": "CC041: placement Mock Interview Slotting",
+    "slug": "placement-mock-interview-slotting",
+    "difficulty": "HARD",
+    "category": "Arrays",
+    "subcategory": "Arrays Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **placement Mock Interview Slotting** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind placement Mock Interview Slotting.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 61,
+    "rating": 1815
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000042",
+    "ccps_id": "CC042",
+    "title": "CC042: Student Transcript GPA Averager",
+    "slug": "student-transcript-gpa-averager",
+    "difficulty": "HARD",
+    "category": "Strings",
+    "subcategory": "Strings Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Student Transcript GPA Averager** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Student Transcript GPA Averager.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 62,
+    "rating": 1830
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000043",
+    "ccps_id": "CC043",
+    "title": "CC043: College Magazine Article Review",
+    "slug": "college-magazine-article-review",
+    "difficulty": "HARD",
+    "category": "Hash Maps",
+    "subcategory": "Hash Maps Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **College Magazine Article Review** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind College Magazine Article Review.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 63,
+    "rating": 1845
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000044",
+    "ccps_id": "CC044",
+    "title": "CC044: Hostel Visitor Entry Timestamp Audit",
+    "slug": "hostel-visitor-entry-timestamp-audit",
+    "difficulty": "HARD",
+    "category": "Two Pointers",
+    "subcategory": "Two Pointers Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Hostel Visitor Entry Timestamp Audit** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Hostel Visitor Entry Timestamp Audit.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 64,
+    "rating": 1860
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000045",
+    "ccps_id": "CC045",
+    "title": "CC045: Campus Shuttle Battery Charging Schedule",
+    "slug": "campus-shuttle-battery-charging-schedule",
+    "difficulty": "HARD",
+    "category": "Sliding Window",
+    "subcategory": "Sliding Window Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Campus Shuttle Battery Charging Schedule** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Campus Shuttle Battery Charging Schedule.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 65,
+    "rating": 1875
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000046",
+    "ccps_id": "CC046",
+    "title": "CC046: Library Computer Lab Seat Booking",
+    "slug": "library-computer-lab-seat-booking",
+    "difficulty": "HARD",
+    "category": "Binary Search",
+    "subcategory": "Binary Search Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Library Computer Lab Seat Booking** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Library Computer Lab Seat Booking.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 66,
+    "rating": 1890
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000047",
+    "ccps_id": "CC047",
+    "title": "CC047: Student Club Budget Expense Tracker",
+    "slug": "student-club-budget-expense-tracker",
+    "difficulty": "HARD",
+    "category": "Sorting",
+    "subcategory": "Sorting Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Student Club Budget Expense Tracker** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Student Club Budget Expense Tracker.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 67,
+    "rating": 1905
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000048",
+    "ccps_id": "CC048",
+    "title": "CC048: Campus Auditorium Light Show Cue",
+    "slug": "campus-auditorium-light-show-cue",
+    "difficulty": "HARD",
+    "category": "Greedy",
+    "subcategory": "Greedy Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Campus Auditorium Light Show Cue** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Campus Auditorium Light Show Cue.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 68,
+    "rating": 1920
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000049",
+    "ccps_id": "CC049",
+    "title": "CC049: Placement Drive Aptitude Test Timer",
+    "slug": "placement-drive-aptitude-test-timer",
+    "difficulty": "HARD",
+    "category": "Stack",
+    "subcategory": "Stack Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Placement Drive Aptitude Test Timer** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Placement Drive Aptitude Test Timer.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 69,
+    "rating": 1935
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000050",
+    "ccps_id": "CC050",
+    "title": "CC050: Campus Code Official Leaderboard Refresh",
+    "slug": "campus-code-official-leaderboard-refresh",
+    "difficulty": "HARD",
+    "category": "Queue",
+    "subcategory": "Queue Fundamentals",
+    "description": "In Sarhad College Campus, the administration requires an automated solution to solve **Campus Code Official Leaderboard Refresh** efficiently. Given an array of student activity records, calculate the optimal configuration.",
+    "story": "Every semester at Sarhad College, hundreds of students participate in campus events. To ensure seamless operation, solve the core computing challenge behind Campus Code Official Leaderboard Refresh.",
+    "input_format": "First line contains integer N (number of records). Second line contains N space-separated integers representing items/scores.",
+    "output_format": "Print the target value or index array as specified in problem constraints.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "4\n2 7 11 15\n9",
+        "output": "[0, 1]",
+        "explanation": "Elements at index 0 (2) and index 1 (7) sum up to target 9."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 70,
+    "rating": 1950
+  }
+]

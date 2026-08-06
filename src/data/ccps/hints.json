@@ -1,0 +1,352 @@
+[
+  {
+    "id": "hint-CC001",
+    "problem_id": "10000000-0000-4000-8000-000000000001",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC002",
+    "problem_id": "10000000-0000-4000-8000-000000000002",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC003",
+    "problem_id": "10000000-0000-4000-8000-000000000003",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC004",
+    "problem_id": "10000000-0000-4000-8000-000000000004",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC005",
+    "problem_id": "10000000-0000-4000-8000-000000000005",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC006",
+    "problem_id": "10000000-0000-4000-8000-000000000006",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC007",
+    "problem_id": "10000000-0000-4000-8000-000000000007",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC008",
+    "problem_id": "10000000-0000-4000-8000-000000000008",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC009",
+    "problem_id": "10000000-0000-4000-8000-000000000009",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC010",
+    "problem_id": "10000000-0000-4000-8000-000000000010",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC011",
+    "problem_id": "10000000-0000-4000-8000-000000000011",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC012",
+    "problem_id": "10000000-0000-4000-8000-000000000012",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC013",
+    "problem_id": "10000000-0000-4000-8000-000000000013",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC014",
+    "problem_id": "10000000-0000-4000-8000-000000000014",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC015",
+    "problem_id": "10000000-0000-4000-8000-000000000015",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC016",
+    "problem_id": "10000000-0000-4000-8000-000000000016",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC017",
+    "problem_id": "10000000-0000-4000-8000-000000000017",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC018",
+    "problem_id": "10000000-0000-4000-8000-000000000018",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC019",
+    "problem_id": "10000000-0000-4000-8000-000000000019",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC020",
+    "problem_id": "10000000-0000-4000-8000-000000000020",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC021",
+    "problem_id": "10000000-0000-4000-8000-000000000021",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC022",
+    "problem_id": "10000000-0000-4000-8000-000000000022",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC023",
+    "problem_id": "10000000-0000-4000-8000-000000000023",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC024",
+    "problem_id": "10000000-0000-4000-8000-000000000024",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC025",
+    "problem_id": "10000000-0000-4000-8000-000000000025",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC026",
+    "problem_id": "10000000-0000-4000-8000-000000000026",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC027",
+    "problem_id": "10000000-0000-4000-8000-000000000027",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC028",
+    "problem_id": "10000000-0000-4000-8000-000000000028",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC029",
+    "problem_id": "10000000-0000-4000-8000-000000000029",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC030",
+    "problem_id": "10000000-0000-4000-8000-000000000030",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC031",
+    "problem_id": "10000000-0000-4000-8000-000000000031",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC032",
+    "problem_id": "10000000-0000-4000-8000-000000000032",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC033",
+    "problem_id": "10000000-0000-4000-8000-000000000033",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC034",
+    "problem_id": "10000000-0000-4000-8000-000000000034",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC035",
+    "problem_id": "10000000-0000-4000-8000-000000000035",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC036",
+    "problem_id": "10000000-0000-4000-8000-000000000036",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC037",
+    "problem_id": "10000000-0000-4000-8000-000000000037",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC038",
+    "problem_id": "10000000-0000-4000-8000-000000000038",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC039",
+    "problem_id": "10000000-0000-4000-8000-000000000039",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC040",
+    "problem_id": "10000000-0000-4000-8000-000000000040",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC041",
+    "problem_id": "10000000-0000-4000-8000-000000000041",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC042",
+    "problem_id": "10000000-0000-4000-8000-000000000042",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC043",
+    "problem_id": "10000000-0000-4000-8000-000000000043",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC044",
+    "problem_id": "10000000-0000-4000-8000-000000000044",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC045",
+    "problem_id": "10000000-0000-4000-8000-000000000045",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC046",
+    "problem_id": "10000000-0000-4000-8000-000000000046",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC047",
+    "problem_id": "10000000-0000-4000-8000-000000000047",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC048",
+    "problem_id": "10000000-0000-4000-8000-000000000048",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC049",
+    "problem_id": "10000000-0000-4000-8000-000000000049",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  },
+  {
+    "id": "hint-CC050",
+    "problem_id": "10000000-0000-4000-8000-000000000050",
+    "hint_1": "Consider using a Hash Map to store elements as you iterate.",
+    "hint_2": "For each element A[i], check if (target - A[i]) already exists in the map.",
+    "hint_3": "If found, return indices [map.get(target - A[i]), i]."
+  }
+]

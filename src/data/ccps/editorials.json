@@ -1,0 +1,252 @@
+[
+  {
+    "id": "ed-CC001",
+    "problem_id": "10000000-0000-4000-8000-000000000001",
+    "content": "### Solution Editorial for CC001: Campus Cafeteria Billing System\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC002",
+    "problem_id": "10000000-0000-4000-8000-000000000002",
+    "content": "### Solution Editorial for CC002: Library Book Stacking Order\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC003",
+    "problem_id": "10000000-0000-4000-8000-000000000003",
+    "content": "### Solution Editorial for CC003: Campus Bus Seat Reservation\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC004",
+    "problem_id": "10000000-0000-4000-8000-000000000004",
+    "content": "### Solution Editorial for CC004: Student ID Hash Verifier\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC005",
+    "problem_id": "10000000-0000-4000-8000-000000000005",
+    "content": "### Solution Editorial for CC005: Hostel Room Allocation Preference\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC006",
+    "problem_id": "10000000-0000-4000-8000-000000000006",
+    "content": "### Solution Editorial for CC006: Semester GPA Percentile Ranker\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC007",
+    "problem_id": "10000000-0000-4000-8000-000000000007",
+    "content": "### Solution Editorial for CC007: Exam Hall Seating Plan\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC008",
+    "problem_id": "10000000-0000-4000-8000-000000000008",
+    "content": "### Solution Editorial for CC008: Campus Wi-Fi Bandwidth Balancer\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC009",
+    "problem_id": "10000000-0000-4000-8000-000000000009",
+    "content": "### Solution Editorial for CC009: Placement Offer Salary Sorter\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC010",
+    "problem_id": "10000000-0000-4000-8000-000000000010",
+    "content": "### Solution Editorial for CC010: Lab Equipment Inventory Check\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC011",
+    "problem_id": "10000000-0000-4000-8000-000000000011",
+    "content": "### Solution Editorial for CC011: College Event Ticket Reservation\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC012",
+    "problem_id": "10000000-0000-4000-8000-000000000012",
+    "content": "### Solution Editorial for CC012: Department Library Catalog Search\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC013",
+    "problem_id": "10000000-0000-4000-8000-000000000013",
+    "content": "### Solution Editorial for CC013: Student Attendance Streak Counter\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC014",
+    "problem_id": "10000000-0000-4000-8000-000000000014",
+    "content": "### Solution Editorial for CC014: Canteen Discount Combo Finder\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC015",
+    "problem_id": "10000000-0000-4000-8000-000000000015",
+    "content": "### Solution Editorial for CC015: Classroom Projector Assignment\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC016",
+    "problem_id": "10000000-0000-4000-8000-000000000016",
+    "content": "### Solution Editorial for CC016: Campus Shuttle Frequency Analyzer\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC017",
+    "problem_id": "10000000-0000-4000-8000-000000000017",
+    "content": "### Solution Editorial for CC017: Sports Meet Medals Tally\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC018",
+    "problem_id": "10000000-0000-4000-8000-000000000018",
+    "content": "### Solution Editorial for CC018: Coding Club Pair Programming Matching\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC019",
+    "problem_id": "10000000-0000-4000-8000-000000000019",
+    "content": "### Solution Editorial for CC019: Campus Gate Entry Logging\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC020",
+    "problem_id": "10000000-0000-4000-8000-000000000020",
+    "content": "### Solution Editorial for CC020: Faculty Lecture Slot Scheduler\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC021",
+    "problem_id": "10000000-0000-4000-8000-000000000021",
+    "content": "### Solution Editorial for CC021: Library Overdue Fine Calculator\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC022",
+    "problem_id": "10000000-0000-4000-8000-000000000022",
+    "content": "### Solution Editorial for CC022: Student Project Repository Search\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC023",
+    "problem_id": "10000000-0000-4000-8000-000000000023",
+    "content": "### Solution Editorial for CC023: Campus Canteen Token Dispenser\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC024",
+    "problem_id": "10000000-0000-4000-8000-000000000024",
+    "content": "### Solution Editorial for CC024: Hostel Laundry Machine Queue\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC025",
+    "problem_id": "10000000-0000-4000-8000-000000000025",
+    "content": "### Solution Editorial for CC025: College Fest Main Stage Schedule\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC026",
+    "problem_id": "10000000-0000-4000-8000-000000000026",
+    "content": "### Solution Editorial for CC026: Robotics Club Component Inventory\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC027",
+    "problem_id": "10000000-0000-4000-8000-000000000027",
+    "content": "### Solution Editorial for CC027: Placement Resume Keyword Scanner\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC028",
+    "problem_id": "10000000-0000-4000-8000-000000000028",
+    "content": "### Solution Editorial for CC028: Alumni Donation Target Tracker\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC029",
+    "problem_id": "10000000-0000-4000-8000-000000000029",
+    "content": "### Solution Editorial for CC029: Campus Cafeteria Calorie Meter\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC030",
+    "problem_id": "10000000-0000-4000-8000-000000000030",
+    "content": "### Solution Editorial for CC030: Student Grade Point Boundary Calculator\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC031",
+    "problem_id": "10000000-0000-4000-8000-000000000031",
+    "content": "### Solution Editorial for CC031: Library Rare Books Access Audit\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC032",
+    "problem_id": "10000000-0000-4000-8000-000000000032",
+    "content": "### Solution Editorial for CC032: Campus Bus Route Optimization\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC033",
+    "problem_id": "10000000-0000-4000-8000-000000000033",
+    "content": "### Solution Editorial for CC033: Hostel Mess Weekly Menu Planner\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC034",
+    "problem_id": "10000000-0000-4000-8000-000000000034",
+    "content": "### Solution Editorial for CC034: Semester Exam Retake Fee Calculator\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC035",
+    "problem_id": "10000000-0000-4000-8000-000000000035",
+    "content": "### Solution Editorial for CC035: Student Hackathon Team Builder\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC036",
+    "problem_id": "10000000-0000-4000-8000-000000000036",
+    "content": "### Solution Editorial for CC036: Campus Parking Slot Allocator\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC037",
+    "problem_id": "10000000-0000-4000-8000-000000000037",
+    "content": "### Solution Editorial for CC037: Department HOD Notice Distribution\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC038",
+    "problem_id": "10000000-0000-4000-8000-000000000038",
+    "content": "### Solution Editorial for CC038: College Library Card Renewal Check\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC039",
+    "problem_id": "10000000-0000-4000-8000-000000000039",
+    "content": "### Solution Editorial for CC039: Student Gym Equipment Reservation\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC040",
+    "problem_id": "10000000-0000-4000-8000-000000000040",
+    "content": "### Solution Editorial for CC040: Campus Green Energy Monitor\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC041",
+    "problem_id": "10000000-0000-4000-8000-000000000041",
+    "content": "### Solution Editorial for CC041: placement Mock Interview Slotting\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC042",
+    "problem_id": "10000000-0000-4000-8000-000000000042",
+    "content": "### Solution Editorial for CC042: Student Transcript GPA Averager\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC043",
+    "problem_id": "10000000-0000-4000-8000-000000000043",
+    "content": "### Solution Editorial for CC043: College Magazine Article Review\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC044",
+    "problem_id": "10000000-0000-4000-8000-000000000044",
+    "content": "### Solution Editorial for CC044: Hostel Visitor Entry Timestamp Audit\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC045",
+    "problem_id": "10000000-0000-4000-8000-000000000045",
+    "content": "### Solution Editorial for CC045: Campus Shuttle Battery Charging Schedule\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC046",
+    "problem_id": "10000000-0000-4000-8000-000000000046",
+    "content": "### Solution Editorial for CC046: Library Computer Lab Seat Booking\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC047",
+    "problem_id": "10000000-0000-4000-8000-000000000047",
+    "content": "### Solution Editorial for CC047: Student Club Budget Expense Tracker\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC048",
+    "problem_id": "10000000-0000-4000-8000-000000000048",
+    "content": "### Solution Editorial for CC048: Campus Auditorium Light Show Cue\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC049",
+    "problem_id": "10000000-0000-4000-8000-000000000049",
+    "content": "### Solution Editorial for CC049: Placement Drive Aptitude Test Timer\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  },
+  {
+    "id": "ed-CC050",
+    "problem_id": "10000000-0000-4000-8000-000000000050",
+    "content": "### Solution Editorial for CC050: Campus Code Official Leaderboard Refresh\n\n#### Approach: Hash Map Optimization\nInstead of checking all pairs using an $O(N^2)$ nested loop, use a Hash Map to achieve $O(N)$ time complexity.\n\n#### Complexity Analysis:\n- **Time Complexity**: $O(N)$\n- **Space Complexity**: $O(N)$"
+  }
+]
