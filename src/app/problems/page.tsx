@@ -58,9 +58,13 @@ export default function ProblemsPage() {
       if (search) query.append("search", search);
 
       const res = await fetch(`/api/problems?${query.toString()}`);
-      const data = await res.json();
+      const rawData = await res.json();
+      const data = rawData.data || rawData;
+
       if (data.problems) {
         setProblems(data.problems);
+      } else if (Array.isArray(data)) {
+        setProblems(data);
       }
     } catch (err: any) {
       console.error("Failed to fetch problems:", err);

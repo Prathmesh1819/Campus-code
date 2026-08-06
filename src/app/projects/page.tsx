@@ -51,8 +51,10 @@ export default function ProjectsPage() {
       if (search) query.append("search", search);
 
       const res = await fetch(`/api/projects?${query.toString()}`);
-      const data = await res.json();
+      const rawData = await res.json();
+      const data = rawData.data || rawData;
       if (data.projects) setProjects(data.projects);
+      else if (Array.isArray(data)) setProjects(data);
     } catch {
       // Fallback mock projects
       setProjects([

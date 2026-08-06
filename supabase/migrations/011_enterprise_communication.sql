@@ -78,7 +78,8 @@ SELECT
     (SELECT COUNT(*) FROM public.notifications) AS total_inapp_notifications,
     (SELECT COUNT(*) FROM public.notifications WHERE is_read = false) AS unread_inapp_notifications,
     (SELECT COUNT(*) FROM public.notification_queue WHERE status = 'pending') AS pending_queue_jobs,
-    (SELECT COUNT(*) FROM public.notification_queue WHERE status = 'dead_letter') AS dead_letter_jobs;
+    (SELECT COUNT(*) FROM public.notification_queue WHERE status = 'dead_letter') AS dead_letter_jobs
+    FROM public.email_logs el;
 
 -- RLS Policies
 ALTER TABLE public.email_logs ENABLE ROW LEVEL SECURITY;

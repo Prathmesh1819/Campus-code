@@ -137,7 +137,8 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
     try {
       const resolvedParams = await params;
       const res = await fetch(`/api/problems/${resolvedParams.id}`);
-      const data = await res.json();
+      const rawData = await res.json();
+      const data = rawData.data || rawData;
       if (data.problem) {
         setProblem(data.problem);
         if (data.problem.category === "SQL") {
@@ -169,7 +170,8 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
     try {
       const resolvedParams = await params;
       const res = await fetch(`/api/submissions?userId=${user.id}&problemId=${resolvedParams.id}`);
-      const data = await res.json();
+      const rawData = await res.json();
+      const data = rawData.data || rawData;
       if (data.submissions) {
         setSubmissionsHistory(data.submissions);
       }
@@ -195,7 +197,6 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
     setIsBottomPanelOpen(true);
     setBottomTab("result");
 
-    // Read instantaneous code buffer directly from Monaco Editor ref
     const currentCode = editorRef.current ? editorRef.current.getValue() : code;
 
     try {
@@ -216,7 +217,8 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
         }),
       });
 
-      const data = await res.json();
+      const rawData = await res.json();
+      const data = rawData.data || rawData;
       if (data.result) {
         setExecutionResult(data.result);
         setSelectedCaseIdx(0);
@@ -245,7 +247,7 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
     }
   };
 
-  const parsedExamples = problem?.examples ? JSON.parse(problem.examples) : [];
+  const parsedExamples = problem?.examples ? (typeof problem.examples === "string" ? JSON.parse(problem.examples) : problem.examples) : [];
 
   return (
     <div className="h-screen flex flex-col bg-[#070913] text-white overflow-hidden">
@@ -278,7 +280,7 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
           </div>
         </div>
 
-        {/* Action Run / Submit Buttons & Permanent Language Selector */}
+        {/* Action Run / Submit Buttons */}
         <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
           <button
             onClick={() => handleRunCode(false)}
@@ -438,7 +440,7 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
 
         {/* Right Column: Code Editor & LeetCode Bottom Workspace */}
         <div className="lg:col-span-7 flex flex-col bg-[#0b0f19] relative overflow-hidden">
-          {/* Editor Header Bar with Permanent Language Selector */}
+          {/* Editor Header Bar */}
           <div className="bg-slate-950 border-b border-slate-800 px-4 py-2 flex items-center justify-between shrink-0 z-20">
             <div className="flex items-center gap-2">
               <Code2 className="w-4 h-4 text-purple-400" />

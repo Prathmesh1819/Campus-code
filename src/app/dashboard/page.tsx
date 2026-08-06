@@ -60,7 +60,8 @@ export default function DashboardPage() {
     if (isTeacherOrAdmin) {
       try {
         const tRes = await fetch("/api/teacher");
-        const tData = await tRes.json();
+        const rawTData = await tRes.json();
+        const tData = rawTData.data || rawTData;
         if (tData.stats) {
           setTeacherStats({
             students: tData.stats.enrolledStudents || 1,
@@ -77,7 +78,8 @@ export default function DashboardPage() {
 
     try {
       const res = await fetch(`/api/submissions?userId=${user?.id}`);
-      const data = await res.json();
+      const rawData = await res.json();
+      const data = rawData.data || rawData;
       if (data.submissions) {
         const accepted = data.submissions.filter((s: any) => s.status === "ACCEPTED");
         setSolvedCount(accepted.length);
@@ -88,7 +90,8 @@ export default function DashboardPage() {
 
     try {
       const pRes = await fetch("/api/projects");
-      const pData = await pRes.json();
+      const rawPData = await pRes.json();
+      const pData = rawPData.data || rawPData;
       if (pData.projects) {
         const myProjects = pData.projects.filter((p: any) => p.userId === user?.id);
         setProjectsCount(myProjects.length);
@@ -101,7 +104,8 @@ export default function DashboardPage() {
   const fetchLeaderboardPreview = async () => {
     try {
       const res = await fetch("/api/leaderboard");
-      const data = await res.json();
+      const rawData = await res.json();
+      const data = rawData.data || rawData;
       if (data.rankings) {
         setTopRankers(data.rankings.slice(0, 3));
         const myEntry = data.rankings.find((r: any) => r.id === user?.id);
@@ -116,7 +120,8 @@ export default function DashboardPage() {
     try {
       const cName = user?.className || "TY BSc CS";
       const res = await fetch(`/api/classrooms?className=${encodeURIComponent(cName)}`);
-      const data = await res.json();
+      const rawData = await res.json();
+      const data = rawData.data || rawData;
       if (data.announcements) setAnnouncements(data.announcements);
     } catch {
       setAnnouncements([]);

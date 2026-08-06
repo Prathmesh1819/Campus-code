@@ -43,8 +43,10 @@ export default function LeaderboardPage() {
   const fetchLeaderboard = async () => {
     try {
       const res = await fetch(`/api/leaderboard?scope=${scope}&period=${period}`);
-      const data = await res.json();
+      const rawData = await res.json();
+      const data = rawData.data || rawData;
       if (data.rankings) setRankings(data.rankings);
+      else if (Array.isArray(data)) setRankings(data);
     } catch {
       setRankings([]);
     } finally {
