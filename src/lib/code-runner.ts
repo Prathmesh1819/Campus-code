@@ -1010,3 +1010,22 @@ export async function executeJudge0Submission(
     debugInfo: firstDebugInfo,
   };
 }
+
+export async function runCodeInJudge0(problemId: string, language: string, code: string) {
+  const meta = resolveProblemMetadata(problemId);
+  const testCases = [
+    { input: "[2, 7, 11, 15], 9", expectedOutput: "[0, 1]" },
+  ];
+
+  const execRes = await executeJudge0Submission(code, language, testCases, meta);
+
+  return {
+    verdict: execRes.status,
+    runtime: execRes.executionTimeMs,
+    memory: execRes.memoryUsageKb,
+    compile_output: execRes.errorMessage || null,
+    stdout: execRes.outputLogs.join("\n"),
+    stderr: execRes.errorMessage || null,
+  };
+}
+

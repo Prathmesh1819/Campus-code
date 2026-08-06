@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Sidebar } from "@/components/Sidebar";
 import { useAuth } from "@/context/AuthContext";
+import { subscribeToDiscussionsRealtime } from "@/lib/supabase/client";
 import {
   MessageSquareShare,
   Heart,
@@ -32,32 +33,35 @@ export default function FeedPage() {
 
   useEffect(() => {
     fetchPosts();
+
+    // Realtime subscription for discussion feed updates
+    const unsubscribe = subscribeToDiscussionsRealtime(() => {
+      fetchPosts();
+    });
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   const fetchPosts = async () => {
     try {
-      const res = await fetch("/api/feed");
+      const res = await fetch("/api/discussions");
       const data = await res.json();
-      if (data.posts) setPosts(data.posts);
+      if (data.data) setPosts(data.data);
     } catch {
       // Fallback posts
       setPosts([
         {
           id: "post-1",
+          title: "Dynamic Programming Space Optimization",
           content: "🚀 Just solved 50 Hard Dynamic Programming problems on CampusCode! Here is my key takeaway on 2D DP table space reduction from O(N*M) to O(M):",
           codeSnippet: "// Space optimization example\nlet dp = new Array(m).fill(0);\nfor(let i = 0; i < n; i++) {\n  let nextDp = [...dp];\n  // ...\n}",
-          tags: '["#DSA", "#DynamicProgramming", "#CampusCode"]',
+          tags: ["#DSA", "#DynamicProgramming", "#CampusCode"],
           likesCount: 38,
           commentsCount: 12,
-          user: { name: "Aarav Sharma", avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80", branch: "CSE" },
-        },
-        {
-          id: "post-2",
-          content: "Does anyone want to team up for the upcoming National Inter-College Hackathon next weekend? Looking for a Backend & Cloud Engineer!",
-          tags: '["#Hackathon", "#TeamUp", "#WebDev"]',
-          likesCount: 19,
-          commentsCount: 8,
-          user: { name: "Ananya Roy", avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&auto=format&fit=crop&q=80", branch: "IT" },
+          author_name: "Aarav Sharma",
+          author_avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80",
         },
       ]);
     } finally {
@@ -70,13 +74,13 @@ export default function FeedPage() {
     if (!postContent.trim()) return;
 
     try {
-      await fetch("/api/feed", {
+      await fetch("/api/discussions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: user?.id,
+          title: postContent.substring(0, 40) + "...",
           content: postContent,
-          codeSnippet: showCodeInput ? codeSnippet : null,
+          category: "General",
           tags: ["#CampusCode", "#DeveloperCommunity"],
         }),
       });
@@ -87,21 +91,6 @@ export default function FeedPage() {
       fetchPosts();
     } catch (err: any) {
       alert("Failed to post: " + err.message);
-    }
-  };
-
-  const handleLikePost = async (postId: string) => {
-    try {
-      await fetch("/api/feed", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "like", userId: user?.id, postId }),
-      });
-      fetchPosts();
-    } catch {
-      setPosts((prev) =>
-        prev.map((p) => (p.id === postId ? { ...p, likesCount: p.likesCount + 1 } : p))
-      );
     }
   };
 
@@ -184,20 +173,20 @@ export default function FeedPage() {
           {/* Posts Feed Stream */}
           <div className="space-y-6 max-w-3xl mx-auto">
             {posts.map((post) => {
-              const tagsList: string[] = typeof post.tags === "string" ? JSON.parse(post.tags) : post.tags || [];
+              const tagsList: string[] = Array.isArray(post.tags) ? post.tags : typeof post.tags === "string" ? JSON.parse(post.tags) : [];
               return (
-                <div key={post.id} className="rounded-3xl glass-card border border-slate-800/80 p-6 space-y-4">
+                <div key={post.id || post.discussion_id} className="rounded-3xl glass-card border border-slate-800/80 p-6 space-y-4">
                   {/* Author Header */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <img
-                        src={post.user?.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80"}
-                        alt={post.user?.name}
+                        src={post.author_avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80"}
+                        alt={post.author_name}
                         className="w-10 h-10 rounded-xl object-cover ring-2 ring-purple-500/30"
                       />
                       <div>
-                        <h4 className="text-sm font-bold text-white">{post.user?.name || "Aarav Sharma"}</h4>
-                        <p className="text-[10px] text-gray-400">{post.user?.branch || "CSE Department"}</p>
+                        <h4 className="text-sm font-bold text-white">{post.author_name || "Aarav Sharma"}</h4>
+                        <p className="text-[10px] text-gray-400">CSE Department</p>
                       </div>
                     </div>
 
@@ -207,6 +196,7 @@ export default function FeedPage() {
                   </div>
 
                   {/* Content */}
+                  <h3 className="text-sm font-bold text-white">{post.title}</h3>
                   <p className="text-xs text-gray-200 leading-relaxed whitespace-pre-line">{post.content}</p>
 
                   {/* Code Snippet Attachment */}
@@ -227,17 +217,14 @@ export default function FeedPage() {
 
                   {/* Action Bar */}
                   <div className="pt-3 border-t border-slate-800/60 flex items-center justify-between text-xs font-bold text-gray-400">
-                    <button
-                      onClick={() => handleLikePost(post.id)}
-                      className="flex items-center gap-1.5 hover:text-rose-400 transition-colors"
-                    >
+                    <button className="flex items-center gap-1.5 hover:text-rose-400 transition-colors">
                       <Heart className="w-4 h-4 text-rose-500 fill-rose-500" />
-                      <span>{post.likesCount || 0} Likes</span>
+                      <span>{post.net_votes || post.likesCount || 0} Votes</span>
                     </button>
 
                     <button className="flex items-center gap-1.5 hover:text-purple-400 transition-colors">
                       <MessageSquare className="w-4 h-4 text-purple-400" />
-                      <span>{post.commentsCount || 0} Comments</span>
+                      <span>{post.comments_count || post.commentsCount || 0} Comments</span>
                     </button>
 
                     <button className="flex items-center gap-1.5 hover:text-cyan-400 transition-colors">

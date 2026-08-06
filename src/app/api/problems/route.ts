@@ -1,75 +1,68 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { NextRequest } from "next/server";
+import { z } from "zod";
+import { apiSuccess, apiError } from "@/lib/api/response";
+import { validateBody } from "@/lib/api/validation";
+import { getAuthenticatedUser, authorizeRole } from "@/lib/api/auth-middleware";
+import { supabaseAdmin } from "@/lib/supabase/server";
 
-export async function GET(req: Request) {
-  try {
-    const { searchParams } = new URL(req.url);
-    const difficulty = searchParams.get("difficulty");
-    const category = searchParams.get("category");
-    const company = searchParams.get("company");
-    const search = searchParams.get("search");
+const createProblemSchema = z.object({
+  title: z.string().min(3, "Title is required"),
+  slug: z.string().optional(),
+  difficulty: z.enum(["EASY", "MEDIUM", "HARD"]).default("EASY"),
+  category: z.string().default("Arrays"),
+  description: z.string().min(10, "Description is required"),
+  constraints: z.string().default("1 <= N <= 10^5"),
+  examples: z.any().optional(),
+  companyTags: z.any().optional(),
+  testCases: z.array(z.any()).optional(),
+});
 
-    const whereClause: any = {};
-    if (difficulty && difficulty !== "ALL") whereClause.difficulty = difficulty;
-    if (category && category !== "ALL") whereClause.category = category;
-    if (company && company !== "ALL") {
-      whereClause.companyTags = { contains: company };
-    }
-    if (search) {
-      whereClause.OR = [
-        { title: { contains: search } },
-        { category: { contains: search } },
-        { description: { contains: search } },
-        { companyTags: { contains: search } },
-      ];
-    }
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const difficulty = searchParams.get("difficulty");
+  const search = searchParams.get("search");
 
-    const problems = await prisma.problem.findMany({
-      where: whereClause,
-      include: {
-        _count: {
-          select: { submissions: true },
-        },
-      },
-      orderBy: { frequency: "desc" },
-    });
+  let query = supabaseAdmin.from("problems").select("*");
 
-    return NextResponse.json({ problems });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Failed to fetch problems" }, { status: 500 });
+  if (difficulty && difficulty !== "ALL") {
+    query = query.eq("difficulty", difficulty);
   }
+  if (search) {
+    query = query.ilike("title", `%${search}%`);
+  }
+
+  const { data: problems, error } = await query.order("created_at", { ascending: false });
+
+  if (error) return apiError("Failed to fetch problems from Supabase", 500, error);
+  return apiSuccess({ problems }, "Problems fetched successfully");
 }
 
-export async function POST(req: Request) {
-  try {
-    const body = await req.json();
-    const { title, slug, difficulty, category, description, examples, constraints, hints, editorial, testCases, companyTags, frequency } = body;
-
-    const problem = await prisma.problem.create({
-      data: {
-        title,
-        slug: slug || title.toLowerCase().replace(/\s+/g, "-"),
-        difficulty,
-        category,
-        description,
-        examples: typeof examples === "string" ? examples : JSON.stringify(examples || []),
-        constraints: constraints || "1 <= N <= 10^5",
-        hints: typeof hints === "string" ? hints : JSON.stringify(hints || []),
-        editorial: editorial || "Editorial explanation coming soon.",
-        acceptedLanguages: JSON.stringify(["c", "cpp", "java", "python", "javascript", "go", "rust", "kotlin"]),
-        companyTags: typeof companyTags === "string" ? companyTags : JSON.stringify(companyTags || ["Google", "Meta"]),
-        frequency: frequency || 85,
-        testCases: {
-          create: testCases || [
-            { input: "sample_input", expectedOutput: "sample_output", isHidden: false },
-          ],
-        },
-      },
-      include: { testCases: true },
-    });
-
-    return NextResponse.json({ message: "Problem created successfully", problem });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Failed to create problem" }, { status: 500 });
+export async function POST(req: NextRequest) {
+  const user = await getAuthenticatedUser(req);
+  if (!user || !authorizeRole(user, ["teacher", "admin"])) {
+    return apiError("Unauthorized to create problems", 403);
   }
+
+  const { data: body, error: valError } = await validateBody(req, createProblemSchema);
+  if (valError) return apiError("Validation failed", 400, valError);
+
+  const { title, slug, difficulty, description, constraints } = body!;
+  const generatedSlug = slug || title.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+
+  const { data: problem, error } = await supabaseAdmin
+    .from("problems")
+    .insert({
+      title,
+      slug: generatedSlug,
+      difficulty,
+      description,
+      constraints,
+      status: "published",
+      created_by: user.id,
+    })
+    .select("*")
+    .single();
+
+  if (error) return apiError("Failed to create problem", 500, error);
+  return apiSuccess(problem, "Problem created successfully", 201);
 }
