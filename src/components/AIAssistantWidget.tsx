@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { AITaskMode } from "@/lib/ai/openai-client";
 import {
   Sparkles,
   X,
@@ -9,6 +10,18 @@ import {
   Trash2,
   Copy,
   Check,
+  Code2,
+  HelpCircle,
+  Clock,
+  HardDrive,
+  PlayCircle,
+  Bug,
+  Briefcase,
+  FileText,
+  MapPin,
+  Trophy,
+  FolderGit2,
+  GraduationCap,
 } from "lucide-react";
 
 interface Message {
@@ -16,27 +29,31 @@ interface Message {
   sender: "user" | "ido";
   text: string;
   timestamp: string;
+  mode?: AITaskMode;
 }
 
 export function AIAssistantWidget() {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [activeMode, setActiveMode] = useState<AITaskMode>("chat");
   const [aiSettings, setAiSettings] = useState({
     aiName: "Ido",
     aiAvatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop&q=80",
-    aiSubtitle: "Sarhad College Virtual Guide & Coding Assistant",
-    aiBadge: "FEMALE AI MENTOR 💖",
+    aiSubtitle: "Sarhad College CampusCode AI Mentor",
+    aiBadge: "OPENAI ENGINE ⚡",
   });
 
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
       sender: "ido",
-      text: `Hello ${user?.name || "Student"}! 👋 I'm **Ido** 👩‍💻, your AI Virtual Assistant & Coding Mentor at Sarhad College.\n\nHow can I help you with your coding, DSA problems, or coursework today?`,
+      text: `Hello ${user?.name || "Student"}! 👋 I'm **${aiSettings.aiName}** 👩‍💻, your AI Virtual Assistant & Coding Mentor at CampusCode.\n\nSelect any AI Mode below (Code Review, Complexity, Bug Finder, Resume Review) or ask me anything!`,
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     },
   ]);
   const [input, setInput] = useState("");
+  const [codeInput, setCodeInput] = useState("");
+  const [showCodeField, setShowCodeField] = useState(false);
   const [loading, setLoading] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -51,18 +68,6 @@ export function AIAssistantWidget() {
       const data = await res.json();
       if (data.settings) {
         setAiSettings(data.settings);
-        // Update welcome message with dynamic AI name if first time
-        setMessages((prev) => {
-          if (prev.length === 1 && prev[0].id === "welcome") {
-            return [
-              {
-                ...prev[0],
-                text: `Hello ${user?.name || "Student"}! 👋 I'm **${data.settings.aiName || "Ido"}** 👩‍💻, your AI Virtual Assistant & Coding Mentor at Sarhad College.\n\nHow can I help you with your coding, DSA problems, or coursework today?`,
-              },
-            ];
-          }
-          return prev;
-        });
       }
     } catch (err) {
       console.error("Error fetching AI Settings:", err);
@@ -79,12 +84,20 @@ export function AIAssistantWidget() {
     }
   }, [messages, isOpen]);
 
-  const quickPrompts = [
-    { label: `👩‍💻 Who is ${aiSettings.aiName}?`, prompt: `Who are you and how can you help me?` },
-    { label: "💡 Explain Two Sum DSA", prompt: "Explain the optimal Hash Map approach for Two Sum Target Pair" },
-    { label: "🐛 Debug My Code", prompt: "How do I debug array index out of bounds error in C++?" },
-    { label: "🚀 Web Project Ideas", prompt: "Suggest high impact web development project ideas for my resume" },
-    { label: "📚 Exam Prep Tips", prompt: "What are key topics for DSA & Operating Systems semester exams?" },
+  const aiModes: Array<{ mode: AITaskMode; label: string; icon: any }> = [
+    { mode: "chat", label: "AI Chat", icon: Sparkles },
+    { mode: "code_review", label: "Code Review", icon: Code2 },
+    { mode: "hint_generator", label: "AI Hint", icon: HelpCircle },
+    { mode: "time_complexity", label: "Time O(N)", icon: Clock },
+    { mode: "space_complexity", label: "Space O(1)", icon: HardDrive },
+    { mode: "dry_run", label: "Dry Run", icon: PlayCircle },
+    { mode: "bug_finder", label: "Bug Scanner", icon: Bug },
+    { mode: "interview_generator", label: "Mock Interview", icon: Briefcase },
+    { mode: "resume_reviewer", label: "Resume Review", icon: FileText },
+    { mode: "learning_roadmap", label: "Learning Roadmap", icon: MapPin },
+    { mode: "contest_performance", label: "Contest Stats", icon: Trophy },
+    { mode: "project_feedback", label: "Project Audit", icon: FolderGit2 },
+    { mode: "teacher_assistant", label: "Teacher Assistant", icon: GraduationCap },
   ];
 
   const handleSend = async (textToSend?: string) => {
@@ -94,8 +107,9 @@ export function AIAssistantWidget() {
     const userMsg: Message = {
       id: Date.now().toString(),
       sender: "user",
-      text: query,
+      text: query + (codeInput ? `\n\n\`\`\`\n${codeInput}\n\`\`\`` : ""),
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      mode: activeMode,
     };
 
     setMessages((prev) => [...prev, userMsg]);
@@ -108,10 +122,9 @@ export function AIAssistantWidget() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           prompt: query,
-          history: messages.map((m) => ({ role: m.sender === "user" ? "user" : "assistant", content: m.text })),
-          userRole: user?.role || "STUDENT",
-          className: user?.className || "TY BSc CS",
-          userName: user?.name || "Student",
+          mode: activeMode,
+          code: codeInput || undefined,
+          messages: messages.map((m) => ({ role: m.sender === "user" ? "user" : "assistant", content: m.text })),
         }),
       });
 
@@ -119,11 +132,14 @@ export function AIAssistantWidget() {
       const aiMsg: Message = {
         id: (Date.now() + 1).toString(),
         sender: "ido",
-        text: data.reply || "I am processing your query. Please ask again!",
+        text: data.data?.reply || data.reply || "I am processing your query. Please ask again!",
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        mode: activeMode,
       };
 
       setMessages((prev) => [...prev, aiMsg]);
+      setCodeInput("");
+      setShowCodeField(false);
     } catch (err) {
       const errorMsg: Message = {
         id: (Date.now() + 1).toString(),
@@ -192,7 +208,7 @@ export function AIAssistantWidget() {
         <button
           onClick={() => setIsOpen(true)}
           className="fixed bottom-6 right-6 z-[999] p-3 rounded-full bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-600 text-white shadow-glow hover:scale-110 transition-all flex items-center gap-3 group border-2 border-pink-400/40"
-          title={`Open ${aiSettings.aiName} - AI Student Guide`}
+          title={`Open ${aiSettings.aiName} - CampusCode AI Engine`}
         >
           <div className="relative">
             <img
@@ -205,16 +221,16 @@ export function AIAssistantWidget() {
           </div>
           <div className="flex flex-col text-left pr-2 hidden sm:flex">
             <span className="text-xs font-black tracking-wide text-white flex items-center gap-1">
-              Ask {aiSettings.aiName} AI 👩‍💻
+              CampusCode AI 🤖
             </span>
-            <span className="text-[10px] text-pink-200 font-semibold">Virtual Mentor</span>
+            <span className="text-[10px] text-pink-200 font-semibold">OpenAI Powered</span>
           </div>
         </button>
       )}
 
       {/* Floating Chat Modal Box */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 z-[999] w-full max-w-md h-[580px] ido-chat-drawer glass-card border border-pink-500/40 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-6 duration-300 bg-[#0c0a1a]">
+        <div className="fixed bottom-6 right-6 z-[999] w-full max-w-lg h-[620px] ido-chat-drawer glass-card border border-pink-500/40 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-6 duration-300 bg-[#0c0a1a]">
           {/* Top Header */}
           <div className="p-4 ido-chat-header bg-slate-950/90 border-b border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -228,7 +244,7 @@ export function AIAssistantWidget() {
               </div>
               <div>
                 <h3 className="text-xs font-black text-white flex items-center gap-1.5">
-                  <span>{aiSettings.aiName} 👩‍💻</span>
+                  <span>CampusCode AI Engine 🤖</span>
                   <span className="px-2 py-0.5 rounded-full bg-pink-500/20 text-pink-300 border border-pink-500/30 text-[9px] font-bold">
                     {aiSettings.aiBadge}
                   </span>
@@ -254,6 +270,28 @@ export function AIAssistantWidget() {
             </div>
           </div>
 
+          {/* AI Capabilities Tabs */}
+          <div className="px-3 py-2 bg-slate-950/80 border-b border-slate-800 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+            {aiModes.map((item) => {
+              const Icon = item.icon;
+              const isActive = activeMode === item.mode;
+              return (
+                <button
+                  key={item.mode}
+                  onClick={() => setActiveMode(item.mode)}
+                  className={`px-3 py-1 rounded-xl text-[10px] font-bold flex items-center gap-1 whitespace-nowrap transition-all ${
+                    isActive
+                      ? "bg-purple-600 text-white shadow-glow"
+                      : "bg-slate-900 text-gray-400 hover:text-gray-200 border border-slate-800"
+                  }`}
+                >
+                  <Icon className="w-3 h-3" />
+                  <span>{item.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
           {/* Messages Body */}
           <div className="flex-1 p-4 overflow-y-auto space-y-4">
             {messages.map((m) => (
@@ -262,7 +300,7 @@ export function AIAssistantWidget() {
                 className={`flex flex-col ${m.sender === "user" ? "items-end" : "items-start"}`}
               >
                 <div
-                  className={`max-w-[88%] p-3.5 rounded-2xl relative shadow-md ${
+                  className={`max-w-[90%] p-3.5 rounded-2xl relative shadow-md ${
                     m.sender === "user"
                       ? "gradient-bg text-white rounded-br-none shadow-glow"
                       : "ido-chat-bubble bg-slate-900/90 border border-pink-500/30 text-gray-200 rounded-bl-none"
@@ -274,7 +312,7 @@ export function AIAssistantWidget() {
                         user?.name || "You"
                       ) : (
                         <span className="text-pink-300 font-bold flex items-center gap-1">
-                          <Sparkles className="w-3 h-3 text-pink-400" /> {aiSettings.aiName} AI
+                          <Sparkles className="w-3 h-3 text-pink-400" /> CampusCode AI ({m.mode || "chat"})
                         </span>
                       )}
                     </span>
@@ -292,7 +330,7 @@ export function AIAssistantWidget() {
                     </div>
                   </div>
 
-                  {m.sender === "ido" ? renderFormattedText(m.text) : <p className="text-xs">{m.text}</p>}
+                  {m.sender === "ido" ? renderFormattedText(m.text) : <p className="text-xs whitespace-pre-line">{m.text}</p>}
                 </div>
               </div>
             ))}
@@ -301,24 +339,11 @@ export function AIAssistantWidget() {
               <div className="flex items-start gap-2">
                 <div className="p-3.5 rounded-2xl ido-chat-bubble bg-slate-900 border border-pink-500/30 text-xs text-pink-300 flex items-center gap-2 animate-pulse">
                   <Sparkles className="w-4 h-4 text-pink-400 animate-spin" />
-                  <span>{aiSettings.aiName} is typing a response...</span>
+                  <span>CampusCode AI is generating response...</span>
                 </div>
               </div>
             )}
             <div ref={messagesEndRef} />
-          </div>
-
-          {/* Quick Suggestion Pills */}
-          <div className="px-3 py-2 border-t border-slate-800/80 bg-slate-950/60 ido-chat-footer flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-            {quickPrompts.map((qp, idx) => (
-              <button
-                key={idx}
-                onClick={() => handleSend(qp.prompt)}
-                className="px-2.5 py-1 rounded-xl bg-slate-900 hover:bg-pink-600/20 border border-slate-800 hover:border-pink-500/40 text-pink-300 text-[10px] font-bold whitespace-nowrap transition-all"
-              >
-                {qp.label}
-              </button>
-            ))}
           </div>
 
           {/* Input Footer */}
@@ -327,22 +352,45 @@ export function AIAssistantWidget() {
               e.preventDefault();
               handleSend();
             }}
-            className="p-3 bg-slate-950 border-t border-slate-800 ido-chat-footer flex items-center gap-2"
+            className="p-3 bg-slate-950 border-t border-slate-800 ido-chat-footer flex flex-col gap-2"
           >
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder={`Ask ${aiSettings.aiName} 👩‍💻 about DSA, code bugs, exams...`}
-              className="flex-1 bg-slate-900 border border-slate-800 ido-chat-input rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-pink-500"
-            />
-            <button
-              type="submit"
-              disabled={!input.trim() || loading}
-              className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 text-white text-xs font-bold shadow-glow hover:opacity-95 disabled:opacity-50 transition-all flex items-center gap-1 shrink-0"
-            >
-              <Send className="w-3.5 h-3.5" />
-            </button>
+            {showCodeField && (
+              <textarea
+                rows={3}
+                value={codeInput}
+                onChange={(e) => setCodeInput(e.target.value)}
+                placeholder="// Paste source code snippet here for AI Review/Analysis..."
+                className="w-full bg-slate-900 border border-slate-800 font-mono text-xs text-purple-300 rounded-xl p-2.5 focus:outline-none"
+              />
+            )}
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setShowCodeField(!showCodeField)}
+                className={`p-2 rounded-xl border text-xs font-bold transition-all ${
+                  showCodeField ? "bg-purple-500/20 text-purple-300 border-purple-500/40" : "bg-slate-900 text-gray-400 border-slate-800"
+                }`}
+                title="Attach Source Code"
+              >
+                <Code2 className="w-4 h-4" />
+              </button>
+
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder={`Prompt for AI [${activeMode}]...`}
+                className="flex-1 bg-slate-900 border border-slate-800 ido-chat-input rounded-xl py-2 px-3 text-xs text-white focus:outline-none focus:border-pink-500"
+              />
+              <button
+                type="submit"
+                disabled={!input.trim() || loading}
+                className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 text-white text-xs font-bold shadow-glow hover:opacity-95 disabled:opacity-50 transition-all flex items-center gap-1 shrink-0"
+              >
+                <Send className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </form>
         </div>
       )}
