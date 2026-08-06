@@ -1,57 +1,42 @@
 import { NextRequest } from "next/server";
 import { apiSuccess, apiError } from "@/lib/api/response";
 import { supabaseAdmin } from "@/lib/supabase/server";
-import fs from "fs";
-import path from "path";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-  let problem: any = null;
-
   try {
-    const { data: dbProblem } = await supabaseAdmin.from("problems").select("*").eq("id", id).single();
-    if (dbProblem) problem = dbProblem;
-  } catch {
-    // Ignore error and use local CCPS fallback
-  }
+    const { data: problem, error: pErr } = await supabaseAdmin
+      .from("problems")
+      .select("*")
+      .or(`id.eq.${id},slug.eq.${id}`)
+      .single();
 
-  if (!problem) {
-    const ccpsPath = path.join(process.cwd(), "src", "data", "ccps", "problems.json");
-    if (fs.existsSync(ccpsPath)) {
-      const problems: any[] = JSON.parse(fs.readFileSync(ccpsPath, "utf8"));
-      problem = problems.find((p) => p.id === id || p.ccps_id === id || p.slug === id);
+    if (pErr || !problem) {
+      return apiError("Problem not found in database", 404, pErr);
     }
-  }
 
-  if (!problem) {
-    return apiError("Problem not found", 404);
-  }
+    const { data: starterCodes } = await supabaseAdmin
+      .from("starter_codes")
+      .select("*")
+      .eq("problem_id", problem.id);
 
-  // Load starter codes and test cases
-  const scPath = path.join(process.cwd(), "src", "data", "ccps", "starter_codes.json");
-  const tcPath = path.join(process.cwd(), "src", "data", "ccps", "test_cases.json");
+    const { data: testCases } = await supabaseAdmin
+      .from("test_cases")
+      .select("*")
+      .eq("problem_id", problem.id);
 
-  let starterCodes: any[] = [];
-  let testCases: any[] = [];
-
-  if (fs.existsSync(scPath)) {
-    const allSc: any[] = JSON.parse(fs.readFileSync(scPath, "utf8"));
-    starterCodes = allSc.filter((sc) => sc.problem_id === problem.id);
-  }
-  if (fs.existsSync(tcPath)) {
-    const allTc: any[] = JSON.parse(fs.readFileSync(tcPath, "utf8"));
-    testCases = allTc.filter((tc) => tc.problem_id === problem.id);
-  }
-
-  return apiSuccess(
-    {
-      problem: {
-        ...problem,
-        starterCodes,
-        testCases,
+    return apiSuccess(
+      {
+        problem: {
+          ...problem,
+          starterCodes: starterCodes || [],
+          testCases: testCases || [],
+        },
       },
-    },
-    "Problem details retrieved successfully"
-  );
+      "Problem details retrieved successfully from Supabase"
+    );
+  } catch (err: any) {
+    return apiError(`Database query failed: ${err.message}`, 500);
+  }
 }

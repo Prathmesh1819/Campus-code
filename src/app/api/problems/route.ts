@@ -4,8 +4,6 @@ import { apiSuccess, apiError } from "@/lib/api/response";
 import { validateBody } from "@/lib/api/validation";
 import { getAuthenticatedUser, authorizeRole } from "@/lib/api/auth-middleware";
 import { supabaseAdmin } from "@/lib/supabase/server";
-import fs from "fs";
-import path from "path";
 
 const createProblemSchema = z.object({
   title: z.string().min(3, "Title is required"),
@@ -23,16 +21,16 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const difficulty = searchParams.get("difficulty");
   const search = searchParams.get("search");
-  const company = searchParams.get("company");
   const category = searchParams.get("category");
-
-  let problemsList: any[] = [];
 
   try {
     let query = supabaseAdmin.from("problems").select("*");
 
     if (difficulty && difficulty !== "ALL") {
-      query = query.eq("difficulty", difficulty);
+      query = query.eq("difficulty", difficulty.toUpperCase());
+    }
+    if (category && category !== "ALL") {
+      query = query.ilike("category", category);
     }
     if (search) {
       query = query.ilike("title", `%${search}%`);
@@ -40,37 +38,14 @@ export async function GET(req: NextRequest) {
 
     const { data: dbProblems, error } = await query.order("created_at", { ascending: false });
 
-    if (!error && dbProblems && dbProblems.length > 0) {
-      problemsList = dbProblems;
+    if (error) {
+      return apiError("Failed to fetch problems from database", 500, error);
     }
-  } catch {
-    // Ignore Supabase connection error and use fallback file dataset below
-  }
 
-  // Fallback to CCPS JSON dataset if database query returns empty
-  if (problemsList.length === 0) {
-    const ccpsPath = path.join(process.cwd(), "src", "data", "ccps", "problems.json");
-    if (fs.existsSync(ccpsPath)) {
-      const fileContent = fs.readFileSync(ccpsPath, "utf8");
-      problemsList = JSON.parse(fileContent);
-    }
+    return apiSuccess({ problems: dbProblems || [] }, "Problems fetched successfully from Supabase");
+  } catch (err: any) {
+    return apiError(`Database connection error: ${err.message}`, 500);
   }
-
-  // Apply filters to problemsList
-  if (difficulty && difficulty !== "ALL") {
-    problemsList = problemsList.filter((p: any) => p.difficulty?.toUpperCase() === difficulty.toUpperCase());
-  }
-  if (category && category !== "ALL") {
-    problemsList = problemsList.filter((p: any) => p.category?.toLowerCase() === category.toLowerCase());
-  }
-  if (search) {
-    const lower = search.toLowerCase();
-    problemsList = problemsList.filter(
-      (p: any) => p.title?.toLowerCase().includes(lower) || p.description?.toLowerCase().includes(lower)
-    );
-  }
-
-  return apiSuccess({ problems: problemsList }, "Problems fetched successfully");
 }
 
 export async function POST(req: NextRequest) {
@@ -99,6 +74,6 @@ export async function POST(req: NextRequest) {
     .select("*")
     .single();
 
-  if (error) return apiError("Failed to create problem", 500, error);
-  return apiSuccess(problem, "Problem created successfully", 201);
+  if (error) return apiError("Failed to create problem in database", 500, error);
+  return apiSuccess(problem, "Problem created successfully in Supabase", 201);
 }
