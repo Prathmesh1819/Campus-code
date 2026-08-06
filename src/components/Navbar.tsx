@@ -25,6 +25,7 @@ import {
   Github,
   Linkedin,
   ExternalLink,
+  X,
 } from "lucide-react";
 
 interface NavbarProps {
@@ -38,6 +39,10 @@ export function Navbar({ onToggleSidebar }: NavbarProps) {
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">("dark");
+
+  // Global Navbar Search Bar State
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("campuscode_theme") as "dark" | "light" | null;
@@ -80,6 +85,13 @@ export function Navbar({ onToggleSidebar }: NavbarProps) {
     }
   };
 
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
+    setIsSearchFocused(false);
+    router.push(`/problems?search=${encodeURIComponent(searchQuery.trim())}`);
+  };
+
   return (
     <>
       <nav className="sticky top-0 z-40 w-full glass-header border-b border-slate-800/80 px-4 lg:px-8 py-3 flex items-center justify-between gap-4">
@@ -110,15 +122,52 @@ export function Navbar({ onToggleSidebar }: NavbarProps) {
         </div>
 
         {/* Global Search Bar */}
-        <div className="hidden md:flex items-center flex-1 max-w-md mx-6">
-          <div className="relative w-full">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+        <div className="hidden md:flex items-center flex-1 max-w-md mx-6 relative">
+          <form onSubmit={handleSearchSubmit} className="relative w-full">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-400" />
             <input
               type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => setIsSearchFocused(true)}
               placeholder="Search problems, topics, projects, or classmates..."
-              className="w-full bg-slate-900/80 border border-slate-800 focus:border-purple-500 rounded-2xl py-2 pl-10 pr-4 text-xs text-white placeholder-gray-500 focus:outline-none transition-all shadow-inner"
+              className="w-full bg-slate-900/90 border border-slate-800 focus:border-purple-500 rounded-2xl py-2 pl-10 pr-9 text-xs text-white placeholder-gray-500 focus:outline-none transition-all shadow-inner"
             />
-          </div>
+            {searchQuery ? (
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            ) : null}
+          </form>
+
+          {/* Quick Search Suggestions Popover */}
+          {isSearchFocused && searchQuery.trim().length > 0 && (
+            <div className="absolute top-full left-0 right-0 mt-2 bg-[#090c17] border border-purple-500/40 rounded-2xl p-3 shadow-2xl z-50 animate-in fade-in space-y-2 text-xs">
+              <div className="flex items-center justify-between text-[10px] text-gray-400 font-bold uppercase tracking-wider px-1">
+                <span>Quick Search Action</span>
+                <span>Press Enter ↵</span>
+              </div>
+              <button
+                onClick={() => {
+                  setIsSearchFocused(false);
+                  router.push(`/problems?search=${encodeURIComponent(searchQuery.trim())}`);
+                }}
+                className="w-full text-left p-2.5 rounded-xl bg-purple-600/20 border border-purple-500/30 text-purple-300 font-bold flex items-center justify-between hover:bg-purple-600/30 transition-all"
+              >
+                <span className="flex items-center gap-2">
+                  <Code2 className="w-4 h-4 text-purple-400" />
+                  <span>Search problems for "{searchQuery}"</span>
+                </span>
+                <span className="text-[10px] bg-purple-500/30 px-2 py-0.5 rounded-md text-white font-mono">
+                  Go to Problems
+                </span>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Action Controls & Profile Menu */}
