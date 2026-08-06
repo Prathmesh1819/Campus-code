@@ -1398,5 +1398,1405 @@
     "input": "5\n1 5 3 7 9\n12",
     "expected_output": "[2, 4]",
     "is_hidden": true
+  },
+  {
+    "id": "tc-CC051-1",
+    "problem_id": "10000000-0000-4000-8000-000000000051",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC051-2",
+    "problem_id": "10000000-0000-4000-8000-000000000051",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC051-3",
+    "problem_id": "10000000-0000-4000-8000-000000000051",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC051-4",
+    "problem_id": "10000000-0000-4000-8000-000000000051",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC052-1",
+    "problem_id": "10000000-0000-4000-8000-000000000052",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC052-2",
+    "problem_id": "10000000-0000-4000-8000-000000000052",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC052-3",
+    "problem_id": "10000000-0000-4000-8000-000000000052",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC052-4",
+    "problem_id": "10000000-0000-4000-8000-000000000052",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC053-1",
+    "problem_id": "10000000-0000-4000-8000-000000000053",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC053-2",
+    "problem_id": "10000000-0000-4000-8000-000000000053",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC053-3",
+    "problem_id": "10000000-0000-4000-8000-000000000053",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC053-4",
+    "problem_id": "10000000-0000-4000-8000-000000000053",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC054-1",
+    "problem_id": "10000000-0000-4000-8000-000000000054",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC054-2",
+    "problem_id": "10000000-0000-4000-8000-000000000054",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC054-3",
+    "problem_id": "10000000-0000-4000-8000-000000000054",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC054-4",
+    "problem_id": "10000000-0000-4000-8000-000000000054",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC055-1",
+    "problem_id": "10000000-0000-4000-8000-000000000055",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC055-2",
+    "problem_id": "10000000-0000-4000-8000-000000000055",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC055-3",
+    "problem_id": "10000000-0000-4000-8000-000000000055",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC055-4",
+    "problem_id": "10000000-0000-4000-8000-000000000055",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC056-1",
+    "problem_id": "10000000-0000-4000-8000-000000000056",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC056-2",
+    "problem_id": "10000000-0000-4000-8000-000000000056",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC056-3",
+    "problem_id": "10000000-0000-4000-8000-000000000056",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC056-4",
+    "problem_id": "10000000-0000-4000-8000-000000000056",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC057-1",
+    "problem_id": "10000000-0000-4000-8000-000000000057",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC057-2",
+    "problem_id": "10000000-0000-4000-8000-000000000057",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC057-3",
+    "problem_id": "10000000-0000-4000-8000-000000000057",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC057-4",
+    "problem_id": "10000000-0000-4000-8000-000000000057",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC058-1",
+    "problem_id": "10000000-0000-4000-8000-000000000058",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC058-2",
+    "problem_id": "10000000-0000-4000-8000-000000000058",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC058-3",
+    "problem_id": "10000000-0000-4000-8000-000000000058",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC058-4",
+    "problem_id": "10000000-0000-4000-8000-000000000058",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC059-1",
+    "problem_id": "10000000-0000-4000-8000-000000000059",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC059-2",
+    "problem_id": "10000000-0000-4000-8000-000000000059",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC059-3",
+    "problem_id": "10000000-0000-4000-8000-000000000059",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC059-4",
+    "problem_id": "10000000-0000-4000-8000-000000000059",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC060-1",
+    "problem_id": "10000000-0000-4000-8000-000000000060",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC060-2",
+    "problem_id": "10000000-0000-4000-8000-000000000060",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC060-3",
+    "problem_id": "10000000-0000-4000-8000-000000000060",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC060-4",
+    "problem_id": "10000000-0000-4000-8000-000000000060",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC061-1",
+    "problem_id": "10000000-0000-4000-8000-000000000061",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC061-2",
+    "problem_id": "10000000-0000-4000-8000-000000000061",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC061-3",
+    "problem_id": "10000000-0000-4000-8000-000000000061",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC061-4",
+    "problem_id": "10000000-0000-4000-8000-000000000061",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC062-1",
+    "problem_id": "10000000-0000-4000-8000-000000000062",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC062-2",
+    "problem_id": "10000000-0000-4000-8000-000000000062",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC062-3",
+    "problem_id": "10000000-0000-4000-8000-000000000062",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC062-4",
+    "problem_id": "10000000-0000-4000-8000-000000000062",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC063-1",
+    "problem_id": "10000000-0000-4000-8000-000000000063",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC063-2",
+    "problem_id": "10000000-0000-4000-8000-000000000063",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC063-3",
+    "problem_id": "10000000-0000-4000-8000-000000000063",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC063-4",
+    "problem_id": "10000000-0000-4000-8000-000000000063",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC064-1",
+    "problem_id": "10000000-0000-4000-8000-000000000064",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC064-2",
+    "problem_id": "10000000-0000-4000-8000-000000000064",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC064-3",
+    "problem_id": "10000000-0000-4000-8000-000000000064",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC064-4",
+    "problem_id": "10000000-0000-4000-8000-000000000064",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC065-1",
+    "problem_id": "10000000-0000-4000-8000-000000000065",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC065-2",
+    "problem_id": "10000000-0000-4000-8000-000000000065",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC065-3",
+    "problem_id": "10000000-0000-4000-8000-000000000065",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC065-4",
+    "problem_id": "10000000-0000-4000-8000-000000000065",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC066-1",
+    "problem_id": "10000000-0000-4000-8000-000000000066",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC066-2",
+    "problem_id": "10000000-0000-4000-8000-000000000066",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC066-3",
+    "problem_id": "10000000-0000-4000-8000-000000000066",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC066-4",
+    "problem_id": "10000000-0000-4000-8000-000000000066",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC067-1",
+    "problem_id": "10000000-0000-4000-8000-000000000067",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC067-2",
+    "problem_id": "10000000-0000-4000-8000-000000000067",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC067-3",
+    "problem_id": "10000000-0000-4000-8000-000000000067",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC067-4",
+    "problem_id": "10000000-0000-4000-8000-000000000067",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC068-1",
+    "problem_id": "10000000-0000-4000-8000-000000000068",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC068-2",
+    "problem_id": "10000000-0000-4000-8000-000000000068",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC068-3",
+    "problem_id": "10000000-0000-4000-8000-000000000068",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC068-4",
+    "problem_id": "10000000-0000-4000-8000-000000000068",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC069-1",
+    "problem_id": "10000000-0000-4000-8000-000000000069",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC069-2",
+    "problem_id": "10000000-0000-4000-8000-000000000069",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC069-3",
+    "problem_id": "10000000-0000-4000-8000-000000000069",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC069-4",
+    "problem_id": "10000000-0000-4000-8000-000000000069",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC070-1",
+    "problem_id": "10000000-0000-4000-8000-000000000070",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC070-2",
+    "problem_id": "10000000-0000-4000-8000-000000000070",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC070-3",
+    "problem_id": "10000000-0000-4000-8000-000000000070",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC070-4",
+    "problem_id": "10000000-0000-4000-8000-000000000070",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC071-1",
+    "problem_id": "10000000-0000-4000-8000-000000000071",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC071-2",
+    "problem_id": "10000000-0000-4000-8000-000000000071",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC071-3",
+    "problem_id": "10000000-0000-4000-8000-000000000071",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC071-4",
+    "problem_id": "10000000-0000-4000-8000-000000000071",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC072-1",
+    "problem_id": "10000000-0000-4000-8000-000000000072",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC072-2",
+    "problem_id": "10000000-0000-4000-8000-000000000072",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC072-3",
+    "problem_id": "10000000-0000-4000-8000-000000000072",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC072-4",
+    "problem_id": "10000000-0000-4000-8000-000000000072",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC073-1",
+    "problem_id": "10000000-0000-4000-8000-000000000073",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC073-2",
+    "problem_id": "10000000-0000-4000-8000-000000000073",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC073-3",
+    "problem_id": "10000000-0000-4000-8000-000000000073",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC073-4",
+    "problem_id": "10000000-0000-4000-8000-000000000073",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC074-1",
+    "problem_id": "10000000-0000-4000-8000-000000000074",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC074-2",
+    "problem_id": "10000000-0000-4000-8000-000000000074",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC074-3",
+    "problem_id": "10000000-0000-4000-8000-000000000074",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC074-4",
+    "problem_id": "10000000-0000-4000-8000-000000000074",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC075-1",
+    "problem_id": "10000000-0000-4000-8000-000000000075",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC075-2",
+    "problem_id": "10000000-0000-4000-8000-000000000075",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC075-3",
+    "problem_id": "10000000-0000-4000-8000-000000000075",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC075-4",
+    "problem_id": "10000000-0000-4000-8000-000000000075",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC076-1",
+    "problem_id": "10000000-0000-4000-8000-000000000076",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC076-2",
+    "problem_id": "10000000-0000-4000-8000-000000000076",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC076-3",
+    "problem_id": "10000000-0000-4000-8000-000000000076",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC076-4",
+    "problem_id": "10000000-0000-4000-8000-000000000076",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC077-1",
+    "problem_id": "10000000-0000-4000-8000-000000000077",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC077-2",
+    "problem_id": "10000000-0000-4000-8000-000000000077",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC077-3",
+    "problem_id": "10000000-0000-4000-8000-000000000077",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC077-4",
+    "problem_id": "10000000-0000-4000-8000-000000000077",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC078-1",
+    "problem_id": "10000000-0000-4000-8000-000000000078",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC078-2",
+    "problem_id": "10000000-0000-4000-8000-000000000078",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC078-3",
+    "problem_id": "10000000-0000-4000-8000-000000000078",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC078-4",
+    "problem_id": "10000000-0000-4000-8000-000000000078",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC079-1",
+    "problem_id": "10000000-0000-4000-8000-000000000079",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC079-2",
+    "problem_id": "10000000-0000-4000-8000-000000000079",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC079-3",
+    "problem_id": "10000000-0000-4000-8000-000000000079",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC079-4",
+    "problem_id": "10000000-0000-4000-8000-000000000079",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC080-1",
+    "problem_id": "10000000-0000-4000-8000-000000000080",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC080-2",
+    "problem_id": "10000000-0000-4000-8000-000000000080",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC080-3",
+    "problem_id": "10000000-0000-4000-8000-000000000080",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC080-4",
+    "problem_id": "10000000-0000-4000-8000-000000000080",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC081-1",
+    "problem_id": "10000000-0000-4000-8000-000000000081",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC081-2",
+    "problem_id": "10000000-0000-4000-8000-000000000081",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC081-3",
+    "problem_id": "10000000-0000-4000-8000-000000000081",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC081-4",
+    "problem_id": "10000000-0000-4000-8000-000000000081",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC082-1",
+    "problem_id": "10000000-0000-4000-8000-000000000082",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC082-2",
+    "problem_id": "10000000-0000-4000-8000-000000000082",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC082-3",
+    "problem_id": "10000000-0000-4000-8000-000000000082",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC082-4",
+    "problem_id": "10000000-0000-4000-8000-000000000082",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC083-1",
+    "problem_id": "10000000-0000-4000-8000-000000000083",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC083-2",
+    "problem_id": "10000000-0000-4000-8000-000000000083",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC083-3",
+    "problem_id": "10000000-0000-4000-8000-000000000083",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC083-4",
+    "problem_id": "10000000-0000-4000-8000-000000000083",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC084-1",
+    "problem_id": "10000000-0000-4000-8000-000000000084",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC084-2",
+    "problem_id": "10000000-0000-4000-8000-000000000084",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC084-3",
+    "problem_id": "10000000-0000-4000-8000-000000000084",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC084-4",
+    "problem_id": "10000000-0000-4000-8000-000000000084",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC085-1",
+    "problem_id": "10000000-0000-4000-8000-000000000085",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC085-2",
+    "problem_id": "10000000-0000-4000-8000-000000000085",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC085-3",
+    "problem_id": "10000000-0000-4000-8000-000000000085",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC085-4",
+    "problem_id": "10000000-0000-4000-8000-000000000085",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC086-1",
+    "problem_id": "10000000-0000-4000-8000-000000000086",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC086-2",
+    "problem_id": "10000000-0000-4000-8000-000000000086",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC086-3",
+    "problem_id": "10000000-0000-4000-8000-000000000086",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC086-4",
+    "problem_id": "10000000-0000-4000-8000-000000000086",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC087-1",
+    "problem_id": "10000000-0000-4000-8000-000000000087",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC087-2",
+    "problem_id": "10000000-0000-4000-8000-000000000087",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC087-3",
+    "problem_id": "10000000-0000-4000-8000-000000000087",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC087-4",
+    "problem_id": "10000000-0000-4000-8000-000000000087",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC088-1",
+    "problem_id": "10000000-0000-4000-8000-000000000088",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC088-2",
+    "problem_id": "10000000-0000-4000-8000-000000000088",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC088-3",
+    "problem_id": "10000000-0000-4000-8000-000000000088",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC088-4",
+    "problem_id": "10000000-0000-4000-8000-000000000088",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC089-1",
+    "problem_id": "10000000-0000-4000-8000-000000000089",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC089-2",
+    "problem_id": "10000000-0000-4000-8000-000000000089",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC089-3",
+    "problem_id": "10000000-0000-4000-8000-000000000089",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC089-4",
+    "problem_id": "10000000-0000-4000-8000-000000000089",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC090-1",
+    "problem_id": "10000000-0000-4000-8000-000000000090",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC090-2",
+    "problem_id": "10000000-0000-4000-8000-000000000090",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC090-3",
+    "problem_id": "10000000-0000-4000-8000-000000000090",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC090-4",
+    "problem_id": "10000000-0000-4000-8000-000000000090",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC091-1",
+    "problem_id": "10000000-0000-4000-8000-000000000091",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC091-2",
+    "problem_id": "10000000-0000-4000-8000-000000000091",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC091-3",
+    "problem_id": "10000000-0000-4000-8000-000000000091",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC091-4",
+    "problem_id": "10000000-0000-4000-8000-000000000091",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC092-1",
+    "problem_id": "10000000-0000-4000-8000-000000000092",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC092-2",
+    "problem_id": "10000000-0000-4000-8000-000000000092",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC092-3",
+    "problem_id": "10000000-0000-4000-8000-000000000092",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC092-4",
+    "problem_id": "10000000-0000-4000-8000-000000000092",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC093-1",
+    "problem_id": "10000000-0000-4000-8000-000000000093",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC093-2",
+    "problem_id": "10000000-0000-4000-8000-000000000093",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC093-3",
+    "problem_id": "10000000-0000-4000-8000-000000000093",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC093-4",
+    "problem_id": "10000000-0000-4000-8000-000000000093",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC094-1",
+    "problem_id": "10000000-0000-4000-8000-000000000094",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC094-2",
+    "problem_id": "10000000-0000-4000-8000-000000000094",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC094-3",
+    "problem_id": "10000000-0000-4000-8000-000000000094",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC094-4",
+    "problem_id": "10000000-0000-4000-8000-000000000094",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC095-1",
+    "problem_id": "10000000-0000-4000-8000-000000000095",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC095-2",
+    "problem_id": "10000000-0000-4000-8000-000000000095",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC095-3",
+    "problem_id": "10000000-0000-4000-8000-000000000095",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC095-4",
+    "problem_id": "10000000-0000-4000-8000-000000000095",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC096-1",
+    "problem_id": "10000000-0000-4000-8000-000000000096",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC096-2",
+    "problem_id": "10000000-0000-4000-8000-000000000096",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC096-3",
+    "problem_id": "10000000-0000-4000-8000-000000000096",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC096-4",
+    "problem_id": "10000000-0000-4000-8000-000000000096",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC097-1",
+    "problem_id": "10000000-0000-4000-8000-000000000097",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC097-2",
+    "problem_id": "10000000-0000-4000-8000-000000000097",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC097-3",
+    "problem_id": "10000000-0000-4000-8000-000000000097",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC097-4",
+    "problem_id": "10000000-0000-4000-8000-000000000097",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC098-1",
+    "problem_id": "10000000-0000-4000-8000-000000000098",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC098-2",
+    "problem_id": "10000000-0000-4000-8000-000000000098",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC098-3",
+    "problem_id": "10000000-0000-4000-8000-000000000098",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC098-4",
+    "problem_id": "10000000-0000-4000-8000-000000000098",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC099-1",
+    "problem_id": "10000000-0000-4000-8000-000000000099",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC099-2",
+    "problem_id": "10000000-0000-4000-8000-000000000099",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC099-3",
+    "problem_id": "10000000-0000-4000-8000-000000000099",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC099-4",
+    "problem_id": "10000000-0000-4000-8000-000000000099",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC100-1",
+    "problem_id": "10000000-0000-4000-8000-000000000100",
+    "input": "5\n1 3 5 7 9\n5",
+    "expected_output": "2",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC100-2",
+    "problem_id": "10000000-0000-4000-8000-000000000100",
+    "input": "4\n10 20 30 40\n25",
+    "expected_output": "-1",
+    "is_hidden": false
+  },
+  {
+    "id": "tc-CC100-3",
+    "problem_id": "10000000-0000-4000-8000-000000000100",
+    "input": "6\n2 4 6 8 10 12\n8",
+    "expected_output": "3",
+    "is_hidden": true
+  },
+  {
+    "id": "tc-CC100-4",
+    "problem_id": "10000000-0000-4000-8000-000000000100",
+    "input": "1\n100\n100",
+    "expected_output": "0",
+    "is_hidden": true
   }
 ]

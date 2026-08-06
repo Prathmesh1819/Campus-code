@@ -1248,5 +1248,1505 @@
     "memory_limit_mb": 256,
     "acceptance_rate": 70,
     "rating": 1950
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000051",
+    "ccps_id": "CC051",
+    "title": "CC051: Campus Library Binary Search Locator",
+    "slug": "campus-library-binary-search-locator",
+    "difficulty": "EASY",
+    "category": "Binary Search",
+    "subcategory": "Binary Search Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Campus Library Binary Search Locator**. Given $N$ input records, write an algorithm using Binary Search to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Campus Library Binary Search Locator using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 63,
+    "rating": 1365
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000052",
+    "ccps_id": "CC052",
+    "title": "CC052: Student Placement Salary Sorter",
+    "slug": "student-placement-salary-sorter",
+    "difficulty": "EASY",
+    "category": "Sorting",
+    "subcategory": "Sorting Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Student Placement Salary Sorter**. Given $N$ input records, write an algorithm using Sorting to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Student Placement Salary Sorter using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 64,
+    "rating": 1380
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000053",
+    "ccps_id": "CC053",
+    "title": "CC053: Exam Prefix Score Accumulator",
+    "slug": "exam-prefix-score-accumulator",
+    "difficulty": "EASY",
+    "category": "Prefix Sum",
+    "subcategory": "Prefix Sum Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Exam Prefix Score Accumulator**. Given $N$ input records, write an algorithm using Prefix Sum to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Exam Prefix Score Accumulator using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 65,
+    "rating": 1395
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000054",
+    "ccps_id": "CC054",
+    "title": "CC054: Sliding Window Campus Wifi Usage",
+    "slug": "sliding-window-campus-wifi-usage",
+    "difficulty": "EASY",
+    "category": "Sliding Window",
+    "subcategory": "Sliding Window Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Sliding Window Campus Wifi Usage**. Given $N$ input records, write an algorithm using Sliding Window to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Sliding Window Campus Wifi Usage using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 66,
+    "rating": 1410
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000055",
+    "ccps_id": "CC055",
+    "title": "CC055: Lab Equipment Borrow Stack",
+    "slug": "lab-equipment-borrow-stack",
+    "difficulty": "EASY",
+    "category": "Stack",
+    "subcategory": "Stack Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Lab Equipment Borrow Stack**. Given $N$ input records, write an algorithm using Stack to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Lab Equipment Borrow Stack using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 67,
+    "rating": 1425
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000056",
+    "ccps_id": "CC056",
+    "title": "CC056: Canteen Orders Processing Queue",
+    "slug": "canteen-orders-processing-queue",
+    "difficulty": "EASY",
+    "category": "Queue",
+    "subcategory": "Queue Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Canteen Orders Processing Queue**. Given $N$ input records, write an algorithm using Queue to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Canteen Orders Processing Queue using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 68,
+    "rating": 1440
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000057",
+    "ccps_id": "CC057",
+    "title": "CC057: Student ID Linked List Reversal",
+    "slug": "student-id-linked-list-reversal",
+    "difficulty": "EASY",
+    "category": "Linked List",
+    "subcategory": "Linked List Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Student ID Linked List Reversal**. Given $N$ input records, write an algorithm using Linked List to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Student ID Linked List Reversal using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 69,
+    "rating": 1455
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000058",
+    "ccps_id": "CC058",
+    "title": "CC058: Recursive Factorial Event Counter",
+    "slug": "recursive-factorial-event-counter",
+    "difficulty": "EASY",
+    "category": "Recursion",
+    "subcategory": "Recursion Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Recursive Factorial Event Counter**. Given $N$ input records, write an algorithm using Recursion to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Recursive Factorial Event Counter using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 70,
+    "rating": 1470
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000059",
+    "ccps_id": "CC059",
+    "title": "CC059: Campus Energy Conservation Greedy",
+    "slug": "campus-energy-conservation-greedy",
+    "difficulty": "EASY",
+    "category": "Basic Greedy",
+    "subcategory": "Basic Greedy Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Campus Energy Conservation Greedy**. Given $N$ input records, write an algorithm using Basic Greedy to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Campus Energy Conservation Greedy using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 71,
+    "rating": 1485
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000060",
+    "ccps_id": "CC060",
+    "title": "CC060: Inter-College Debate Hash Search",
+    "slug": "inter-college-debate-hash-search",
+    "difficulty": "EASY",
+    "category": "Hash Maps (Intermediate)",
+    "subcategory": "Hash Maps (Intermediate) Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Inter-College Debate Hash Search**. Given $N$ input records, write an algorithm using Hash Maps (Intermediate) to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Inter-College Debate Hash Search using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 72,
+    "rating": 1500
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000061",
+    "ccps_id": "CC061",
+    "title": "CC061: Binary Search Exam Roll Matcher",
+    "slug": "binary-search-exam-roll-matcher",
+    "difficulty": "EASY",
+    "category": "Binary Search",
+    "subcategory": "Binary Search Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Binary Search Exam Roll Matcher**. Given $N$ input records, write an algorithm using Binary Search to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Binary Search Exam Roll Matcher using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 73,
+    "rating": 1515
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000062",
+    "ccps_id": "CC062",
+    "title": "CC062: QuickSort Placement Percentile Ranker",
+    "slug": "quicksort-placement-percentile-ranker",
+    "difficulty": "EASY",
+    "category": "Sorting",
+    "subcategory": "Sorting Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **QuickSort Placement Percentile Ranker**. Given $N$ input records, write an algorithm using Sorting to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of QuickSort Placement Percentile Ranker using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 74,
+    "rating": 1530
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000063",
+    "ccps_id": "CC063",
+    "title": "CC063: Subarray Prefix Sum Balance",
+    "slug": "subarray-prefix-sum-balance",
+    "difficulty": "EASY",
+    "category": "Prefix Sum",
+    "subcategory": "Prefix Sum Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Subarray Prefix Sum Balance**. Given $N$ input records, write an algorithm using Prefix Sum to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Subarray Prefix Sum Balance using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 75,
+    "rating": 1545
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000064",
+    "ccps_id": "CC064",
+    "title": "CC064: Sliding Window Highest GPA Detector",
+    "slug": "sliding-window-highest-gpa-detector",
+    "difficulty": "EASY",
+    "category": "Sliding Window",
+    "subcategory": "Sliding Window Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Sliding Window Highest GPA Detector**. Given $N$ input records, write an algorithm using Sliding Window to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Sliding Window Highest GPA Detector using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 76,
+    "rating": 1560
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000065",
+    "ccps_id": "CC065",
+    "title": "CC065: Syntax Parenthesis Checker Stack",
+    "slug": "syntax-parenthesis-checker-stack",
+    "difficulty": "EASY",
+    "category": "Stack",
+    "subcategory": "Stack Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Syntax Parenthesis Checker Stack**. Given $N$ input records, write an algorithm using Stack to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Syntax Parenthesis Checker Stack using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 77,
+    "rating": 1575
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000066",
+    "ccps_id": "CC066",
+    "title": "CC066: Printer Job Emergency Queue",
+    "slug": "printer-job-emergency-queue",
+    "difficulty": "EASY",
+    "category": "Queue",
+    "subcategory": "Queue Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Printer Job Emergency Queue**. Given $N$ input records, write an algorithm using Queue to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Printer Job Emergency Queue using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 78,
+    "rating": 1590
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000067",
+    "ccps_id": "CC067",
+    "title": "CC067: Linked List Middle Student Finder",
+    "slug": "linked-list-middle-student-finder",
+    "difficulty": "EASY",
+    "category": "Linked List",
+    "subcategory": "Linked List Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Linked List Middle Student Finder**. Given $N$ input records, write an algorithm using Linked List to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Linked List Middle Student Finder using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 79,
+    "rating": 1605
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000068",
+    "ccps_id": "CC068",
+    "title": "CC068: Recursive Fibonaccian Seating Arrangement",
+    "slug": "recursive-fibonaccian-seating-arrangement",
+    "difficulty": "EASY",
+    "category": "Recursion",
+    "subcategory": "Recursion Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Recursive Fibonaccian Seating Arrangement**. Given $N$ input records, write an algorithm using Recursion to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Recursive Fibonaccian Seating Arrangement using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 80,
+    "rating": 1620
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000069",
+    "ccps_id": "CC069",
+    "title": "CC069: Greedy Campus Festival Booth Allocator",
+    "slug": "greedy-campus-festival-booth-allocator",
+    "difficulty": "EASY",
+    "category": "Basic Greedy",
+    "subcategory": "Basic Greedy Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Greedy Campus Festival Booth Allocator**. Given $N$ input records, write an algorithm using Basic Greedy to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Greedy Campus Festival Booth Allocator using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 81,
+    "rating": 1635
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000070",
+    "ccps_id": "CC070",
+    "title": "CC070: Hash Map Student Pair Matcher",
+    "slug": "hash-map-student-pair-matcher",
+    "difficulty": "EASY",
+    "category": "Hash Maps (Intermediate)",
+    "subcategory": "Hash Maps (Intermediate) Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Hash Map Student Pair Matcher**. Given $N$ input records, write an algorithm using Hash Maps (Intermediate) to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Hash Map Student Pair Matcher using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 82,
+    "rating": 1650
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000071",
+    "ccps_id": "CC071",
+    "title": "CC071: Binary Search Rotated Library Shelf",
+    "slug": "binary-search-rotated-library-shelf",
+    "difficulty": "MEDIUM",
+    "category": "Binary Search",
+    "subcategory": "Binary Search Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Binary Search Rotated Library Shelf**. Given $N$ input records, write an algorithm using Binary Search to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Binary Search Rotated Library Shelf using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 83,
+    "rating": 1665
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000072",
+    "ccps_id": "CC072",
+    "title": "CC072: MergeSort Grade Rank Sorting",
+    "slug": "mergesort-grade-rank-sorting",
+    "difficulty": "MEDIUM",
+    "category": "Sorting",
+    "subcategory": "Sorting Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **MergeSort Grade Rank Sorting**. Given $N$ input records, write an algorithm using Sorting to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of MergeSort Grade Rank Sorting using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 84,
+    "rating": 1680
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000073",
+    "ccps_id": "CC073",
+    "title": "CC073: Prefix Sum Attendance Target Reach",
+    "slug": "prefix-sum-attendance-target-reach",
+    "difficulty": "MEDIUM",
+    "category": "Prefix Sum",
+    "subcategory": "Prefix Sum Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Prefix Sum Attendance Target Reach**. Given $N$ input records, write an algorithm using Prefix Sum to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Prefix Sum Attendance Target Reach using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 85,
+    "rating": 1695
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000074",
+    "ccps_id": "CC074",
+    "title": "CC074: Max Sum Subarray Sliding Window",
+    "slug": "max-sum-subarray-sliding-window",
+    "difficulty": "MEDIUM",
+    "category": "Sliding Window",
+    "subcategory": "Sliding Window Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Max Sum Subarray Sliding Window**. Given $N$ input records, write an algorithm using Sliding Window to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Max Sum Subarray Sliding Window using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 86,
+    "rating": 1710
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000075",
+    "ccps_id": "CC075",
+    "title": "CC075: Evaluate Reverse Polish Notation Stack",
+    "slug": "evaluate-reverse-polish-notation-stack",
+    "difficulty": "MEDIUM",
+    "category": "Stack",
+    "subcategory": "Stack Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Evaluate Reverse Polish Notation Stack**. Given $N$ input records, write an algorithm using Stack to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Evaluate Reverse Polish Notation Stack using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 87,
+    "rating": 1725
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000076",
+    "ccps_id": "CC076",
+    "title": "CC076: Recent Student Logins Queue",
+    "slug": "recent-student-logins-queue",
+    "difficulty": "MEDIUM",
+    "category": "Queue",
+    "subcategory": "Queue Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Recent Student Logins Queue**. Given $N$ input records, write an algorithm using Queue to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Recent Student Logins Queue using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 50,
+    "rating": 1740
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000077",
+    "ccps_id": "CC077",
+    "title": "CC077: Cycle Detection in Student Referral List",
+    "slug": "cycle-detection-in-student-referral-list",
+    "difficulty": "MEDIUM",
+    "category": "Linked List",
+    "subcategory": "Linked List Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Cycle Detection in Student Referral List**. Given $N$ input records, write an algorithm using Linked List to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Cycle Detection in Student Referral List using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 51,
+    "rating": 1755
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000078",
+    "ccps_id": "CC078",
+    "title": "CC078: Recursive Tower of Brahma Placement Puzzle",
+    "slug": "recursive-tower-of-brahma-placement-puzzle",
+    "difficulty": "MEDIUM",
+    "category": "Recursion",
+    "subcategory": "Recursion Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Recursive Tower of Brahma Placement Puzzle**. Given $N$ input records, write an algorithm using Recursion to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Recursive Tower of Brahma Placement Puzzle using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 52,
+    "rating": 1770
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000079",
+    "ccps_id": "CC079",
+    "title": "CC079: Greedy Activity Selector for Auditorium",
+    "slug": "greedy-activity-selector-for-auditorium",
+    "difficulty": "MEDIUM",
+    "category": "Basic Greedy",
+    "subcategory": "Basic Greedy Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Greedy Activity Selector for Auditorium**. Given $N$ input records, write an algorithm using Basic Greedy to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Greedy Activity Selector for Auditorium using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 53,
+    "rating": 1785
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000080",
+    "ccps_id": "CC080",
+    "title": "CC080: Hash Map Frequency Ranker",
+    "slug": "hash-map-frequency-ranker",
+    "difficulty": "MEDIUM",
+    "category": "Hash Maps (Intermediate)",
+    "subcategory": "Hash Maps (Intermediate) Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Hash Map Frequency Ranker**. Given $N$ input records, write an algorithm using Hash Maps (Intermediate) to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Hash Map Frequency Ranker using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 54,
+    "rating": 1800
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000081",
+    "ccps_id": "CC081",
+    "title": "CC081: Binary Search Matrix Seat Finder",
+    "slug": "binary-search-matrix-seat-finder",
+    "difficulty": "MEDIUM",
+    "category": "Binary Search",
+    "subcategory": "Binary Search Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Binary Search Matrix Seat Finder**. Given $N$ input records, write an algorithm using Binary Search to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Binary Search Matrix Seat Finder using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 55,
+    "rating": 1815
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000082",
+    "ccps_id": "CC082",
+    "title": "CC082: Custom TimSort Student Ranking",
+    "slug": "custom-timsort-student-ranking",
+    "difficulty": "MEDIUM",
+    "category": "Sorting",
+    "subcategory": "Sorting Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Custom TimSort Student Ranking**. Given $N$ input records, write an algorithm using Sorting to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Custom TimSort Student Ranking using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 56,
+    "rating": 1830
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000083",
+    "ccps_id": "CC083",
+    "title": "CC083: 2D Range Sum Query Matrix",
+    "slug": "2d-range-sum-query-matrix",
+    "difficulty": "MEDIUM",
+    "category": "Prefix Sum",
+    "subcategory": "Prefix Sum Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **2D Range Sum Query Matrix**. Given $N$ input records, write an algorithm using Prefix Sum to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of 2D Range Sum Query Matrix using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 57,
+    "rating": 1845
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000084",
+    "ccps_id": "CC084",
+    "title": "CC084: Longest Substring K Distinct Characters",
+    "slug": "longest-substring-k-distinct-characters",
+    "difficulty": "MEDIUM",
+    "category": "Sliding Window",
+    "subcategory": "Sliding Window Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Longest Substring K Distinct Characters**. Given $N$ input records, write an algorithm using Sliding Window to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Longest Substring K Distinct Characters using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 58,
+    "rating": 1860
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000085",
+    "ccps_id": "CC085",
+    "title": "CC085: Monotonic Stack Next Greater Grade",
+    "slug": "monotonic-stack-next-greater-grade",
+    "difficulty": "MEDIUM",
+    "category": "Stack",
+    "subcategory": "Stack Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Monotonic Stack Next Greater Grade**. Given $N$ input records, write an algorithm using Stack to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Monotonic Stack Next Greater Grade using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 59,
+    "rating": 1875
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000086",
+    "ccps_id": "CC086",
+    "title": "CC086: Circular Queue Hostel Gate Scanner",
+    "slug": "circular-queue-hostel-gate-scanner",
+    "difficulty": "MEDIUM",
+    "category": "Queue",
+    "subcategory": "Queue Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Circular Queue Hostel Gate Scanner**. Given $N$ input records, write an algorithm using Queue to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Circular Queue Hostel Gate Scanner using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 60,
+    "rating": 1890
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000087",
+    "ccps_id": "CC087",
+    "title": "CC087: Remove Nth Node Student Linked List",
+    "slug": "remove-nth-node-student-linked-list",
+    "difficulty": "MEDIUM",
+    "category": "Linked List",
+    "subcategory": "Linked List Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Remove Nth Node Student Linked List**. Given $N$ input records, write an algorithm using Linked List to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Remove Nth Node Student Linked List using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 61,
+    "rating": 1905
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000088",
+    "ccps_id": "CC088",
+    "title": "CC088: Recursive Combination Generator",
+    "slug": "recursive-combination-generator",
+    "difficulty": "MEDIUM",
+    "category": "Recursion",
+    "subcategory": "Recursion Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Recursive Combination Generator**. Given $N$ input records, write an algorithm using Recursion to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Recursive Combination Generator using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 62,
+    "rating": 1920
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000089",
+    "ccps_id": "CC089",
+    "title": "CC089: Min Coins Campus Canteen Cashback",
+    "slug": "min-coins-campus-canteen-cashback",
+    "difficulty": "MEDIUM",
+    "category": "Basic Greedy",
+    "subcategory": "Basic Greedy Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Min Coins Campus Canteen Cashback**. Given $N$ input records, write an algorithm using Basic Greedy to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Min Coins Campus Canteen Cashback using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 63,
+    "rating": 1935
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000090",
+    "ccps_id": "CC090",
+    "title": "CC090: Hash Map Anagram Student Names",
+    "slug": "hash-map-anagram-student-names",
+    "difficulty": "MEDIUM",
+    "category": "Hash Maps (Intermediate)",
+    "subcategory": "Hash Maps (Intermediate) Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Hash Map Anagram Student Names**. Given $N$ input records, write an algorithm using Hash Maps (Intermediate) to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Hash Map Anagram Student Names using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 64,
+    "rating": 1950
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000091",
+    "ccps_id": "CC091",
+    "title": "CC091: Binary Search Peak Score Finding",
+    "slug": "binary-search-peak-score-finding",
+    "difficulty": "HARD",
+    "category": "Binary Search",
+    "subcategory": "Binary Search Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Binary Search Peak Score Finding**. Given $N$ input records, write an algorithm using Binary Search to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Binary Search Peak Score Finding using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 65,
+    "rating": 1965
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000092",
+    "ccps_id": "CC092",
+    "title": "CC092: Stable Sort Placement Applications",
+    "slug": "stable-sort-placement-applications",
+    "difficulty": "HARD",
+    "category": "Sorting",
+    "subcategory": "Sorting Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Stable Sort Placement Applications**. Given $N$ input records, write an algorithm using Sorting to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Stable Sort Placement Applications using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 66,
+    "rating": 1980
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000093",
+    "ccps_id": "CC093",
+    "title": "CC093: Continuous Subarray Sum Prefix",
+    "slug": "continuous-subarray-sum-prefix",
+    "difficulty": "HARD",
+    "category": "Prefix Sum",
+    "subcategory": "Prefix Sum Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Continuous Subarray Sum Prefix**. Given $N$ input records, write an algorithm using Prefix Sum to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Continuous Subarray Sum Prefix using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 67,
+    "rating": 1995
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000094",
+    "ccps_id": "CC094",
+    "title": "CC094: Sliding Window Fruit Collector",
+    "slug": "sliding-window-fruit-collector",
+    "difficulty": "HARD",
+    "category": "Sliding Window",
+    "subcategory": "Sliding Window Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Sliding Window Fruit Collector**. Given $N$ input records, write an algorithm using Sliding Window to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Sliding Window Fruit Collector using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 68,
+    "rating": 2010
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000095",
+    "ccps_id": "CC095",
+    "title": "CC095: Stock Span Calculator Stack",
+    "slug": "stock-span-calculator-stack",
+    "difficulty": "HARD",
+    "category": "Stack",
+    "subcategory": "Stack Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Stock Span Calculator Stack**. Given $N$ input records, write an algorithm using Stack to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Stock Span Calculator Stack using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 69,
+    "rating": 2025
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000096",
+    "ccps_id": "CC096",
+    "title": "CC096: Queue Reconstruction by Height",
+    "slug": "queue-reconstruction-by-height",
+    "difficulty": "HARD",
+    "category": "Queue",
+    "subcategory": "Queue Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Queue Reconstruction by Height**. Given $N$ input records, write an algorithm using Queue to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Queue Reconstruction by Height using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 70,
+    "rating": 2040
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000097",
+    "ccps_id": "CC097",
+    "title": "CC097: Merge Two Sorted Student Lists",
+    "slug": "merge-two-sorted-student-lists",
+    "difficulty": "HARD",
+    "category": "Linked List",
+    "subcategory": "Linked List Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Merge Two Sorted Student Lists**. Given $N$ input records, write an algorithm using Linked List to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Merge Two Sorted Student Lists using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 71,
+    "rating": 2055
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000098",
+    "ccps_id": "CC098",
+    "title": "CC098: Recursive Permutation Seating Arrangement",
+    "slug": "recursive-permutation-seating-arrangement",
+    "difficulty": "HARD",
+    "category": "Recursion",
+    "subcategory": "Recursion Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Recursive Permutation Seating Arrangement**. Given $N$ input records, write an algorithm using Recursion to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Recursive Permutation Seating Arrangement using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 72,
+    "rating": 2070
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000099",
+    "ccps_id": "CC099",
+    "title": "CC099: Gas Station Loop Greedy Route",
+    "slug": "gas-station-loop-greedy-route",
+    "difficulty": "HARD",
+    "category": "Basic Greedy",
+    "subcategory": "Basic Greedy Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Gas Station Loop Greedy Route**. Given $N$ input records, write an algorithm using Basic Greedy to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Gas Station Loop Greedy Route using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 73,
+    "rating": 2085
+  },
+  {
+    "id": "10000000-0000-4000-8000-000000000100",
+    "ccps_id": "CC100",
+    "title": "CC100: Group Anagram Student Clubs Hash Map",
+    "slug": "group-anagram-student-clubs-hash-map",
+    "difficulty": "HARD",
+    "category": "Hash Maps (Intermediate)",
+    "subcategory": "Hash Maps (Intermediate) Intermediate",
+    "description": "At Sarhad College, compute the optimal configuration for **Group Anagram Student Clubs Hash Map**. Given $N$ input records, write an algorithm using Hash Maps (Intermediate) to process student records efficiently.",
+    "story": "Sarhad College's IT department is upgrading the campus automated systems. Help optimize the performance of Group Anagram Student Clubs Hash Map using algorithmic techniques.",
+    "input_format": "First line contains integer N. Second line contains N space-separated integers representing student metric values.",
+    "output_format": "Print the target calculated output matching specifications.",
+    "constraints": "1 <= N <= 10^5\n-10^9 <= A[i] <= 10^9",
+    "examples": [
+      {
+        "input": "5\n1 3 5 7 9\n5",
+        "output": "2",
+        "explanation": "Element 5 is found at index 2."
+      },
+      {
+        "input": "4\n10 20 30 40\n25",
+        "output": "-1",
+        "explanation": "Element 25 is not present in the array."
+      }
+    ],
+    "time_limit_ms": 2000,
+    "memory_limit_mb": 256,
+    "acceptance_rate": 74,
+    "rating": 2100
   }
 ]

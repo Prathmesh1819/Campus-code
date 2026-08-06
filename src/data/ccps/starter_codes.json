@@ -2398,5 +2398,2405 @@
     "problem_id": "10000000-0000-4000-8000-000000000050",
     "language": "kotlin",
     "code_template": "// CampusCode Campus Code Official Leaderboard Refresh\nclass Solution {\n    fun solve(nums: IntArray, target: Int): IntArray {\n        return intArrayOf()\n    }\n}"
+  },
+  {
+    "id": "sc-CC051-c",
+    "problem_id": "10000000-0000-4000-8000-000000000051",
+    "language": "c",
+    "code_template": "// CampusCode Campus Library Binary Search Locator\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC051-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000051",
+    "language": "cpp",
+    "code_template": "// CampusCode Campus Library Binary Search Locator\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC051-java",
+    "problem_id": "10000000-0000-4000-8000-000000000051",
+    "language": "java",
+    "code_template": "// CampusCode Campus Library Binary Search Locator\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC051-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000051",
+    "language": "javascript",
+    "code_template": "// CampusCode Campus Library Binary Search Locator\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC051-python",
+    "problem_id": "10000000-0000-4000-8000-000000000051",
+    "language": "python",
+    "code_template": "# CampusCode Campus Library Binary Search Locator\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC051-go",
+    "problem_id": "10000000-0000-4000-8000-000000000051",
+    "language": "go",
+    "code_template": "// CampusCode Campus Library Binary Search Locator\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC051-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000051",
+    "language": "rust",
+    "code_template": "// CampusCode Campus Library Binary Search Locator\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC051-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000051",
+    "language": "kotlin",
+    "code_template": "// CampusCode Campus Library Binary Search Locator\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC052-c",
+    "problem_id": "10000000-0000-4000-8000-000000000052",
+    "language": "c",
+    "code_template": "// CampusCode Student Placement Salary Sorter\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC052-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000052",
+    "language": "cpp",
+    "code_template": "// CampusCode Student Placement Salary Sorter\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC052-java",
+    "problem_id": "10000000-0000-4000-8000-000000000052",
+    "language": "java",
+    "code_template": "// CampusCode Student Placement Salary Sorter\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC052-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000052",
+    "language": "javascript",
+    "code_template": "// CampusCode Student Placement Salary Sorter\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC052-python",
+    "problem_id": "10000000-0000-4000-8000-000000000052",
+    "language": "python",
+    "code_template": "# CampusCode Student Placement Salary Sorter\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC052-go",
+    "problem_id": "10000000-0000-4000-8000-000000000052",
+    "language": "go",
+    "code_template": "// CampusCode Student Placement Salary Sorter\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC052-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000052",
+    "language": "rust",
+    "code_template": "// CampusCode Student Placement Salary Sorter\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC052-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000052",
+    "language": "kotlin",
+    "code_template": "// CampusCode Student Placement Salary Sorter\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC053-c",
+    "problem_id": "10000000-0000-4000-8000-000000000053",
+    "language": "c",
+    "code_template": "// CampusCode Exam Prefix Score Accumulator\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC053-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000053",
+    "language": "cpp",
+    "code_template": "// CampusCode Exam Prefix Score Accumulator\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC053-java",
+    "problem_id": "10000000-0000-4000-8000-000000000053",
+    "language": "java",
+    "code_template": "// CampusCode Exam Prefix Score Accumulator\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC053-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000053",
+    "language": "javascript",
+    "code_template": "// CampusCode Exam Prefix Score Accumulator\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC053-python",
+    "problem_id": "10000000-0000-4000-8000-000000000053",
+    "language": "python",
+    "code_template": "# CampusCode Exam Prefix Score Accumulator\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC053-go",
+    "problem_id": "10000000-0000-4000-8000-000000000053",
+    "language": "go",
+    "code_template": "// CampusCode Exam Prefix Score Accumulator\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC053-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000053",
+    "language": "rust",
+    "code_template": "// CampusCode Exam Prefix Score Accumulator\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC053-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000053",
+    "language": "kotlin",
+    "code_template": "// CampusCode Exam Prefix Score Accumulator\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC054-c",
+    "problem_id": "10000000-0000-4000-8000-000000000054",
+    "language": "c",
+    "code_template": "// CampusCode Sliding Window Campus Wifi Usage\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC054-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000054",
+    "language": "cpp",
+    "code_template": "// CampusCode Sliding Window Campus Wifi Usage\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC054-java",
+    "problem_id": "10000000-0000-4000-8000-000000000054",
+    "language": "java",
+    "code_template": "// CampusCode Sliding Window Campus Wifi Usage\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC054-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000054",
+    "language": "javascript",
+    "code_template": "// CampusCode Sliding Window Campus Wifi Usage\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC054-python",
+    "problem_id": "10000000-0000-4000-8000-000000000054",
+    "language": "python",
+    "code_template": "# CampusCode Sliding Window Campus Wifi Usage\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC054-go",
+    "problem_id": "10000000-0000-4000-8000-000000000054",
+    "language": "go",
+    "code_template": "// CampusCode Sliding Window Campus Wifi Usage\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC054-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000054",
+    "language": "rust",
+    "code_template": "// CampusCode Sliding Window Campus Wifi Usage\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC054-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000054",
+    "language": "kotlin",
+    "code_template": "// CampusCode Sliding Window Campus Wifi Usage\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC055-c",
+    "problem_id": "10000000-0000-4000-8000-000000000055",
+    "language": "c",
+    "code_template": "// CampusCode Lab Equipment Borrow Stack\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC055-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000055",
+    "language": "cpp",
+    "code_template": "// CampusCode Lab Equipment Borrow Stack\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC055-java",
+    "problem_id": "10000000-0000-4000-8000-000000000055",
+    "language": "java",
+    "code_template": "// CampusCode Lab Equipment Borrow Stack\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC055-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000055",
+    "language": "javascript",
+    "code_template": "// CampusCode Lab Equipment Borrow Stack\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC055-python",
+    "problem_id": "10000000-0000-4000-8000-000000000055",
+    "language": "python",
+    "code_template": "# CampusCode Lab Equipment Borrow Stack\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC055-go",
+    "problem_id": "10000000-0000-4000-8000-000000000055",
+    "language": "go",
+    "code_template": "// CampusCode Lab Equipment Borrow Stack\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC055-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000055",
+    "language": "rust",
+    "code_template": "// CampusCode Lab Equipment Borrow Stack\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC055-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000055",
+    "language": "kotlin",
+    "code_template": "// CampusCode Lab Equipment Borrow Stack\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC056-c",
+    "problem_id": "10000000-0000-4000-8000-000000000056",
+    "language": "c",
+    "code_template": "// CampusCode Canteen Orders Processing Queue\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC056-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000056",
+    "language": "cpp",
+    "code_template": "// CampusCode Canteen Orders Processing Queue\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC056-java",
+    "problem_id": "10000000-0000-4000-8000-000000000056",
+    "language": "java",
+    "code_template": "// CampusCode Canteen Orders Processing Queue\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC056-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000056",
+    "language": "javascript",
+    "code_template": "// CampusCode Canteen Orders Processing Queue\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC056-python",
+    "problem_id": "10000000-0000-4000-8000-000000000056",
+    "language": "python",
+    "code_template": "# CampusCode Canteen Orders Processing Queue\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC056-go",
+    "problem_id": "10000000-0000-4000-8000-000000000056",
+    "language": "go",
+    "code_template": "// CampusCode Canteen Orders Processing Queue\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC056-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000056",
+    "language": "rust",
+    "code_template": "// CampusCode Canteen Orders Processing Queue\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC056-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000056",
+    "language": "kotlin",
+    "code_template": "// CampusCode Canteen Orders Processing Queue\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC057-c",
+    "problem_id": "10000000-0000-4000-8000-000000000057",
+    "language": "c",
+    "code_template": "// CampusCode Student ID Linked List Reversal\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC057-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000057",
+    "language": "cpp",
+    "code_template": "// CampusCode Student ID Linked List Reversal\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC057-java",
+    "problem_id": "10000000-0000-4000-8000-000000000057",
+    "language": "java",
+    "code_template": "// CampusCode Student ID Linked List Reversal\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC057-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000057",
+    "language": "javascript",
+    "code_template": "// CampusCode Student ID Linked List Reversal\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC057-python",
+    "problem_id": "10000000-0000-4000-8000-000000000057",
+    "language": "python",
+    "code_template": "# CampusCode Student ID Linked List Reversal\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC057-go",
+    "problem_id": "10000000-0000-4000-8000-000000000057",
+    "language": "go",
+    "code_template": "// CampusCode Student ID Linked List Reversal\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC057-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000057",
+    "language": "rust",
+    "code_template": "// CampusCode Student ID Linked List Reversal\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC057-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000057",
+    "language": "kotlin",
+    "code_template": "// CampusCode Student ID Linked List Reversal\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC058-c",
+    "problem_id": "10000000-0000-4000-8000-000000000058",
+    "language": "c",
+    "code_template": "// CampusCode Recursive Factorial Event Counter\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC058-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000058",
+    "language": "cpp",
+    "code_template": "// CampusCode Recursive Factorial Event Counter\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC058-java",
+    "problem_id": "10000000-0000-4000-8000-000000000058",
+    "language": "java",
+    "code_template": "// CampusCode Recursive Factorial Event Counter\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC058-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000058",
+    "language": "javascript",
+    "code_template": "// CampusCode Recursive Factorial Event Counter\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC058-python",
+    "problem_id": "10000000-0000-4000-8000-000000000058",
+    "language": "python",
+    "code_template": "# CampusCode Recursive Factorial Event Counter\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC058-go",
+    "problem_id": "10000000-0000-4000-8000-000000000058",
+    "language": "go",
+    "code_template": "// CampusCode Recursive Factorial Event Counter\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC058-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000058",
+    "language": "rust",
+    "code_template": "// CampusCode Recursive Factorial Event Counter\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC058-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000058",
+    "language": "kotlin",
+    "code_template": "// CampusCode Recursive Factorial Event Counter\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC059-c",
+    "problem_id": "10000000-0000-4000-8000-000000000059",
+    "language": "c",
+    "code_template": "// CampusCode Campus Energy Conservation Greedy\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC059-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000059",
+    "language": "cpp",
+    "code_template": "// CampusCode Campus Energy Conservation Greedy\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC059-java",
+    "problem_id": "10000000-0000-4000-8000-000000000059",
+    "language": "java",
+    "code_template": "// CampusCode Campus Energy Conservation Greedy\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC059-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000059",
+    "language": "javascript",
+    "code_template": "// CampusCode Campus Energy Conservation Greedy\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC059-python",
+    "problem_id": "10000000-0000-4000-8000-000000000059",
+    "language": "python",
+    "code_template": "# CampusCode Campus Energy Conservation Greedy\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC059-go",
+    "problem_id": "10000000-0000-4000-8000-000000000059",
+    "language": "go",
+    "code_template": "// CampusCode Campus Energy Conservation Greedy\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC059-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000059",
+    "language": "rust",
+    "code_template": "// CampusCode Campus Energy Conservation Greedy\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC059-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000059",
+    "language": "kotlin",
+    "code_template": "// CampusCode Campus Energy Conservation Greedy\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC060-c",
+    "problem_id": "10000000-0000-4000-8000-000000000060",
+    "language": "c",
+    "code_template": "// CampusCode Inter-College Debate Hash Search\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC060-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000060",
+    "language": "cpp",
+    "code_template": "// CampusCode Inter-College Debate Hash Search\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC060-java",
+    "problem_id": "10000000-0000-4000-8000-000000000060",
+    "language": "java",
+    "code_template": "// CampusCode Inter-College Debate Hash Search\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC060-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000060",
+    "language": "javascript",
+    "code_template": "// CampusCode Inter-College Debate Hash Search\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC060-python",
+    "problem_id": "10000000-0000-4000-8000-000000000060",
+    "language": "python",
+    "code_template": "# CampusCode Inter-College Debate Hash Search\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC060-go",
+    "problem_id": "10000000-0000-4000-8000-000000000060",
+    "language": "go",
+    "code_template": "// CampusCode Inter-College Debate Hash Search\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC060-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000060",
+    "language": "rust",
+    "code_template": "// CampusCode Inter-College Debate Hash Search\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC060-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000060",
+    "language": "kotlin",
+    "code_template": "// CampusCode Inter-College Debate Hash Search\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC061-c",
+    "problem_id": "10000000-0000-4000-8000-000000000061",
+    "language": "c",
+    "code_template": "// CampusCode Binary Search Exam Roll Matcher\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC061-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000061",
+    "language": "cpp",
+    "code_template": "// CampusCode Binary Search Exam Roll Matcher\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC061-java",
+    "problem_id": "10000000-0000-4000-8000-000000000061",
+    "language": "java",
+    "code_template": "// CampusCode Binary Search Exam Roll Matcher\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC061-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000061",
+    "language": "javascript",
+    "code_template": "// CampusCode Binary Search Exam Roll Matcher\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC061-python",
+    "problem_id": "10000000-0000-4000-8000-000000000061",
+    "language": "python",
+    "code_template": "# CampusCode Binary Search Exam Roll Matcher\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC061-go",
+    "problem_id": "10000000-0000-4000-8000-000000000061",
+    "language": "go",
+    "code_template": "// CampusCode Binary Search Exam Roll Matcher\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC061-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000061",
+    "language": "rust",
+    "code_template": "// CampusCode Binary Search Exam Roll Matcher\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC061-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000061",
+    "language": "kotlin",
+    "code_template": "// CampusCode Binary Search Exam Roll Matcher\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC062-c",
+    "problem_id": "10000000-0000-4000-8000-000000000062",
+    "language": "c",
+    "code_template": "// CampusCode QuickSort Placement Percentile Ranker\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC062-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000062",
+    "language": "cpp",
+    "code_template": "// CampusCode QuickSort Placement Percentile Ranker\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC062-java",
+    "problem_id": "10000000-0000-4000-8000-000000000062",
+    "language": "java",
+    "code_template": "// CampusCode QuickSort Placement Percentile Ranker\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC062-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000062",
+    "language": "javascript",
+    "code_template": "// CampusCode QuickSort Placement Percentile Ranker\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC062-python",
+    "problem_id": "10000000-0000-4000-8000-000000000062",
+    "language": "python",
+    "code_template": "# CampusCode QuickSort Placement Percentile Ranker\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC062-go",
+    "problem_id": "10000000-0000-4000-8000-000000000062",
+    "language": "go",
+    "code_template": "// CampusCode QuickSort Placement Percentile Ranker\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC062-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000062",
+    "language": "rust",
+    "code_template": "// CampusCode QuickSort Placement Percentile Ranker\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC062-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000062",
+    "language": "kotlin",
+    "code_template": "// CampusCode QuickSort Placement Percentile Ranker\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC063-c",
+    "problem_id": "10000000-0000-4000-8000-000000000063",
+    "language": "c",
+    "code_template": "// CampusCode Subarray Prefix Sum Balance\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC063-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000063",
+    "language": "cpp",
+    "code_template": "// CampusCode Subarray Prefix Sum Balance\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC063-java",
+    "problem_id": "10000000-0000-4000-8000-000000000063",
+    "language": "java",
+    "code_template": "// CampusCode Subarray Prefix Sum Balance\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC063-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000063",
+    "language": "javascript",
+    "code_template": "// CampusCode Subarray Prefix Sum Balance\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC063-python",
+    "problem_id": "10000000-0000-4000-8000-000000000063",
+    "language": "python",
+    "code_template": "# CampusCode Subarray Prefix Sum Balance\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC063-go",
+    "problem_id": "10000000-0000-4000-8000-000000000063",
+    "language": "go",
+    "code_template": "// CampusCode Subarray Prefix Sum Balance\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC063-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000063",
+    "language": "rust",
+    "code_template": "// CampusCode Subarray Prefix Sum Balance\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC063-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000063",
+    "language": "kotlin",
+    "code_template": "// CampusCode Subarray Prefix Sum Balance\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC064-c",
+    "problem_id": "10000000-0000-4000-8000-000000000064",
+    "language": "c",
+    "code_template": "// CampusCode Sliding Window Highest GPA Detector\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC064-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000064",
+    "language": "cpp",
+    "code_template": "// CampusCode Sliding Window Highest GPA Detector\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC064-java",
+    "problem_id": "10000000-0000-4000-8000-000000000064",
+    "language": "java",
+    "code_template": "// CampusCode Sliding Window Highest GPA Detector\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC064-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000064",
+    "language": "javascript",
+    "code_template": "// CampusCode Sliding Window Highest GPA Detector\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC064-python",
+    "problem_id": "10000000-0000-4000-8000-000000000064",
+    "language": "python",
+    "code_template": "# CampusCode Sliding Window Highest GPA Detector\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC064-go",
+    "problem_id": "10000000-0000-4000-8000-000000000064",
+    "language": "go",
+    "code_template": "// CampusCode Sliding Window Highest GPA Detector\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC064-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000064",
+    "language": "rust",
+    "code_template": "// CampusCode Sliding Window Highest GPA Detector\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC064-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000064",
+    "language": "kotlin",
+    "code_template": "// CampusCode Sliding Window Highest GPA Detector\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC065-c",
+    "problem_id": "10000000-0000-4000-8000-000000000065",
+    "language": "c",
+    "code_template": "// CampusCode Syntax Parenthesis Checker Stack\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC065-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000065",
+    "language": "cpp",
+    "code_template": "// CampusCode Syntax Parenthesis Checker Stack\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC065-java",
+    "problem_id": "10000000-0000-4000-8000-000000000065",
+    "language": "java",
+    "code_template": "// CampusCode Syntax Parenthesis Checker Stack\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC065-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000065",
+    "language": "javascript",
+    "code_template": "// CampusCode Syntax Parenthesis Checker Stack\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC065-python",
+    "problem_id": "10000000-0000-4000-8000-000000000065",
+    "language": "python",
+    "code_template": "# CampusCode Syntax Parenthesis Checker Stack\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC065-go",
+    "problem_id": "10000000-0000-4000-8000-000000000065",
+    "language": "go",
+    "code_template": "// CampusCode Syntax Parenthesis Checker Stack\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC065-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000065",
+    "language": "rust",
+    "code_template": "// CampusCode Syntax Parenthesis Checker Stack\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC065-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000065",
+    "language": "kotlin",
+    "code_template": "// CampusCode Syntax Parenthesis Checker Stack\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC066-c",
+    "problem_id": "10000000-0000-4000-8000-000000000066",
+    "language": "c",
+    "code_template": "// CampusCode Printer Job Emergency Queue\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC066-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000066",
+    "language": "cpp",
+    "code_template": "// CampusCode Printer Job Emergency Queue\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC066-java",
+    "problem_id": "10000000-0000-4000-8000-000000000066",
+    "language": "java",
+    "code_template": "// CampusCode Printer Job Emergency Queue\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC066-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000066",
+    "language": "javascript",
+    "code_template": "// CampusCode Printer Job Emergency Queue\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC066-python",
+    "problem_id": "10000000-0000-4000-8000-000000000066",
+    "language": "python",
+    "code_template": "# CampusCode Printer Job Emergency Queue\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC066-go",
+    "problem_id": "10000000-0000-4000-8000-000000000066",
+    "language": "go",
+    "code_template": "// CampusCode Printer Job Emergency Queue\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC066-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000066",
+    "language": "rust",
+    "code_template": "// CampusCode Printer Job Emergency Queue\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC066-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000066",
+    "language": "kotlin",
+    "code_template": "// CampusCode Printer Job Emergency Queue\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC067-c",
+    "problem_id": "10000000-0000-4000-8000-000000000067",
+    "language": "c",
+    "code_template": "// CampusCode Linked List Middle Student Finder\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC067-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000067",
+    "language": "cpp",
+    "code_template": "// CampusCode Linked List Middle Student Finder\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC067-java",
+    "problem_id": "10000000-0000-4000-8000-000000000067",
+    "language": "java",
+    "code_template": "// CampusCode Linked List Middle Student Finder\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC067-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000067",
+    "language": "javascript",
+    "code_template": "// CampusCode Linked List Middle Student Finder\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC067-python",
+    "problem_id": "10000000-0000-4000-8000-000000000067",
+    "language": "python",
+    "code_template": "# CampusCode Linked List Middle Student Finder\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC067-go",
+    "problem_id": "10000000-0000-4000-8000-000000000067",
+    "language": "go",
+    "code_template": "// CampusCode Linked List Middle Student Finder\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC067-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000067",
+    "language": "rust",
+    "code_template": "// CampusCode Linked List Middle Student Finder\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC067-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000067",
+    "language": "kotlin",
+    "code_template": "// CampusCode Linked List Middle Student Finder\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC068-c",
+    "problem_id": "10000000-0000-4000-8000-000000000068",
+    "language": "c",
+    "code_template": "// CampusCode Recursive Fibonaccian Seating Arrangement\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC068-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000068",
+    "language": "cpp",
+    "code_template": "// CampusCode Recursive Fibonaccian Seating Arrangement\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC068-java",
+    "problem_id": "10000000-0000-4000-8000-000000000068",
+    "language": "java",
+    "code_template": "// CampusCode Recursive Fibonaccian Seating Arrangement\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC068-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000068",
+    "language": "javascript",
+    "code_template": "// CampusCode Recursive Fibonaccian Seating Arrangement\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC068-python",
+    "problem_id": "10000000-0000-4000-8000-000000000068",
+    "language": "python",
+    "code_template": "# CampusCode Recursive Fibonaccian Seating Arrangement\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC068-go",
+    "problem_id": "10000000-0000-4000-8000-000000000068",
+    "language": "go",
+    "code_template": "// CampusCode Recursive Fibonaccian Seating Arrangement\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC068-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000068",
+    "language": "rust",
+    "code_template": "// CampusCode Recursive Fibonaccian Seating Arrangement\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC068-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000068",
+    "language": "kotlin",
+    "code_template": "// CampusCode Recursive Fibonaccian Seating Arrangement\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC069-c",
+    "problem_id": "10000000-0000-4000-8000-000000000069",
+    "language": "c",
+    "code_template": "// CampusCode Greedy Campus Festival Booth Allocator\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC069-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000069",
+    "language": "cpp",
+    "code_template": "// CampusCode Greedy Campus Festival Booth Allocator\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC069-java",
+    "problem_id": "10000000-0000-4000-8000-000000000069",
+    "language": "java",
+    "code_template": "// CampusCode Greedy Campus Festival Booth Allocator\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC069-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000069",
+    "language": "javascript",
+    "code_template": "// CampusCode Greedy Campus Festival Booth Allocator\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC069-python",
+    "problem_id": "10000000-0000-4000-8000-000000000069",
+    "language": "python",
+    "code_template": "# CampusCode Greedy Campus Festival Booth Allocator\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC069-go",
+    "problem_id": "10000000-0000-4000-8000-000000000069",
+    "language": "go",
+    "code_template": "// CampusCode Greedy Campus Festival Booth Allocator\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC069-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000069",
+    "language": "rust",
+    "code_template": "// CampusCode Greedy Campus Festival Booth Allocator\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC069-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000069",
+    "language": "kotlin",
+    "code_template": "// CampusCode Greedy Campus Festival Booth Allocator\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC070-c",
+    "problem_id": "10000000-0000-4000-8000-000000000070",
+    "language": "c",
+    "code_template": "// CampusCode Hash Map Student Pair Matcher\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC070-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000070",
+    "language": "cpp",
+    "code_template": "// CampusCode Hash Map Student Pair Matcher\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC070-java",
+    "problem_id": "10000000-0000-4000-8000-000000000070",
+    "language": "java",
+    "code_template": "// CampusCode Hash Map Student Pair Matcher\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC070-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000070",
+    "language": "javascript",
+    "code_template": "// CampusCode Hash Map Student Pair Matcher\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC070-python",
+    "problem_id": "10000000-0000-4000-8000-000000000070",
+    "language": "python",
+    "code_template": "# CampusCode Hash Map Student Pair Matcher\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC070-go",
+    "problem_id": "10000000-0000-4000-8000-000000000070",
+    "language": "go",
+    "code_template": "// CampusCode Hash Map Student Pair Matcher\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC070-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000070",
+    "language": "rust",
+    "code_template": "// CampusCode Hash Map Student Pair Matcher\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC070-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000070",
+    "language": "kotlin",
+    "code_template": "// CampusCode Hash Map Student Pair Matcher\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC071-c",
+    "problem_id": "10000000-0000-4000-8000-000000000071",
+    "language": "c",
+    "code_template": "// CampusCode Binary Search Rotated Library Shelf\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC071-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000071",
+    "language": "cpp",
+    "code_template": "// CampusCode Binary Search Rotated Library Shelf\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC071-java",
+    "problem_id": "10000000-0000-4000-8000-000000000071",
+    "language": "java",
+    "code_template": "// CampusCode Binary Search Rotated Library Shelf\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC071-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000071",
+    "language": "javascript",
+    "code_template": "// CampusCode Binary Search Rotated Library Shelf\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC071-python",
+    "problem_id": "10000000-0000-4000-8000-000000000071",
+    "language": "python",
+    "code_template": "# CampusCode Binary Search Rotated Library Shelf\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC071-go",
+    "problem_id": "10000000-0000-4000-8000-000000000071",
+    "language": "go",
+    "code_template": "// CampusCode Binary Search Rotated Library Shelf\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC071-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000071",
+    "language": "rust",
+    "code_template": "// CampusCode Binary Search Rotated Library Shelf\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC071-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000071",
+    "language": "kotlin",
+    "code_template": "// CampusCode Binary Search Rotated Library Shelf\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC072-c",
+    "problem_id": "10000000-0000-4000-8000-000000000072",
+    "language": "c",
+    "code_template": "// CampusCode MergeSort Grade Rank Sorting\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC072-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000072",
+    "language": "cpp",
+    "code_template": "// CampusCode MergeSort Grade Rank Sorting\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC072-java",
+    "problem_id": "10000000-0000-4000-8000-000000000072",
+    "language": "java",
+    "code_template": "// CampusCode MergeSort Grade Rank Sorting\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC072-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000072",
+    "language": "javascript",
+    "code_template": "// CampusCode MergeSort Grade Rank Sorting\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC072-python",
+    "problem_id": "10000000-0000-4000-8000-000000000072",
+    "language": "python",
+    "code_template": "# CampusCode MergeSort Grade Rank Sorting\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC072-go",
+    "problem_id": "10000000-0000-4000-8000-000000000072",
+    "language": "go",
+    "code_template": "// CampusCode MergeSort Grade Rank Sorting\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC072-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000072",
+    "language": "rust",
+    "code_template": "// CampusCode MergeSort Grade Rank Sorting\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC072-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000072",
+    "language": "kotlin",
+    "code_template": "// CampusCode MergeSort Grade Rank Sorting\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC073-c",
+    "problem_id": "10000000-0000-4000-8000-000000000073",
+    "language": "c",
+    "code_template": "// CampusCode Prefix Sum Attendance Target Reach\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC073-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000073",
+    "language": "cpp",
+    "code_template": "// CampusCode Prefix Sum Attendance Target Reach\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC073-java",
+    "problem_id": "10000000-0000-4000-8000-000000000073",
+    "language": "java",
+    "code_template": "// CampusCode Prefix Sum Attendance Target Reach\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC073-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000073",
+    "language": "javascript",
+    "code_template": "// CampusCode Prefix Sum Attendance Target Reach\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC073-python",
+    "problem_id": "10000000-0000-4000-8000-000000000073",
+    "language": "python",
+    "code_template": "# CampusCode Prefix Sum Attendance Target Reach\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC073-go",
+    "problem_id": "10000000-0000-4000-8000-000000000073",
+    "language": "go",
+    "code_template": "// CampusCode Prefix Sum Attendance Target Reach\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC073-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000073",
+    "language": "rust",
+    "code_template": "// CampusCode Prefix Sum Attendance Target Reach\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC073-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000073",
+    "language": "kotlin",
+    "code_template": "// CampusCode Prefix Sum Attendance Target Reach\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC074-c",
+    "problem_id": "10000000-0000-4000-8000-000000000074",
+    "language": "c",
+    "code_template": "// CampusCode Max Sum Subarray Sliding Window\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC074-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000074",
+    "language": "cpp",
+    "code_template": "// CampusCode Max Sum Subarray Sliding Window\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC074-java",
+    "problem_id": "10000000-0000-4000-8000-000000000074",
+    "language": "java",
+    "code_template": "// CampusCode Max Sum Subarray Sliding Window\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC074-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000074",
+    "language": "javascript",
+    "code_template": "// CampusCode Max Sum Subarray Sliding Window\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC074-python",
+    "problem_id": "10000000-0000-4000-8000-000000000074",
+    "language": "python",
+    "code_template": "# CampusCode Max Sum Subarray Sliding Window\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC074-go",
+    "problem_id": "10000000-0000-4000-8000-000000000074",
+    "language": "go",
+    "code_template": "// CampusCode Max Sum Subarray Sliding Window\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC074-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000074",
+    "language": "rust",
+    "code_template": "// CampusCode Max Sum Subarray Sliding Window\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC074-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000074",
+    "language": "kotlin",
+    "code_template": "// CampusCode Max Sum Subarray Sliding Window\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC075-c",
+    "problem_id": "10000000-0000-4000-8000-000000000075",
+    "language": "c",
+    "code_template": "// CampusCode Evaluate Reverse Polish Notation Stack\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC075-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000075",
+    "language": "cpp",
+    "code_template": "// CampusCode Evaluate Reverse Polish Notation Stack\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC075-java",
+    "problem_id": "10000000-0000-4000-8000-000000000075",
+    "language": "java",
+    "code_template": "// CampusCode Evaluate Reverse Polish Notation Stack\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC075-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000075",
+    "language": "javascript",
+    "code_template": "// CampusCode Evaluate Reverse Polish Notation Stack\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC075-python",
+    "problem_id": "10000000-0000-4000-8000-000000000075",
+    "language": "python",
+    "code_template": "# CampusCode Evaluate Reverse Polish Notation Stack\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC075-go",
+    "problem_id": "10000000-0000-4000-8000-000000000075",
+    "language": "go",
+    "code_template": "// CampusCode Evaluate Reverse Polish Notation Stack\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC075-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000075",
+    "language": "rust",
+    "code_template": "// CampusCode Evaluate Reverse Polish Notation Stack\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC075-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000075",
+    "language": "kotlin",
+    "code_template": "// CampusCode Evaluate Reverse Polish Notation Stack\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC076-c",
+    "problem_id": "10000000-0000-4000-8000-000000000076",
+    "language": "c",
+    "code_template": "// CampusCode Recent Student Logins Queue\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC076-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000076",
+    "language": "cpp",
+    "code_template": "// CampusCode Recent Student Logins Queue\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC076-java",
+    "problem_id": "10000000-0000-4000-8000-000000000076",
+    "language": "java",
+    "code_template": "// CampusCode Recent Student Logins Queue\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC076-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000076",
+    "language": "javascript",
+    "code_template": "// CampusCode Recent Student Logins Queue\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC076-python",
+    "problem_id": "10000000-0000-4000-8000-000000000076",
+    "language": "python",
+    "code_template": "# CampusCode Recent Student Logins Queue\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC076-go",
+    "problem_id": "10000000-0000-4000-8000-000000000076",
+    "language": "go",
+    "code_template": "// CampusCode Recent Student Logins Queue\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC076-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000076",
+    "language": "rust",
+    "code_template": "// CampusCode Recent Student Logins Queue\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC076-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000076",
+    "language": "kotlin",
+    "code_template": "// CampusCode Recent Student Logins Queue\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC077-c",
+    "problem_id": "10000000-0000-4000-8000-000000000077",
+    "language": "c",
+    "code_template": "// CampusCode Cycle Detection in Student Referral List\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC077-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000077",
+    "language": "cpp",
+    "code_template": "// CampusCode Cycle Detection in Student Referral List\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC077-java",
+    "problem_id": "10000000-0000-4000-8000-000000000077",
+    "language": "java",
+    "code_template": "// CampusCode Cycle Detection in Student Referral List\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC077-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000077",
+    "language": "javascript",
+    "code_template": "// CampusCode Cycle Detection in Student Referral List\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC077-python",
+    "problem_id": "10000000-0000-4000-8000-000000000077",
+    "language": "python",
+    "code_template": "# CampusCode Cycle Detection in Student Referral List\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC077-go",
+    "problem_id": "10000000-0000-4000-8000-000000000077",
+    "language": "go",
+    "code_template": "// CampusCode Cycle Detection in Student Referral List\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC077-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000077",
+    "language": "rust",
+    "code_template": "// CampusCode Cycle Detection in Student Referral List\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC077-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000077",
+    "language": "kotlin",
+    "code_template": "// CampusCode Cycle Detection in Student Referral List\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC078-c",
+    "problem_id": "10000000-0000-4000-8000-000000000078",
+    "language": "c",
+    "code_template": "// CampusCode Recursive Tower of Brahma Placement Puzzle\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC078-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000078",
+    "language": "cpp",
+    "code_template": "// CampusCode Recursive Tower of Brahma Placement Puzzle\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC078-java",
+    "problem_id": "10000000-0000-4000-8000-000000000078",
+    "language": "java",
+    "code_template": "// CampusCode Recursive Tower of Brahma Placement Puzzle\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC078-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000078",
+    "language": "javascript",
+    "code_template": "// CampusCode Recursive Tower of Brahma Placement Puzzle\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC078-python",
+    "problem_id": "10000000-0000-4000-8000-000000000078",
+    "language": "python",
+    "code_template": "# CampusCode Recursive Tower of Brahma Placement Puzzle\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC078-go",
+    "problem_id": "10000000-0000-4000-8000-000000000078",
+    "language": "go",
+    "code_template": "// CampusCode Recursive Tower of Brahma Placement Puzzle\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC078-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000078",
+    "language": "rust",
+    "code_template": "// CampusCode Recursive Tower of Brahma Placement Puzzle\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC078-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000078",
+    "language": "kotlin",
+    "code_template": "// CampusCode Recursive Tower of Brahma Placement Puzzle\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC079-c",
+    "problem_id": "10000000-0000-4000-8000-000000000079",
+    "language": "c",
+    "code_template": "// CampusCode Greedy Activity Selector for Auditorium\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC079-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000079",
+    "language": "cpp",
+    "code_template": "// CampusCode Greedy Activity Selector for Auditorium\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC079-java",
+    "problem_id": "10000000-0000-4000-8000-000000000079",
+    "language": "java",
+    "code_template": "// CampusCode Greedy Activity Selector for Auditorium\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC079-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000079",
+    "language": "javascript",
+    "code_template": "// CampusCode Greedy Activity Selector for Auditorium\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC079-python",
+    "problem_id": "10000000-0000-4000-8000-000000000079",
+    "language": "python",
+    "code_template": "# CampusCode Greedy Activity Selector for Auditorium\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC079-go",
+    "problem_id": "10000000-0000-4000-8000-000000000079",
+    "language": "go",
+    "code_template": "// CampusCode Greedy Activity Selector for Auditorium\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC079-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000079",
+    "language": "rust",
+    "code_template": "// CampusCode Greedy Activity Selector for Auditorium\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC079-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000079",
+    "language": "kotlin",
+    "code_template": "// CampusCode Greedy Activity Selector for Auditorium\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC080-c",
+    "problem_id": "10000000-0000-4000-8000-000000000080",
+    "language": "c",
+    "code_template": "// CampusCode Hash Map Frequency Ranker\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC080-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000080",
+    "language": "cpp",
+    "code_template": "// CampusCode Hash Map Frequency Ranker\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC080-java",
+    "problem_id": "10000000-0000-4000-8000-000000000080",
+    "language": "java",
+    "code_template": "// CampusCode Hash Map Frequency Ranker\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC080-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000080",
+    "language": "javascript",
+    "code_template": "// CampusCode Hash Map Frequency Ranker\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC080-python",
+    "problem_id": "10000000-0000-4000-8000-000000000080",
+    "language": "python",
+    "code_template": "# CampusCode Hash Map Frequency Ranker\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC080-go",
+    "problem_id": "10000000-0000-4000-8000-000000000080",
+    "language": "go",
+    "code_template": "// CampusCode Hash Map Frequency Ranker\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC080-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000080",
+    "language": "rust",
+    "code_template": "// CampusCode Hash Map Frequency Ranker\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC080-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000080",
+    "language": "kotlin",
+    "code_template": "// CampusCode Hash Map Frequency Ranker\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC081-c",
+    "problem_id": "10000000-0000-4000-8000-000000000081",
+    "language": "c",
+    "code_template": "// CampusCode Binary Search Matrix Seat Finder\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC081-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000081",
+    "language": "cpp",
+    "code_template": "// CampusCode Binary Search Matrix Seat Finder\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC081-java",
+    "problem_id": "10000000-0000-4000-8000-000000000081",
+    "language": "java",
+    "code_template": "// CampusCode Binary Search Matrix Seat Finder\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC081-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000081",
+    "language": "javascript",
+    "code_template": "// CampusCode Binary Search Matrix Seat Finder\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC081-python",
+    "problem_id": "10000000-0000-4000-8000-000000000081",
+    "language": "python",
+    "code_template": "# CampusCode Binary Search Matrix Seat Finder\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC081-go",
+    "problem_id": "10000000-0000-4000-8000-000000000081",
+    "language": "go",
+    "code_template": "// CampusCode Binary Search Matrix Seat Finder\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC081-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000081",
+    "language": "rust",
+    "code_template": "// CampusCode Binary Search Matrix Seat Finder\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC081-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000081",
+    "language": "kotlin",
+    "code_template": "// CampusCode Binary Search Matrix Seat Finder\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC082-c",
+    "problem_id": "10000000-0000-4000-8000-000000000082",
+    "language": "c",
+    "code_template": "// CampusCode Custom TimSort Student Ranking\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC082-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000082",
+    "language": "cpp",
+    "code_template": "// CampusCode Custom TimSort Student Ranking\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC082-java",
+    "problem_id": "10000000-0000-4000-8000-000000000082",
+    "language": "java",
+    "code_template": "// CampusCode Custom TimSort Student Ranking\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC082-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000082",
+    "language": "javascript",
+    "code_template": "// CampusCode Custom TimSort Student Ranking\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC082-python",
+    "problem_id": "10000000-0000-4000-8000-000000000082",
+    "language": "python",
+    "code_template": "# CampusCode Custom TimSort Student Ranking\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC082-go",
+    "problem_id": "10000000-0000-4000-8000-000000000082",
+    "language": "go",
+    "code_template": "// CampusCode Custom TimSort Student Ranking\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC082-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000082",
+    "language": "rust",
+    "code_template": "// CampusCode Custom TimSort Student Ranking\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC082-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000082",
+    "language": "kotlin",
+    "code_template": "// CampusCode Custom TimSort Student Ranking\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC083-c",
+    "problem_id": "10000000-0000-4000-8000-000000000083",
+    "language": "c",
+    "code_template": "// CampusCode 2D Range Sum Query Matrix\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC083-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000083",
+    "language": "cpp",
+    "code_template": "// CampusCode 2D Range Sum Query Matrix\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC083-java",
+    "problem_id": "10000000-0000-4000-8000-000000000083",
+    "language": "java",
+    "code_template": "// CampusCode 2D Range Sum Query Matrix\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC083-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000083",
+    "language": "javascript",
+    "code_template": "// CampusCode 2D Range Sum Query Matrix\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC083-python",
+    "problem_id": "10000000-0000-4000-8000-000000000083",
+    "language": "python",
+    "code_template": "# CampusCode 2D Range Sum Query Matrix\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC083-go",
+    "problem_id": "10000000-0000-4000-8000-000000000083",
+    "language": "go",
+    "code_template": "// CampusCode 2D Range Sum Query Matrix\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC083-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000083",
+    "language": "rust",
+    "code_template": "// CampusCode 2D Range Sum Query Matrix\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC083-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000083",
+    "language": "kotlin",
+    "code_template": "// CampusCode 2D Range Sum Query Matrix\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC084-c",
+    "problem_id": "10000000-0000-4000-8000-000000000084",
+    "language": "c",
+    "code_template": "// CampusCode Longest Substring K Distinct Characters\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC084-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000084",
+    "language": "cpp",
+    "code_template": "// CampusCode Longest Substring K Distinct Characters\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC084-java",
+    "problem_id": "10000000-0000-4000-8000-000000000084",
+    "language": "java",
+    "code_template": "// CampusCode Longest Substring K Distinct Characters\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC084-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000084",
+    "language": "javascript",
+    "code_template": "// CampusCode Longest Substring K Distinct Characters\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC084-python",
+    "problem_id": "10000000-0000-4000-8000-000000000084",
+    "language": "python",
+    "code_template": "# CampusCode Longest Substring K Distinct Characters\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC084-go",
+    "problem_id": "10000000-0000-4000-8000-000000000084",
+    "language": "go",
+    "code_template": "// CampusCode Longest Substring K Distinct Characters\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC084-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000084",
+    "language": "rust",
+    "code_template": "// CampusCode Longest Substring K Distinct Characters\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC084-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000084",
+    "language": "kotlin",
+    "code_template": "// CampusCode Longest Substring K Distinct Characters\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC085-c",
+    "problem_id": "10000000-0000-4000-8000-000000000085",
+    "language": "c",
+    "code_template": "// CampusCode Monotonic Stack Next Greater Grade\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC085-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000085",
+    "language": "cpp",
+    "code_template": "// CampusCode Monotonic Stack Next Greater Grade\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC085-java",
+    "problem_id": "10000000-0000-4000-8000-000000000085",
+    "language": "java",
+    "code_template": "// CampusCode Monotonic Stack Next Greater Grade\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC085-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000085",
+    "language": "javascript",
+    "code_template": "// CampusCode Monotonic Stack Next Greater Grade\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC085-python",
+    "problem_id": "10000000-0000-4000-8000-000000000085",
+    "language": "python",
+    "code_template": "# CampusCode Monotonic Stack Next Greater Grade\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC085-go",
+    "problem_id": "10000000-0000-4000-8000-000000000085",
+    "language": "go",
+    "code_template": "// CampusCode Monotonic Stack Next Greater Grade\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC085-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000085",
+    "language": "rust",
+    "code_template": "// CampusCode Monotonic Stack Next Greater Grade\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC085-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000085",
+    "language": "kotlin",
+    "code_template": "// CampusCode Monotonic Stack Next Greater Grade\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC086-c",
+    "problem_id": "10000000-0000-4000-8000-000000000086",
+    "language": "c",
+    "code_template": "// CampusCode Circular Queue Hostel Gate Scanner\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC086-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000086",
+    "language": "cpp",
+    "code_template": "// CampusCode Circular Queue Hostel Gate Scanner\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC086-java",
+    "problem_id": "10000000-0000-4000-8000-000000000086",
+    "language": "java",
+    "code_template": "// CampusCode Circular Queue Hostel Gate Scanner\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC086-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000086",
+    "language": "javascript",
+    "code_template": "// CampusCode Circular Queue Hostel Gate Scanner\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC086-python",
+    "problem_id": "10000000-0000-4000-8000-000000000086",
+    "language": "python",
+    "code_template": "# CampusCode Circular Queue Hostel Gate Scanner\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC086-go",
+    "problem_id": "10000000-0000-4000-8000-000000000086",
+    "language": "go",
+    "code_template": "// CampusCode Circular Queue Hostel Gate Scanner\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC086-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000086",
+    "language": "rust",
+    "code_template": "// CampusCode Circular Queue Hostel Gate Scanner\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC086-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000086",
+    "language": "kotlin",
+    "code_template": "// CampusCode Circular Queue Hostel Gate Scanner\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC087-c",
+    "problem_id": "10000000-0000-4000-8000-000000000087",
+    "language": "c",
+    "code_template": "// CampusCode Remove Nth Node Student Linked List\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC087-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000087",
+    "language": "cpp",
+    "code_template": "// CampusCode Remove Nth Node Student Linked List\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC087-java",
+    "problem_id": "10000000-0000-4000-8000-000000000087",
+    "language": "java",
+    "code_template": "// CampusCode Remove Nth Node Student Linked List\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC087-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000087",
+    "language": "javascript",
+    "code_template": "// CampusCode Remove Nth Node Student Linked List\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC087-python",
+    "problem_id": "10000000-0000-4000-8000-000000000087",
+    "language": "python",
+    "code_template": "# CampusCode Remove Nth Node Student Linked List\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC087-go",
+    "problem_id": "10000000-0000-4000-8000-000000000087",
+    "language": "go",
+    "code_template": "// CampusCode Remove Nth Node Student Linked List\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC087-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000087",
+    "language": "rust",
+    "code_template": "// CampusCode Remove Nth Node Student Linked List\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC087-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000087",
+    "language": "kotlin",
+    "code_template": "// CampusCode Remove Nth Node Student Linked List\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC088-c",
+    "problem_id": "10000000-0000-4000-8000-000000000088",
+    "language": "c",
+    "code_template": "// CampusCode Recursive Combination Generator\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC088-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000088",
+    "language": "cpp",
+    "code_template": "// CampusCode Recursive Combination Generator\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC088-java",
+    "problem_id": "10000000-0000-4000-8000-000000000088",
+    "language": "java",
+    "code_template": "// CampusCode Recursive Combination Generator\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC088-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000088",
+    "language": "javascript",
+    "code_template": "// CampusCode Recursive Combination Generator\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC088-python",
+    "problem_id": "10000000-0000-4000-8000-000000000088",
+    "language": "python",
+    "code_template": "# CampusCode Recursive Combination Generator\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC088-go",
+    "problem_id": "10000000-0000-4000-8000-000000000088",
+    "language": "go",
+    "code_template": "// CampusCode Recursive Combination Generator\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC088-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000088",
+    "language": "rust",
+    "code_template": "// CampusCode Recursive Combination Generator\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC088-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000088",
+    "language": "kotlin",
+    "code_template": "// CampusCode Recursive Combination Generator\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC089-c",
+    "problem_id": "10000000-0000-4000-8000-000000000089",
+    "language": "c",
+    "code_template": "// CampusCode Min Coins Campus Canteen Cashback\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC089-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000089",
+    "language": "cpp",
+    "code_template": "// CampusCode Min Coins Campus Canteen Cashback\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC089-java",
+    "problem_id": "10000000-0000-4000-8000-000000000089",
+    "language": "java",
+    "code_template": "// CampusCode Min Coins Campus Canteen Cashback\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC089-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000089",
+    "language": "javascript",
+    "code_template": "// CampusCode Min Coins Campus Canteen Cashback\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC089-python",
+    "problem_id": "10000000-0000-4000-8000-000000000089",
+    "language": "python",
+    "code_template": "# CampusCode Min Coins Campus Canteen Cashback\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC089-go",
+    "problem_id": "10000000-0000-4000-8000-000000000089",
+    "language": "go",
+    "code_template": "// CampusCode Min Coins Campus Canteen Cashback\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC089-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000089",
+    "language": "rust",
+    "code_template": "// CampusCode Min Coins Campus Canteen Cashback\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC089-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000089",
+    "language": "kotlin",
+    "code_template": "// CampusCode Min Coins Campus Canteen Cashback\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC090-c",
+    "problem_id": "10000000-0000-4000-8000-000000000090",
+    "language": "c",
+    "code_template": "// CampusCode Hash Map Anagram Student Names\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC090-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000090",
+    "language": "cpp",
+    "code_template": "// CampusCode Hash Map Anagram Student Names\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC090-java",
+    "problem_id": "10000000-0000-4000-8000-000000000090",
+    "language": "java",
+    "code_template": "// CampusCode Hash Map Anagram Student Names\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC090-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000090",
+    "language": "javascript",
+    "code_template": "// CampusCode Hash Map Anagram Student Names\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC090-python",
+    "problem_id": "10000000-0000-4000-8000-000000000090",
+    "language": "python",
+    "code_template": "# CampusCode Hash Map Anagram Student Names\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC090-go",
+    "problem_id": "10000000-0000-4000-8000-000000000090",
+    "language": "go",
+    "code_template": "// CampusCode Hash Map Anagram Student Names\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC090-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000090",
+    "language": "rust",
+    "code_template": "// CampusCode Hash Map Anagram Student Names\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC090-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000090",
+    "language": "kotlin",
+    "code_template": "// CampusCode Hash Map Anagram Student Names\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC091-c",
+    "problem_id": "10000000-0000-4000-8000-000000000091",
+    "language": "c",
+    "code_template": "// CampusCode Binary Search Peak Score Finding\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC091-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000091",
+    "language": "cpp",
+    "code_template": "// CampusCode Binary Search Peak Score Finding\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC091-java",
+    "problem_id": "10000000-0000-4000-8000-000000000091",
+    "language": "java",
+    "code_template": "// CampusCode Binary Search Peak Score Finding\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC091-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000091",
+    "language": "javascript",
+    "code_template": "// CampusCode Binary Search Peak Score Finding\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC091-python",
+    "problem_id": "10000000-0000-4000-8000-000000000091",
+    "language": "python",
+    "code_template": "# CampusCode Binary Search Peak Score Finding\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC091-go",
+    "problem_id": "10000000-0000-4000-8000-000000000091",
+    "language": "go",
+    "code_template": "// CampusCode Binary Search Peak Score Finding\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC091-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000091",
+    "language": "rust",
+    "code_template": "// CampusCode Binary Search Peak Score Finding\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC091-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000091",
+    "language": "kotlin",
+    "code_template": "// CampusCode Binary Search Peak Score Finding\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC092-c",
+    "problem_id": "10000000-0000-4000-8000-000000000092",
+    "language": "c",
+    "code_template": "// CampusCode Stable Sort Placement Applications\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC092-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000092",
+    "language": "cpp",
+    "code_template": "// CampusCode Stable Sort Placement Applications\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC092-java",
+    "problem_id": "10000000-0000-4000-8000-000000000092",
+    "language": "java",
+    "code_template": "// CampusCode Stable Sort Placement Applications\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC092-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000092",
+    "language": "javascript",
+    "code_template": "// CampusCode Stable Sort Placement Applications\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC092-python",
+    "problem_id": "10000000-0000-4000-8000-000000000092",
+    "language": "python",
+    "code_template": "# CampusCode Stable Sort Placement Applications\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC092-go",
+    "problem_id": "10000000-0000-4000-8000-000000000092",
+    "language": "go",
+    "code_template": "// CampusCode Stable Sort Placement Applications\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC092-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000092",
+    "language": "rust",
+    "code_template": "// CampusCode Stable Sort Placement Applications\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC092-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000092",
+    "language": "kotlin",
+    "code_template": "// CampusCode Stable Sort Placement Applications\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC093-c",
+    "problem_id": "10000000-0000-4000-8000-000000000093",
+    "language": "c",
+    "code_template": "// CampusCode Continuous Subarray Sum Prefix\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC093-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000093",
+    "language": "cpp",
+    "code_template": "// CampusCode Continuous Subarray Sum Prefix\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC093-java",
+    "problem_id": "10000000-0000-4000-8000-000000000093",
+    "language": "java",
+    "code_template": "// CampusCode Continuous Subarray Sum Prefix\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC093-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000093",
+    "language": "javascript",
+    "code_template": "// CampusCode Continuous Subarray Sum Prefix\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC093-python",
+    "problem_id": "10000000-0000-4000-8000-000000000093",
+    "language": "python",
+    "code_template": "# CampusCode Continuous Subarray Sum Prefix\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC093-go",
+    "problem_id": "10000000-0000-4000-8000-000000000093",
+    "language": "go",
+    "code_template": "// CampusCode Continuous Subarray Sum Prefix\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC093-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000093",
+    "language": "rust",
+    "code_template": "// CampusCode Continuous Subarray Sum Prefix\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC093-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000093",
+    "language": "kotlin",
+    "code_template": "// CampusCode Continuous Subarray Sum Prefix\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC094-c",
+    "problem_id": "10000000-0000-4000-8000-000000000094",
+    "language": "c",
+    "code_template": "// CampusCode Sliding Window Fruit Collector\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC094-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000094",
+    "language": "cpp",
+    "code_template": "// CampusCode Sliding Window Fruit Collector\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC094-java",
+    "problem_id": "10000000-0000-4000-8000-000000000094",
+    "language": "java",
+    "code_template": "// CampusCode Sliding Window Fruit Collector\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC094-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000094",
+    "language": "javascript",
+    "code_template": "// CampusCode Sliding Window Fruit Collector\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC094-python",
+    "problem_id": "10000000-0000-4000-8000-000000000094",
+    "language": "python",
+    "code_template": "# CampusCode Sliding Window Fruit Collector\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC094-go",
+    "problem_id": "10000000-0000-4000-8000-000000000094",
+    "language": "go",
+    "code_template": "// CampusCode Sliding Window Fruit Collector\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC094-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000094",
+    "language": "rust",
+    "code_template": "// CampusCode Sliding Window Fruit Collector\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC094-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000094",
+    "language": "kotlin",
+    "code_template": "// CampusCode Sliding Window Fruit Collector\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC095-c",
+    "problem_id": "10000000-0000-4000-8000-000000000095",
+    "language": "c",
+    "code_template": "// CampusCode Stock Span Calculator Stack\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC095-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000095",
+    "language": "cpp",
+    "code_template": "// CampusCode Stock Span Calculator Stack\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC095-java",
+    "problem_id": "10000000-0000-4000-8000-000000000095",
+    "language": "java",
+    "code_template": "// CampusCode Stock Span Calculator Stack\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC095-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000095",
+    "language": "javascript",
+    "code_template": "// CampusCode Stock Span Calculator Stack\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC095-python",
+    "problem_id": "10000000-0000-4000-8000-000000000095",
+    "language": "python",
+    "code_template": "# CampusCode Stock Span Calculator Stack\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC095-go",
+    "problem_id": "10000000-0000-4000-8000-000000000095",
+    "language": "go",
+    "code_template": "// CampusCode Stock Span Calculator Stack\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC095-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000095",
+    "language": "rust",
+    "code_template": "// CampusCode Stock Span Calculator Stack\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC095-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000095",
+    "language": "kotlin",
+    "code_template": "// CampusCode Stock Span Calculator Stack\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC096-c",
+    "problem_id": "10000000-0000-4000-8000-000000000096",
+    "language": "c",
+    "code_template": "// CampusCode Queue Reconstruction by Height\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC096-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000096",
+    "language": "cpp",
+    "code_template": "// CampusCode Queue Reconstruction by Height\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC096-java",
+    "problem_id": "10000000-0000-4000-8000-000000000096",
+    "language": "java",
+    "code_template": "// CampusCode Queue Reconstruction by Height\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC096-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000096",
+    "language": "javascript",
+    "code_template": "// CampusCode Queue Reconstruction by Height\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC096-python",
+    "problem_id": "10000000-0000-4000-8000-000000000096",
+    "language": "python",
+    "code_template": "# CampusCode Queue Reconstruction by Height\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC096-go",
+    "problem_id": "10000000-0000-4000-8000-000000000096",
+    "language": "go",
+    "code_template": "// CampusCode Queue Reconstruction by Height\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC096-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000096",
+    "language": "rust",
+    "code_template": "// CampusCode Queue Reconstruction by Height\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC096-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000096",
+    "language": "kotlin",
+    "code_template": "// CampusCode Queue Reconstruction by Height\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC097-c",
+    "problem_id": "10000000-0000-4000-8000-000000000097",
+    "language": "c",
+    "code_template": "// CampusCode Merge Two Sorted Student Lists\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC097-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000097",
+    "language": "cpp",
+    "code_template": "// CampusCode Merge Two Sorted Student Lists\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC097-java",
+    "problem_id": "10000000-0000-4000-8000-000000000097",
+    "language": "java",
+    "code_template": "// CampusCode Merge Two Sorted Student Lists\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC097-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000097",
+    "language": "javascript",
+    "code_template": "// CampusCode Merge Two Sorted Student Lists\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC097-python",
+    "problem_id": "10000000-0000-4000-8000-000000000097",
+    "language": "python",
+    "code_template": "# CampusCode Merge Two Sorted Student Lists\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC097-go",
+    "problem_id": "10000000-0000-4000-8000-000000000097",
+    "language": "go",
+    "code_template": "// CampusCode Merge Two Sorted Student Lists\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC097-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000097",
+    "language": "rust",
+    "code_template": "// CampusCode Merge Two Sorted Student Lists\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC097-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000097",
+    "language": "kotlin",
+    "code_template": "// CampusCode Merge Two Sorted Student Lists\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC098-c",
+    "problem_id": "10000000-0000-4000-8000-000000000098",
+    "language": "c",
+    "code_template": "// CampusCode Recursive Permutation Seating Arrangement\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC098-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000098",
+    "language": "cpp",
+    "code_template": "// CampusCode Recursive Permutation Seating Arrangement\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC098-java",
+    "problem_id": "10000000-0000-4000-8000-000000000098",
+    "language": "java",
+    "code_template": "// CampusCode Recursive Permutation Seating Arrangement\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC098-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000098",
+    "language": "javascript",
+    "code_template": "// CampusCode Recursive Permutation Seating Arrangement\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC098-python",
+    "problem_id": "10000000-0000-4000-8000-000000000098",
+    "language": "python",
+    "code_template": "# CampusCode Recursive Permutation Seating Arrangement\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC098-go",
+    "problem_id": "10000000-0000-4000-8000-000000000098",
+    "language": "go",
+    "code_template": "// CampusCode Recursive Permutation Seating Arrangement\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC098-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000098",
+    "language": "rust",
+    "code_template": "// CampusCode Recursive Permutation Seating Arrangement\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC098-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000098",
+    "language": "kotlin",
+    "code_template": "// CampusCode Recursive Permutation Seating Arrangement\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC099-c",
+    "problem_id": "10000000-0000-4000-8000-000000000099",
+    "language": "c",
+    "code_template": "// CampusCode Gas Station Loop Greedy Route\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC099-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000099",
+    "language": "cpp",
+    "code_template": "// CampusCode Gas Station Loop Greedy Route\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC099-java",
+    "problem_id": "10000000-0000-4000-8000-000000000099",
+    "language": "java",
+    "code_template": "// CampusCode Gas Station Loop Greedy Route\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC099-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000099",
+    "language": "javascript",
+    "code_template": "// CampusCode Gas Station Loop Greedy Route\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC099-python",
+    "problem_id": "10000000-0000-4000-8000-000000000099",
+    "language": "python",
+    "code_template": "# CampusCode Gas Station Loop Greedy Route\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC099-go",
+    "problem_id": "10000000-0000-4000-8000-000000000099",
+    "language": "go",
+    "code_template": "// CampusCode Gas Station Loop Greedy Route\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC099-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000099",
+    "language": "rust",
+    "code_template": "// CampusCode Gas Station Loop Greedy Route\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC099-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000099",
+    "language": "kotlin",
+    "code_template": "// CampusCode Gas Station Loop Greedy Route\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC100-c",
+    "problem_id": "10000000-0000-4000-8000-000000000100",
+    "language": "c",
+    "code_template": "// CampusCode Group Anagram Student Clubs Hash Map\n#include <stdio.h>\n\nint solve(int* nums, int numsSize, int target) {\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC100-cpp",
+    "problem_id": "10000000-0000-4000-8000-000000000100",
+    "language": "cpp",
+    "code_template": "// CampusCode Group Anagram Student Clubs Hash Map\n#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    int solve(vector<int>& nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n};"
+  },
+  {
+    "id": "sc-CC100-java",
+    "problem_id": "10000000-0000-4000-8000-000000000100",
+    "language": "java",
+    "code_template": "// CampusCode Group Anagram Student Clubs Hash Map\nimport java.util.*;\n\npublic class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here\n        return -1;\n    }\n}"
+  },
+  {
+    "id": "sc-CC100-javascript",
+    "problem_id": "10000000-0000-4000-8000-000000000100",
+    "language": "javascript",
+    "code_template": "// CampusCode Group Anagram Student Clubs Hash Map\nfunction solve(nums, target) {\n    // Write your solution here\n    return -1;\n}"
+  },
+  {
+    "id": "sc-CC100-python",
+    "problem_id": "10000000-0000-4000-8000-000000000100",
+    "language": "python",
+    "code_template": "# CampusCode Group Anagram Student Clubs Hash Map\nclass Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here\n        return -1"
+  },
+  {
+    "id": "sc-CC100-go",
+    "problem_id": "10000000-0000-4000-8000-000000000100",
+    "language": "go",
+    "code_template": "// CampusCode Group Anagram Student Clubs Hash Map\npackage main\n\nfunc solve(nums []int, target int) int {\n    return -1\n}"
+  },
+  {
+    "id": "sc-CC100-rust",
+    "problem_id": "10000000-0000-4000-8000-000000000100",
+    "language": "rust",
+    "code_template": "// CampusCode Group Anagram Student Clubs Hash Map\nimpl Solution {\n    pub fn solve(nums: Vec<i32>, target: i32) -> i32 {\n        -1\n    }\n}"
+  },
+  {
+    "id": "sc-CC100-kotlin",
+    "problem_id": "10000000-0000-4000-8000-000000000100",
+    "language": "kotlin",
+    "code_template": "// CampusCode Group Anagram Student Clubs Hash Map\nclass Solution {\n    fun solve(nums: IntArray, target: Int): Int {\n        return -1\n    }\n}"
   }
 ]

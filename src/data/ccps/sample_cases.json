@@ -348,5 +348,705 @@
     "input": "4\n2 7 11 15\n9",
     "output": "[0, 1]",
     "explanation": "Sum of elements at indices 0 and 1 equals target 9."
+  },
+  {
+    "id": "sample-CC051-1",
+    "problem_id": "10000000-0000-4000-8000-000000000051",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC051-2",
+    "problem_id": "10000000-0000-4000-8000-000000000051",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC052-1",
+    "problem_id": "10000000-0000-4000-8000-000000000052",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC052-2",
+    "problem_id": "10000000-0000-4000-8000-000000000052",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC053-1",
+    "problem_id": "10000000-0000-4000-8000-000000000053",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC053-2",
+    "problem_id": "10000000-0000-4000-8000-000000000053",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC054-1",
+    "problem_id": "10000000-0000-4000-8000-000000000054",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC054-2",
+    "problem_id": "10000000-0000-4000-8000-000000000054",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC055-1",
+    "problem_id": "10000000-0000-4000-8000-000000000055",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC055-2",
+    "problem_id": "10000000-0000-4000-8000-000000000055",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC056-1",
+    "problem_id": "10000000-0000-4000-8000-000000000056",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC056-2",
+    "problem_id": "10000000-0000-4000-8000-000000000056",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC057-1",
+    "problem_id": "10000000-0000-4000-8000-000000000057",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC057-2",
+    "problem_id": "10000000-0000-4000-8000-000000000057",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC058-1",
+    "problem_id": "10000000-0000-4000-8000-000000000058",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC058-2",
+    "problem_id": "10000000-0000-4000-8000-000000000058",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC059-1",
+    "problem_id": "10000000-0000-4000-8000-000000000059",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC059-2",
+    "problem_id": "10000000-0000-4000-8000-000000000059",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC060-1",
+    "problem_id": "10000000-0000-4000-8000-000000000060",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC060-2",
+    "problem_id": "10000000-0000-4000-8000-000000000060",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC061-1",
+    "problem_id": "10000000-0000-4000-8000-000000000061",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC061-2",
+    "problem_id": "10000000-0000-4000-8000-000000000061",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC062-1",
+    "problem_id": "10000000-0000-4000-8000-000000000062",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC062-2",
+    "problem_id": "10000000-0000-4000-8000-000000000062",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC063-1",
+    "problem_id": "10000000-0000-4000-8000-000000000063",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC063-2",
+    "problem_id": "10000000-0000-4000-8000-000000000063",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC064-1",
+    "problem_id": "10000000-0000-4000-8000-000000000064",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC064-2",
+    "problem_id": "10000000-0000-4000-8000-000000000064",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC065-1",
+    "problem_id": "10000000-0000-4000-8000-000000000065",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC065-2",
+    "problem_id": "10000000-0000-4000-8000-000000000065",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC066-1",
+    "problem_id": "10000000-0000-4000-8000-000000000066",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC066-2",
+    "problem_id": "10000000-0000-4000-8000-000000000066",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC067-1",
+    "problem_id": "10000000-0000-4000-8000-000000000067",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC067-2",
+    "problem_id": "10000000-0000-4000-8000-000000000067",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC068-1",
+    "problem_id": "10000000-0000-4000-8000-000000000068",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC068-2",
+    "problem_id": "10000000-0000-4000-8000-000000000068",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC069-1",
+    "problem_id": "10000000-0000-4000-8000-000000000069",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC069-2",
+    "problem_id": "10000000-0000-4000-8000-000000000069",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC070-1",
+    "problem_id": "10000000-0000-4000-8000-000000000070",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC070-2",
+    "problem_id": "10000000-0000-4000-8000-000000000070",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC071-1",
+    "problem_id": "10000000-0000-4000-8000-000000000071",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC071-2",
+    "problem_id": "10000000-0000-4000-8000-000000000071",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC072-1",
+    "problem_id": "10000000-0000-4000-8000-000000000072",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC072-2",
+    "problem_id": "10000000-0000-4000-8000-000000000072",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC073-1",
+    "problem_id": "10000000-0000-4000-8000-000000000073",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC073-2",
+    "problem_id": "10000000-0000-4000-8000-000000000073",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC074-1",
+    "problem_id": "10000000-0000-4000-8000-000000000074",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC074-2",
+    "problem_id": "10000000-0000-4000-8000-000000000074",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC075-1",
+    "problem_id": "10000000-0000-4000-8000-000000000075",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC075-2",
+    "problem_id": "10000000-0000-4000-8000-000000000075",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC076-1",
+    "problem_id": "10000000-0000-4000-8000-000000000076",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC076-2",
+    "problem_id": "10000000-0000-4000-8000-000000000076",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC077-1",
+    "problem_id": "10000000-0000-4000-8000-000000000077",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC077-2",
+    "problem_id": "10000000-0000-4000-8000-000000000077",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC078-1",
+    "problem_id": "10000000-0000-4000-8000-000000000078",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC078-2",
+    "problem_id": "10000000-0000-4000-8000-000000000078",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC079-1",
+    "problem_id": "10000000-0000-4000-8000-000000000079",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC079-2",
+    "problem_id": "10000000-0000-4000-8000-000000000079",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC080-1",
+    "problem_id": "10000000-0000-4000-8000-000000000080",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC080-2",
+    "problem_id": "10000000-0000-4000-8000-000000000080",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC081-1",
+    "problem_id": "10000000-0000-4000-8000-000000000081",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC081-2",
+    "problem_id": "10000000-0000-4000-8000-000000000081",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC082-1",
+    "problem_id": "10000000-0000-4000-8000-000000000082",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC082-2",
+    "problem_id": "10000000-0000-4000-8000-000000000082",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC083-1",
+    "problem_id": "10000000-0000-4000-8000-000000000083",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC083-2",
+    "problem_id": "10000000-0000-4000-8000-000000000083",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC084-1",
+    "problem_id": "10000000-0000-4000-8000-000000000084",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC084-2",
+    "problem_id": "10000000-0000-4000-8000-000000000084",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC085-1",
+    "problem_id": "10000000-0000-4000-8000-000000000085",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC085-2",
+    "problem_id": "10000000-0000-4000-8000-000000000085",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC086-1",
+    "problem_id": "10000000-0000-4000-8000-000000000086",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC086-2",
+    "problem_id": "10000000-0000-4000-8000-000000000086",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC087-1",
+    "problem_id": "10000000-0000-4000-8000-000000000087",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC087-2",
+    "problem_id": "10000000-0000-4000-8000-000000000087",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC088-1",
+    "problem_id": "10000000-0000-4000-8000-000000000088",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC088-2",
+    "problem_id": "10000000-0000-4000-8000-000000000088",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC089-1",
+    "problem_id": "10000000-0000-4000-8000-000000000089",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC089-2",
+    "problem_id": "10000000-0000-4000-8000-000000000089",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC090-1",
+    "problem_id": "10000000-0000-4000-8000-000000000090",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC090-2",
+    "problem_id": "10000000-0000-4000-8000-000000000090",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC091-1",
+    "problem_id": "10000000-0000-4000-8000-000000000091",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC091-2",
+    "problem_id": "10000000-0000-4000-8000-000000000091",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC092-1",
+    "problem_id": "10000000-0000-4000-8000-000000000092",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC092-2",
+    "problem_id": "10000000-0000-4000-8000-000000000092",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC093-1",
+    "problem_id": "10000000-0000-4000-8000-000000000093",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC093-2",
+    "problem_id": "10000000-0000-4000-8000-000000000093",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC094-1",
+    "problem_id": "10000000-0000-4000-8000-000000000094",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC094-2",
+    "problem_id": "10000000-0000-4000-8000-000000000094",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC095-1",
+    "problem_id": "10000000-0000-4000-8000-000000000095",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC095-2",
+    "problem_id": "10000000-0000-4000-8000-000000000095",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC096-1",
+    "problem_id": "10000000-0000-4000-8000-000000000096",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC096-2",
+    "problem_id": "10000000-0000-4000-8000-000000000096",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC097-1",
+    "problem_id": "10000000-0000-4000-8000-000000000097",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC097-2",
+    "problem_id": "10000000-0000-4000-8000-000000000097",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC098-1",
+    "problem_id": "10000000-0000-4000-8000-000000000098",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC098-2",
+    "problem_id": "10000000-0000-4000-8000-000000000098",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC099-1",
+    "problem_id": "10000000-0000-4000-8000-000000000099",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC099-2",
+    "problem_id": "10000000-0000-4000-8000-000000000099",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
+  },
+  {
+    "id": "sample-CC100-1",
+    "problem_id": "10000000-0000-4000-8000-000000000100",
+    "input": "5\n1 3 5 7 9\n5",
+    "output": "2",
+    "explanation": "Element 5 is located at zero-based index 2."
+  },
+  {
+    "id": "sample-CC100-2",
+    "problem_id": "10000000-0000-4000-8000-000000000100",
+    "input": "4\n10 20 30 40\n25",
+    "output": "-1",
+    "explanation": "Element 25 is not present."
   }
 ]
