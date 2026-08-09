@@ -300,8 +300,22 @@ function formatJSSubmissionCode(code: string, stdinInput: string): string {
   const trimmed = code.trim();
   if (trimmed.includes("console.log")) return trimmed;
 
-  const methodMatch = trimmed.match(/(?:function|const|let|var)\s+(\w+)\s*\(/) || trimmed.match(/(\w+)\s*\([^)]*\)\s*\{/);
-  const methodName = methodMatch ? methodMatch[1] : "twoSum";
+  const codeWithoutComments = trimmed
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/\/\/.*/g, "");
+
+  let methodName = "twoSum";
+  const varFnMatch = codeWithoutComments.match(/(?:const|let|var)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=/);
+  const fnDeclMatch = codeWithoutComments.match(/function\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/);
+  const methodDeclMatch = codeWithoutComments.match(/([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\([^)]*\)\s*\{/);
+
+  if (varFnMatch && varFnMatch[1] !== "function") {
+    methodName = varFnMatch[1];
+  } else if (fnDeclMatch) {
+    methodName = fnDeclMatch[1];
+  } else if (methodDeclMatch && !["if", "for", "while", "switch", "catch", "function"].includes(methodDeclMatch[1])) {
+    methodName = methodDeclMatch[1];
+  }
 
   const rawArgs = splitInputArgs(stdinInput);
   const callArgs = rawArgs.map((a) => a.trim());
@@ -313,13 +327,26 @@ try {
   if (typeof Solution === 'function') {
     solObj = new Solution();
   }
-  let fn = solObj && typeof solObj.${methodName} === 'function' ? solObj.${methodName}.bind(solObj) : (typeof ${methodName} === 'function' ? ${methodName} : null);
-  if (fn) {
+  let fn = null;
+  if (solObj && typeof solObj["${methodName}"] === 'function') {
+    fn = solObj["${methodName}"].bind(solObj);
+  } else if (typeof globalThis["${methodName}"] === 'function') {
+    fn = globalThis["${methodName}"];
+  } else if (typeof solve === 'function') {
+    fn = solve;
+  } else if (typeof twoSum === 'function') {
+    fn = twoSum;
+  } else {
+    try { fn = eval("${methodName}"); } catch(e) {}
+  }
+  if (typeof fn === 'function') {
     const ans = fn(${callArgs.join(", ")});
-    console.log(typeof ans === 'object' ? JSON.stringify(ans) : ans);
+    if (ans !== undefined) {
+      console.log(typeof ans === 'object' ? JSON.stringify(ans) : ans);
+    }
   }
 } catch (e) {
-  console.error(e.message);
+  console.log(e.message || String(e));
 }
 `;
 
@@ -511,11 +538,12 @@ function formatCSubmissionCode(code: string, stdinInput: string): string {
     }
   });
 
-  const cMain = `
-
-#include <stdio.h>
+  return `#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
+
+${trimmed}
 
 int main() {
     ${varDecls.join("\n    ")}
@@ -531,8 +559,6 @@ int main() {
     return 0;
 }
 `;
-
-  return trimmed + cMain;
 }
 
 export function formatSubmissionCode(code: string, language: string, stdinInput: string): string {
