@@ -15,70 +15,54 @@ export async function GET(req: Request) {
     const userId = searchParams.get("userId");
     const username = searchParams.get("username");
 
-    if (userId) {
-      const realStreak = await calculateAndUpdateStreak(userId);
+    const identifier = userId || username;
 
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          role: true,
-          avatar: true,
-          rollNumber: true,
-          className: true,
-          branch: true,
-          xp: true,
-          level: true,
-          streakDays: true,
-          coins: true,
-          bio: true,
-          githubUrl: true,
-          linkedinUrl: true,
-        },
+    if (identifier) {
+      const selectFields = {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        avatar: true,
+        rollNumber: true,
+        className: true,
+        branch: true,
+        xp: true,
+        level: true,
+        streakDays: true,
+        coins: true,
+        bio: true,
+        githubUrl: true,
+        linkedinUrl: true,
+      };
+
+      // 1. Try finding by unique ID first
+      let user = await prisma.user.findUnique({
+        where: { id: identifier },
+        select: selectFields,
       });
+
+      // 2. If not found by ID, try matching by name slug or email prefix
+      if (!user) {
+        const users = await prisma.user.findMany({ select: selectFields });
+        const targetLower = identifier.toLowerCase().replace(/\s+/g, "");
+        const matched = users.find(
+          (u) =>
+            u.id === identifier ||
+            u.name.toLowerCase().replace(/\s+/g, "") === targetLower ||
+            u.email.split("@")[0].toLowerCase() === targetLower
+        );
+        if (matched) {
+          user = matched;
+        }
+      }
 
       if (!user) {
-        return NextResponse.json({ error: "User not found" }, { status: 404 });
-      }
-
-      return NextResponse.json({ user: { ...user, streakDays: realStreak } });
-    }
-
-    if (username) {
-      const users = await prisma.user.findMany({
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          role: true,
-          avatar: true,
-          rollNumber: true,
-          className: true,
-          branch: true,
-          xp: true,
-          level: true,
-          streakDays: true,
-          coins: true,
-          bio: true,
-          githubUrl: true,
-          linkedinUrl: true,
-        },
-      });
-
-      const matched = users.find(
-        (u) =>
-          u.id === username ||
-          u.name.toLowerCase().replace(/\s+/g, "") === username.toLowerCase() ||
-          u.email.split("@")[0].toLowerCase() === username.toLowerCase()
-      );
-
-      if (matched) {
-        return NextResponse.json({ user: matched });
-      } else {
         return NextResponse.json({ error: "User profile not found" }, { status: 404 });
       }
+
+      const realStreak = await calculateAndUpdateStreak(user.id);
+      return NextResponse.json({ user: { ...user, streakDays: realStreak } });
     }
 
     return NextResponse.json({ error: "User ID or username required" }, { status: 400 });
