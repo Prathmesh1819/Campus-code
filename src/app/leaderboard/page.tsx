@@ -235,7 +235,7 @@ export default function LeaderboardPage() {
                       </td>
                       <td className="px-6 py-4">
                         <span className="px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-400 font-bold text-[11px] border border-amber-500/20 flex items-center gap-1 w-fit">
-                          <Flame className="w-3 h-3 fill-amber-500" /> {user.streakDays || 7} Days
+                          <Flame className="w-3 h-3 fill-amber-500" /> {user.streakDays ?? 0} Days
                         </span>
                       </td>
                       <td className="px-6 py-4 font-black text-purple-300">

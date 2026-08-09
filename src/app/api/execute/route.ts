@@ -28,6 +28,7 @@ export async function POST(req: Request) {
     const result = await executeJudge0Submission(code, language, problem.testCases);
 
     let submissionRecord = null;
+    let updatedUserRecord = null;
 
     if (isSubmit && userId) {
       submissionRecord = await prisma.submission.create({
@@ -48,21 +49,30 @@ export async function POST(req: Request) {
       if (result.status === "ACCEPTED") {
         const xpGain = problem.difficulty === "HARD" ? 150 : problem.difficulty === "MEDIUM" ? 100 : 50;
 
-        await prisma.user.update({
+        const updatedUser = await prisma.user.update({
           where: { id: userId },
           data: {
             xp: { increment: xpGain },
             coins: { increment: 20 },
           },
+          select: {
+            id: true,
+            xp: true,
+            level: true,
+            coins: true,
+            streakDays: true,
+          },
         });
 
-        await calculateAndUpdateStreak(userId);
+        const streakDays = await calculateAndUpdateStreak(userId);
+        updatedUserRecord = { ...updatedUser, streakDays };
       }
     }
 
     return NextResponse.json({
       result,
       submission: submissionRecord,
+      user: updatedUserRecord,
     }, {
       headers: {
         "Cache-Control": "no-cache, no-store, must-revalidate, max-age=0",

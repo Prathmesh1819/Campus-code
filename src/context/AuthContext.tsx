@@ -27,7 +27,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (userData: User, token: string) => void;
   logout: () => void;
-  refreshUserData: () => Promise<void>;
+  refreshUserData: (updatedFields?: Partial<User>) => Promise<void>;
   switchRole: (role: "STUDENT" | "TEACHER" | "ADMIN") => Promise<void>;
   updateUserAvatar: (newAvatarUrl: string) => Promise<void>;
   updateUserProfile: (updatedFields: Partial<User>) => Promise<void>;
@@ -68,10 +68,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const fetchLatestUserStats = async (userId: string) => {
     try {
-      const res = await fetch(`/api/auth?userId=${userId}`);
+      const res = await fetch(`/api/auth?userId=${userId}&t=${Date.now()}`, {
+        cache: "no-store",
+        headers: {
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+          "Pragma": "no-cache",
+        },
+      });
       const data = await res.json();
       if (data.user) {
         setUser((prev) => {
+          if (!prev) return data.user;
           const updated = { ...prev, ...data.user };
           localStorage.setItem("campuscode_user", JSON.stringify(updated));
           return updated;
@@ -82,7 +89,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const refreshUserData = async () => {
+  const refreshUserData = async (updatedFields?: Partial<User>) => {
+    if (updatedFields) {
+      setUser((prev) => {
+        if (!prev) return null;
+        const updated = { ...prev, ...updatedFields };
+        localStorage.setItem("campuscode_user", JSON.stringify(updated));
+        return updated;
+      });
+    }
     if (user?.id) {
       await fetchLatestUserStats(user.id);
     }
