@@ -76,8 +76,8 @@ export async function GET(req: Request) {
 
       if (matched) {
         return NextResponse.json({ user: matched });
-      } else if (users.length > 0) {
-        return NextResponse.json({ user: users[0] });
+      } else {
+        return NextResponse.json({ error: "User profile not found" }, { status: 404 });
       }
     }
 

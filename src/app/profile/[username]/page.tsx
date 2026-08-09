@@ -60,12 +60,10 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
         setCustomAvatarUrl(data.user.avatar || "");
         fetchUserSubmissions(data.user.id);
       } else {
-        setProfileUser(currentUser);
-        if (currentUser?.id) fetchUserSubmissions(currentUser.id);
+        setProfileUser(null);
       }
     } catch {
-      setProfileUser(currentUser);
-      if (currentUser?.id) fetchUserSubmissions(currentUser.id);
+      setProfileUser(null);
     } finally {
       setLoading(false);
     }
@@ -171,10 +169,10 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
   };
 
   const weeksMatrix = generateRealCalendarData();
-  const displayUser = profileUser || currentUser;
+  const displayUser = profileUser;
   const totalYearContributions = selectedYearSubmissions.length;
 
-  const profileUrl = typeof window !== "undefined" ? window.location.href : `https://campuscode.vercel.app/profile/${displayUser?.name?.toLowerCase().replace(/\s+/g, "")}`;
+  const profileUrl = typeof window !== "undefined" ? window.location.href : `https://campuscode.vercel.app/profile/${displayUser?.name?.toLowerCase().replace(/\s+/g, "") || "user"}`;
   const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(profileUrl)}`;
 
   return (
@@ -185,6 +183,19 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
         <main className="flex-1 p-4 lg:p-8 space-y-8 overflow-y-auto">
+          {loading ? (
+            <div className="flex items-center justify-center py-24 text-purple-400 text-xs font-mono space-x-2">
+              <div className="w-5 h-5 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+              <span>Loading Student Profile...</span>
+            </div>
+          ) : !displayUser ? (
+            <div className="flex flex-col items-center justify-center py-24 text-center space-y-3">
+              <User className="w-12 h-12 text-purple-400 opacity-40" />
+              <h2 className="text-xl font-extrabold text-white">Profile Not Found</h2>
+              <p className="text-xs text-gray-400 max-w-sm">Unable to load the requested profile. Please verify your login session or URL.</p>
+            </div>
+          ) : (
+            <>
           {/* GitHub-style Profile Banner & Header */}
           <div className="rounded-3xl glass-card border border-purple-500/30 overflow-hidden relative">
             <div className="h-44 w-full bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-950 relative overflow-hidden">
@@ -424,6 +435,8 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
               </table>
             )}
           </div>
+          </>
+          )}
         </main>
       </div>
 

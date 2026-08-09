@@ -205,7 +205,7 @@ export function Navbar({ onToggleSidebar }: NavbarProps) {
 
                     {/* View My Profile */}
                     <Link
-                      href={`/profile/${profileUsername}`}
+                      href={`/profile/${user?.id || profileUsername}`}
                       onClick={() => setProfileDropdownOpen(false)}
                       className="flex items-center justify-between px-3 py-2.5 text-xs font-bold text-gray-200 hover:text-white hover:bg-purple-600/20 rounded-xl transition-all border border-transparent hover:border-purple-500/30"
                     >
