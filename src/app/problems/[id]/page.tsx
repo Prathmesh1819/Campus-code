@@ -129,8 +129,13 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
 
   useEffect(() => {
     fetchProblemDetail();
-    fetchSubmissionsHistory();
-  }, [user?.id]);
+  }, [params]);
+
+  useEffect(() => {
+    if (user?.id) {
+      fetchSubmissionsHistory();
+    }
+  }, [user?.id, problem?.id]);
 
   const fetchProblemDetail = async () => {
     try {
@@ -167,7 +172,8 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
     if (!user?.id) return;
     try {
       const resolvedParams = await params;
-      const res = await fetch(`/api/submissions?userId=${user.id}&problemId=${resolvedParams.id}`);
+      const targetId = problem?.id || resolvedParams.id;
+      const res = await fetch(`/api/submissions?userId=${user.id}&problemId=${targetId}`);
       const data = await res.json();
       if (data.submissions) {
         setSubmissionsHistory(data.submissions);

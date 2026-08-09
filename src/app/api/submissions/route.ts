@@ -9,7 +9,17 @@ export async function GET(req: Request) {
 
     const whereClause: any = {};
     if (userId) whereClause.userId = userId;
-    if (problemId) whereClause.problemId = problemId;
+    if (problemId) {
+      const p = await prisma.problem.findFirst({
+        where: { OR: [{ id: problemId }, { slug: problemId }] },
+        select: { id: true },
+      });
+      if (p) {
+        whereClause.problemId = p.id;
+      } else {
+        whereClause.problemId = problemId;
+      }
+    }
 
     const submissions = await prisma.submission.findMany({
       where: whereClause,

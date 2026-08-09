@@ -15,8 +15,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Code and language are required" }, { status: 400 });
     }
 
-    const problem = await prisma.problem.findUnique({
-      where: { id: problemId },
+    const problem = await prisma.problem.findFirst({
+      where: { OR: [{ id: problemId }, { slug: problemId }] },
       include: { testCases: true },
     });
 
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
       submissionRecord = await prisma.submission.create({
         data: {
           userId,
-          problemId,
+          problemId: problem.id,
           code,
           language,
           status: result.status,
