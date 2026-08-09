@@ -79,6 +79,13 @@ export async function POST(req: Request) {
       if (result.status === "ACCEPTED") {
         const xpGain = problem.difficulty === "HARD" ? 150 : problem.difficulty === "MEDIUM" ? 100 : 50;
 
+        const userBefore = await prisma.user.findUnique({
+          where: { id: effectiveUserId },
+          select: { xp: true, streakDays: true },
+        });
+
+        console.log(`[EXECUTE API] DB Write Attempted - UserID: ${effectiveUserId}, ProblemID: ${problem.id}, SubmissionID: ${submissionRecord.id}, XP Before: ${userBefore?.xp || 0}, Streak Before: ${userBefore?.streakDays || 0}`);
+
         const updatedUser = await prisma.user.update({
           where: { id: effectiveUserId },
           data: {
@@ -96,6 +103,8 @@ export async function POST(req: Request) {
 
         const streakDays = await calculateAndUpdateStreak(effectiveUserId);
         updatedUserRecord = { ...updatedUser, streakDays };
+
+        console.log(`[EXECUTE API] DB Write Success - UserID: ${effectiveUserId}, XP After: ${updatedUserRecord.xp}, Streak After: ${updatedUserRecord.streakDays}`);
       }
 
       await syncSubmissionToPersistentStore(submissionRecord, updatedUserRecord || { id: effectiveUserId });
