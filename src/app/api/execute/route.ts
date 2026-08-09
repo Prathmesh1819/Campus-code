@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { executeJudge0Submission } from "@/lib/code-runner";
 import { calculateAndUpdateStreak } from "@/lib/streak";
+import { verifyAccessToken } from "@/lib/auth";
+import { cookies } from "next/headers";
 
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
@@ -30,10 +32,37 @@ export async function POST(req: Request) {
     let submissionRecord = null;
     let updatedUserRecord = null;
 
-    if (isSubmit && userId) {
+    // Resolve authenticated user ID from JWT token (cookie / Authorization header) or validated body userId
+    let effectiveUserId = userId;
+    try {
+      const cookieStore = await cookies();
+      const token = cookieStore.get("token")?.value;
+      const authHeader = req.headers.get("Authorization");
+      const bearerToken = authHeader?.startsWith("Bearer ") ? authHeader.substring(7) : null;
+      const activeToken = token || bearerToken;
+
+      if (activeToken) {
+        const decoded = verifyAccessToken(activeToken);
+        if (decoded?.userId) {
+          effectiveUserId = decoded.userId;
+        }
+      }
+    } catch {}
+
+    if (effectiveUserId) {
+      const existingUser = await prisma.user.findUnique({
+        where: { id: effectiveUserId },
+        select: { id: true },
+      });
+      if (!existingUser) {
+        effectiveUserId = null;
+      }
+    }
+
+    if (isSubmit && effectiveUserId) {
       submissionRecord = await prisma.submission.create({
         data: {
-          userId,
+          userId: effectiveUserId,
           problemId: problem.id,
           code,
           language,
@@ -50,7 +79,7 @@ export async function POST(req: Request) {
         const xpGain = problem.difficulty === "HARD" ? 150 : problem.difficulty === "MEDIUM" ? 100 : 50;
 
         const updatedUser = await prisma.user.update({
-          where: { id: userId },
+          where: { id: effectiveUserId },
           data: {
             xp: { increment: xpGain },
             coins: { increment: 20 },
@@ -64,7 +93,7 @@ export async function POST(req: Request) {
           },
         });
 
-        const streakDays = await calculateAndUpdateStreak(userId);
+        const streakDays = await calculateAndUpdateStreak(effectiveUserId);
         updatedUserRecord = { ...updatedUser, streakDays };
       }
     }
