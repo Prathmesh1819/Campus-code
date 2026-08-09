@@ -233,7 +233,7 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
 
           if (data.result.status === "ACCEPTED") {
             setShowSuccessBanner(true);
-            await refreshUserData();
+            await refreshUserData(data.user || undefined);
           }
         }
       }
