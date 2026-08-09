@@ -120,7 +120,17 @@ export async function POST(req: Request) {
       const existingUsers = await prisma.user.findMany();
       const existingUser = existingUsers.find((u) => u.email.toLowerCase() === cleanEmail);
       if (existingUser) {
-        return NextResponse.json({ error: "An account with this email already exists" }, { status: 400 });
+        return NextResponse.json({ error: "Email already registered" }, { status: 400 });
+      }
+
+      if (rollNumber && rollNumber.trim() !== "") {
+        const cleanRoll = rollNumber.trim().toUpperCase();
+        const existingRollUser = existingUsers.find(
+          (u) => u.rollNumber && u.rollNumber.trim().toUpperCase() === cleanRoll
+        );
+        if (existingRollUser) {
+          return NextResponse.json({ error: "Roll number already registered" }, { status: 400 });
+        }
       }
 
       const hashedPassword = await hashPassword(password);
