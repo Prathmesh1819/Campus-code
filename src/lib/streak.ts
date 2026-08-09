@@ -2,6 +2,10 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+function getISTDateStr(date: Date): string {
+  return new Date(date).toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
+}
+
 export async function calculateAndUpdateStreak(userId: string): Promise<number> {
   try {
     const submissions = await prisma.submission.findMany({
@@ -25,17 +29,17 @@ export async function calculateAndUpdateStreak(userId: string): Promise<number> 
       return 0;
     }
 
-    // Extract unique active dates in YYYY-MM-DD
+    // Extract unique active dates in YYYY-MM-DD (Asia/Kolkata timezone)
     const activeDates = new Set(
-      submissions.map((s) => new Date(s.createdAt).toISOString().split("T")[0])
+      submissions.map((s) => getISTDateStr(s.createdAt))
     );
 
     const now = new Date();
-    const todayStr = now.toISOString().split("T")[0];
+    const todayStr = getISTDateStr(now);
 
     const yesterday = new Date(now);
     yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayStr = yesterday.toISOString().split("T")[0];
+    const yesterdayStr = getISTDateStr(yesterday);
 
     // If user has NO submission today AND NO submission yesterday, streak is 0!
     if (!activeDates.has(todayStr) && !activeDates.has(yesterdayStr)) {
@@ -46,12 +50,12 @@ export async function calculateAndUpdateStreak(userId: string): Promise<number> 
       return 0;
     }
 
-    // Calculate consecutive active days going backwards
+    // Calculate consecutive active days going backwards in IST
     let streak = 0;
     let curr = activeDates.has(todayStr) ? new Date(now) : yesterday;
 
     while (true) {
-      const currStr = curr.toISOString().split("T")[0];
+      const currStr = getISTDateStr(curr);
       if (activeDates.has(currStr)) {
         streak++;
         curr.setDate(curr.getDate() - 1);
