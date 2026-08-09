@@ -98,8 +98,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return updated;
       });
     }
-    if (user?.id) {
-      await fetchLatestUserStats(user.id);
+    const targetId = updatedFields?.id || user?.id;
+    if (targetId) {
+      await fetchLatestUserStats(targetId);
     }
   };
 
