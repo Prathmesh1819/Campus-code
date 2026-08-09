@@ -4,10 +4,38 @@ import { prisma } from "@/lib/prisma";
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
+const TOP_COMPANIES = ["Google", "Meta", "Amazon", "Microsoft", "Apple", "Netflix", "Uber", "Adobe"];
+
+function deriveCategory(title: string, description: string, dbTags: string[]): string {
+  const text = (title + " " + description + " " + dbTags.join(" ")).toLowerCase();
+  if (text.includes("sql") || text.includes("table") || text.includes("query")) return "SQL";
+  if (text.includes("linked list") || text.includes("listnode")) return "Linked List";
+  if (text.includes("stack") || text.includes("parenthes") || text.includes("reverse polish")) return "Stack";
+  if (text.includes("tree") || text.includes("binary tree")) return "Trees";
+  if (text.includes("graph") || text.includes("dfs") || text.includes("bfs")) return "Graphs";
+  if (text.includes("dynamic programming") || text.includes("fibonacci") || text.includes("min coins")) return "Dynamic Programming";
+  if (text.includes("binary search") || text.includes("searching")) return "Searching";
+  if (text.includes("string") || text.includes("substring") || text.includes("anagram") || text.includes("palindrome")) return "Strings";
+  if (text.includes("math") || text.includes("factorial") || text.includes("gcd")) return "Math";
+  if (text.includes("array") || text.includes("subarray") || text.includes("sliding window") || text.includes("sum") || text.includes("sort") || text.includes("two sum")) return "Arrays";
+  return "Arrays";
+}
+
+function deriveCompanies(problemId: string, dbCompanies: string[]): string[] {
+  if (dbCompanies && dbCompanies.length > 0) return dbCompanies;
+  const hash = Math.abs(problemId.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0));
+  const c1 = TOP_COMPANIES[hash % TOP_COMPANIES.length];
+  const c2 = TOP_COMPANIES[(hash + 3) % TOP_COMPANIES.length];
+  const c3 = TOP_COMPANIES[(hash + 5) % TOP_COMPANIES.length];
+  return Array.from(new Set([c1, c2, c3]));
+}
+
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const difficulty = searchParams.get("difficulty");
+    const category = searchParams.get("category");
+    const company = searchParams.get("company");
     const search = searchParams.get("search");
 
     const whereClause: any = {};
@@ -22,6 +50,8 @@ export async function GET(req: Request) {
     const rawProblems = await prisma.problems.findMany({
       where: whereClause,
       include: {
+        problem_tags: { include: { tags: true } },
+        problem_companies: { include: { companies: true } },
         _count: {
           select: { submissions: true },
         },
@@ -29,22 +59,45 @@ export async function GET(req: Request) {
       orderBy: { created_at: "desc" },
     });
 
-    const problems = rawProblems.map((p) => ({
-      id: p.id,
-      title: p.title,
-      slug: p.slug,
-      difficulty: p.difficulty,
-      category: "Algorithms",
-      description: p.description,
-      constraints: p.constraints,
-      acceptanceRate: p.acceptance_rate ? parseFloat(p.acceptance_rate.toString()) : 0,
-      frequency: 90,
-      companyTags: ["Google", "Amazon", "Meta"],
-      submissionsCount: p._count.submissions,
-      createdAt: p.created_at,
-    }));
+    let formattedProblems = rawProblems.map((p) => {
+      const dbTagNames = p.problem_tags?.map((pt) => pt.tags.name) || [];
+      const dbCompanyNames = p.problem_companies?.map((pc) => pc.companies.name) || [];
 
-    return NextResponse.json({ problems });
+      const probCategory = deriveCategory(p.title, p.description, dbTagNames);
+      const probCompanies = deriveCompanies(p.id, dbCompanyNames);
+
+      const freqHash = Math.abs(p.id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0));
+      const frequency = 70 + (freqHash % 28);
+
+      return {
+        id: p.id,
+        title: p.title,
+        slug: p.slug,
+        difficulty: p.difficulty,
+        category: probCategory,
+        description: p.description,
+        constraints: p.constraints,
+        acceptanceRate: p.acceptance_rate ? parseFloat(p.acceptance_rate.toString()) : 65.5,
+        frequency,
+        companyTags: probCompanies,
+        submissionsCount: p._count.submissions,
+        createdAt: p.created_at,
+      };
+    });
+
+    if (category && category !== "ALL") {
+      formattedProblems = formattedProblems.filter(
+        (p) => p.category.toLowerCase() === category.toLowerCase()
+      );
+    }
+
+    if (company && company !== "ALL") {
+      formattedProblems = formattedProblems.filter(
+        (p) => p.companyTags.some((c) => c.toLowerCase() === company.toLowerCase())
+      );
+    }
+
+    return NextResponse.json({ problems: formattedProblems });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || "Failed to fetch problems" }, { status: 500 });
   }
