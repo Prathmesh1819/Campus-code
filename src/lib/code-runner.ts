@@ -28,7 +28,7 @@ export function getJudge0LanguageId(language: string): number {
       return 54; // C++ (GCC 9.2.0)
     case "python":
     case "python3":
-      return 71; // Python (3.8.1)
+      return 92; // Python (3.11.2) - natively supports modern type hints
     case "javascript":
     case "js":
       return 63; // JavaScript (Node.js 12.14.0)
@@ -226,14 +226,14 @@ function formatCppSubmissionCode(code: string, stdinInput: string): string {
     }
   });
 
-  const cppMain = `
-
-#include <iostream>
+  return `#include <iostream>
 #include <vector>
 #include <string>
 #include <unordered_map>
 #include <algorithm>
 using namespace std;
+
+${cleanCode}
 
 void printAns(int val) { cout << val << endl; }
 void printAns(double val) { cout << val << endl; }
@@ -262,8 +262,6 @@ int main() {
     return 0;
 }
 `;
-
-  return cleanCode + cppMain;
 }
 
 function formatPythonSubmissionCode(code: string, stdinInput: string): string {
@@ -360,14 +358,16 @@ function formatGoSubmissionCode(code: string, stdinInput: string): string {
     }
   });
 
-  const goMain = `
+  const cleanCode = trimmed.replace(/^package\s+main\s*/g, "");
 
-package main
+  return `package main
 
 import (
 	"encoding/json"
 	"fmt"
 )
+
+${cleanCode}
 
 func main() {
 	${varDecls.join("\n\t")}
@@ -380,8 +380,6 @@ func main() {
 	}
 }
 `;
-
-  return trimmed.startsWith("package main") ? trimmed + goMain : "package main\n\n" + trimmed + goMain;
 }
 
 function formatRustSubmissionCode(code: string, stdinInput: string): string {
@@ -416,7 +414,10 @@ function formatRustSubmissionCode(code: string, stdinInput: string): string {
     }
   });
 
-  const rustMain = `
+  return `
+struct Solution;
+
+${trimmed}
 
 fn main() {
     ${varDecls.join("\n    ")}
@@ -424,8 +425,6 @@ fn main() {
     println!("{:?}", ans);
 }
 `;
-
-  return trimmed + rustMain;
 }
 
 function formatKotlinSubmissionCode(code: string, stdinInput: string): string {
@@ -625,6 +624,19 @@ function deepEqual(a: any, b: any): boolean {
   return String(a).trim() === String(b).trim();
 }
 
+function safeBase64Encode(str: string): string {
+  return Buffer.from(str || "", "utf-8").toString("base64");
+}
+
+function safeBase64Decode(str?: string | null): string {
+  if (!str) return "";
+  try {
+    return Buffer.from(str, "base64").toString("utf-8");
+  } catch {
+    return str;
+  }
+}
+
 /**
  * Pure Judge0 CE Execution Engine.
  * Executes user code strictly through Judge0 CE API with zero caching.
@@ -692,7 +704,7 @@ export async function executeJudge0Submission(
     outputLogs.push(`🚀 [Test ${i + 1}/${testCases.length}] Input: ${tc.input} | Expected: ${tc.expectedOutput}`);
 
     try {
-      const response = await fetch(`${judge0Host}/submissions?base64_encoded=false&wait=true`, {
+      const response = await fetch(`${judge0Host}/submissions?base64_encoded=true&wait=true`, {
         method: "POST",
         cache: "no-store",
         headers: {
@@ -700,20 +712,22 @@ export async function executeJudge0Submission(
           "Cache-Control": "no-cache, no-store, must-revalidate",
         },
         body: JSON.stringify({
-          source_code: finalCode,
+          source_code: safeBase64Encode(finalCode),
           language_id: languageId,
-          stdin: tc.input,
+          stdin: safeBase64Encode(tc.input),
+          expected_output: safeBase64Encode(tc.expectedOutput),
           cpu_time_limit: 5.0,
           memory_limit: 128000,
         }),
       });
 
       const data = await response.json();
-      const stdout = (data.stdout || "").trim();
-      const stderr = (data.stderr || "").trim();
-      const compileOutput = (data.compile_output || "").trim();
-      const statusId = data.status?.id || 13;
-      const statusDesc = data.status?.description || "Unknown Status";
+      const stdout = safeBase64Decode(data.stdout).trim();
+      const stderr = safeBase64Decode(data.stderr).trim();
+      const compileOutput = safeBase64Decode(data.compile_output).trim();
+      const message = safeBase64Decode(data.message).trim();
+      const statusId = data.status?.id || (data.error ? 13 : 13);
+      const statusDesc = data.status?.description || data.error || "Unknown Status";
       const token = data.token || `sub_${Date.now()}_${i}`;
 
       const timeMs = Math.round(parseFloat(data.time || "0.015") * 1000);
@@ -721,7 +735,7 @@ export async function executeJudge0Submission(
       maxTimeMs = Math.max(maxTimeMs, timeMs);
       maxMemoryKb = Math.max(maxMemoryKb, memoryKb);
 
-      outputLogs.push(`  ├ Raw Judge0 JSON: ${JSON.stringify(data)}`);
+      outputLogs.push(`  ├ Raw Judge0 JSON: ${JSON.stringify({ ...data, stdout, stderr, compileOutput, message })}`);
       outputLogs.push(`  ├ Token: ${token} | Status: ${statusDesc} (ID: ${statusId}) | CPU Time: ${timeMs}ms | RAM: ${memoryKb}KB`);
 
       if (compileOutput) {
@@ -734,16 +748,14 @@ export async function executeJudge0Submission(
       actual = stdout;
 
       // Judge0 Status ID Mapping: 3=Accepted (Run Clean), 4=Wrong Answer, 5=Time Limit Exceeded, 6=Compilation Error, 7-12=Runtime Error
-      if (statusId === 3) {
+      if (statusId === 3 || statusId === 4) {
         passed = compareJudgeOutputs(actual, tc.expectedOutput);
-        if (passed) passedCount++;
-        else {
+        if (passed) {
+          passedCount++;
+        } else {
           if (overallStatus === "ACCEPTED") overallStatus = "WRONG_ANSWER";
+          if (!actual) actual = "Wrong Output";
         }
-      } else if (statusId === 4) {
-        passed = false;
-        if (overallStatus === "ACCEPTED") overallStatus = "WRONG_ANSWER";
-        actual = stdout || "Wrong Output";
       } else if (statusId === 5) {
         passed = false;
         if (overallStatus === "ACCEPTED") overallStatus = "TIME_LIMIT_EXCEEDED";
