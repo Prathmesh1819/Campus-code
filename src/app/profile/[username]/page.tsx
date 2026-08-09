@@ -45,13 +45,23 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
 
   useEffect(() => {
     fetchProfileData();
-  }, []);
+  }, [params, currentUser?.id]);
 
   const fetchProfileData = async () => {
     setLoading(true);
     try {
       const resolvedParams = await params;
-      const targetParam = resolvedParams.username;
+      let targetParam = resolvedParams.username;
+
+      if (targetParam === "user") {
+        if (currentUser?.id) {
+          targetParam = currentUser.id;
+        } else {
+          setProfileUser(null);
+          setLoading(false);
+          return;
+        }
+      }
 
       const res = await fetch(`/api/auth?username=${encodeURIComponent(targetParam)}`);
       const data = await res.json();

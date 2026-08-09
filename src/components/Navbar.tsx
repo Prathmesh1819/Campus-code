@@ -67,15 +67,17 @@ export function Navbar({ onToggleSidebar }: NavbarProps) {
     setAuthModalOpen(true);
   };
 
-  const profileUsername = user?.name ? user.name.toLowerCase().replace(/\s+/g, "") : "user";
+  const profileUsername = user?.id || (user?.name ? user.name.toLowerCase().replace(/\s+/g, "") : null);
 
   const handleSocialClick = (platform: "github" | "linkedin") => {
     setProfileDropdownOpen(false);
     if (platform === "github") {
-      const url = user?.githubUrl || `https://github.com/${profileUsername}`;
+      const fallbackName = user?.name ? user.name.toLowerCase().replace(/\s+/g, "") : "user";
+      const url = user?.githubUrl || `https://github.com/${fallbackName}`;
       window.open(url, "_blank");
     } else if (platform === "linkedin") {
-      const url = user?.linkedinUrl || `https://linkedin.com/in/${profileUsername}`;
+      const fallbackName = user?.name ? user.name.toLowerCase().replace(/\s+/g, "") : "user";
+      const url = user?.linkedinUrl || `https://linkedin.com/in/${fallbackName}`;
       window.open(url, "_blank");
     }
   };
@@ -204,17 +206,19 @@ export function Navbar({ onToggleSidebar }: NavbarProps) {
                     </div>
 
                     {/* View My Profile */}
-                    <Link
-                      href={`/profile/${user?.id || profileUsername}`}
-                      onClick={() => setProfileDropdownOpen(false)}
-                      className="flex items-center justify-between px-3 py-2.5 text-xs font-bold text-gray-200 hover:text-white hover:bg-purple-600/20 rounded-xl transition-all border border-transparent hover:border-purple-500/30"
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <User className="w-4 h-4 text-purple-400" />
-                        <span>View My Profile</span>
-                      </div>
-                      <ChevronDown className="w-3.5 h-3.5 -rotate-90 text-gray-500" />
-                    </Link>
+                    {profileUsername && (
+                      <Link
+                        href={`/profile/${profileUsername}`}
+                        onClick={() => setProfileDropdownOpen(false)}
+                        className="flex items-center justify-between px-3 py-2.5 text-xs font-bold text-gray-200 hover:text-white hover:bg-purple-600/20 rounded-xl transition-all border border-transparent hover:border-purple-500/30"
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <User className="w-4 h-4 text-purple-400" />
+                          <span>View My Profile</span>
+                        </div>
+                        <ChevronDown className="w-3.5 h-3.5 -rotate-90 text-gray-500" />
+                      </Link>
+                    )}
 
                     {/* Dynamic GitHub Profile Action */}
                     <button
