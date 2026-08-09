@@ -63,7 +63,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
         }
       }
 
-      const res = await fetch(`/api/auth?username=${encodeURIComponent(targetParam)}`);
+      const res = await fetch(`/api/auth?userId=${encodeURIComponent(targetParam)}&username=${encodeURIComponent(targetParam)}`);
       const data = await res.json();
       if (data.user) {
         setProfileUser(data.user);

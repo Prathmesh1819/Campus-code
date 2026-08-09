@@ -90,15 +90,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const refreshUserData = async (updatedFields?: Partial<User>) => {
+    let activeId = updatedFields?.id || user?.id;
     if (updatedFields) {
       setUser((prev) => {
-        if (!prev) return null;
-        const updated = { ...prev, ...updatedFields };
+        const base = prev || (updatedFields.id ? (updatedFields as User) : null);
+        if (!base) return null;
+        const updated = { ...base, ...updatedFields };
+        activeId = updated.id;
         localStorage.setItem("campuscode_user", JSON.stringify(updated));
         return updated;
       });
     }
-    const targetId = updatedFields?.id || user?.id;
+    const targetId = updatedFields?.id || activeId || user?.id;
     if (targetId) {
       await fetchLatestUserStats(targetId);
     }
