@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { syncPersistentUsersToPrisma } from "@/lib/user-sync";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export async function GET(req: Request) {
   try {
+    await syncPersistentUsersToPrisma();
     const { searchParams } = new URL(req.url);
     const className = searchParams.get("className") || "TY BSc CS";
 

@@ -2,15 +2,17 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { hashPassword, comparePassword, generateAccessToken, generateRefreshToken } from "@/lib/auth";
 import { calculateAndUpdateStreak } from "@/lib/streak";
+import { syncUserToPersistentStore, syncPersistentUsersToPrisma } from "@/lib/user-sync";
 
 export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export const fetchCache = "force-no-store";
 
 // Temporary in-memory OTP store for password resets
 const otpStore = new Map<string, string>();
 
 export async function GET(req: Request) {
   try {
+    await syncPersistentUsersToPrisma();
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get("userId");
     const username = searchParams.get("username");
@@ -131,6 +133,8 @@ export async function POST(req: Request) {
           avatar: avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80",
         },
       });
+
+      await syncUserToPersistentStore(user);
 
       const token = generateAccessToken({ userId: user.id, email: user.email, role: user.role, name: user.name });
       const refreshToken = generateRefreshToken({ userId: user.id, email: user.email, role: user.role, name: user.name });

@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { syncPersistentUsersToPrisma } from "@/lib/user-sync";
 
 export async function GET(req: Request) {
   try {
+    await syncPersistentUsersToPrisma();
     const { searchParams } = new URL(req.url);
     const scope = searchParams.get("scope") || "GLOBAL"; // GLOBAL, COLLEGE, DEPARTMENT, CLASS
     const period = searchParams.get("period") || "ALL_TIME"; // WEEKLY, MONTHLY, ALL_TIME
