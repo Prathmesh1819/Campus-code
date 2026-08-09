@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Sidebar } from "@/components/Sidebar";
 import Link from "next/link";
-import { subscribeToLeaderboardRealtime } from "@/lib/supabase/client";
 import {
   Trophy,
   Crown,
@@ -29,15 +28,6 @@ export default function LeaderboardPage() {
 
   useEffect(() => {
     fetchLeaderboard();
-
-    // Enable Supabase Realtime for Leaderboard
-    const unsubscribe = subscribeToLeaderboardRealtime(() => {
-      fetchLeaderboard();
-    });
-
-    return () => {
-      unsubscribe();
-    };
   }, [scope, period]);
 
   const fetchLeaderboard = async () => {

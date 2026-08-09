@@ -26,7 +26,6 @@ import {
   ChevronDown,
   Layers,
   FileCode,
-  Bug,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -43,13 +42,13 @@ SELECT * FROM Employee;`,
  * @return {number[]}
  */
 function solve(nums, target) {
-    // Write your solution algorithm here
+    // TODO: Write your solution algorithm here
     
 }`,
 
   python: `# Python 3 Starter Solution
 def solve(nums, target):
-    # Write your solution algorithm here
+    # TODO: Write your solution algorithm here
     pass
 `,
 
@@ -58,7 +57,7 @@ import java.util.*;
 
 public class Solution {
     public int[] solve(int[] nums, int target) {
-        // Write your solution algorithm here
+        // TODO: Write your solution algorithm here
         return new int[]{};
     }
 }
@@ -71,7 +70,7 @@ using namespace std;
 class Solution {
 public:
     vector<int> solve(vector<int>& nums, int target) {
-        // Write your solution algorithm here
+        // TODO: Write your solution algorithm here
         return {};
     }
 };
@@ -81,7 +80,7 @@ public:
 #include <stdio.h>
 
 void solve(int nums[], int numsSize, int target) {
-    // Write your solution algorithm in C
+    // TODO: Write your solution algorithm in C
 }
 `,
 
@@ -124,7 +123,7 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
   const [submissionsHistory, setSubmissionsHistory] = useState<any[]>([]);
 
   // LeetCode-Style Bottom Panel state
-  const [bottomTab, setBottomTab] = useState<"testcase" | "result" | "debug">("testcase");
+  const [bottomTab, setBottomTab] = useState<"testcase" | "result">("testcase");
   const [selectedCaseIdx, setSelectedCaseIdx] = useState(0);
   const [isBottomPanelOpen, setIsBottomPanelOpen] = useState(true);
 
@@ -500,7 +499,7 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
           {/* LEETCODE-STYLE INTERACTIVE TESTCASE & TEST RESULT BOTTOM PANEL */}
           <div
             className={`border-t border-slate-800 bg-[#090d16] flex flex-col transition-all duration-300 shrink-0 ${
-              isBottomPanelOpen ? "h-64 sm:h-72" : "h-10"
+              isBottomPanelOpen ? "h-56 sm:h-64" : "h-10"
             }`}
           >
             {/* LeetCode Bottom Tab Bar */}
@@ -541,21 +540,6 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
                       }`}
                     />
                   )}
-                </button>
-
-                <button
-                  onClick={() => {
-                    setBottomTab("debug");
-                    setIsBottomPanelOpen(true);
-                  }}
-                  className={`px-3 py-1.5 text-xs font-bold rounded-t-lg transition-all flex items-center gap-1.5 ${
-                    bottomTab === "debug"
-                      ? "bg-[#090d16] text-amber-400 border-t-2 border-amber-500"
-                      : "text-gray-400 hover:text-white"
-                  }`}
-                >
-                  <Bug className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Debug Mode</span>
                 </button>
               </div>
 
@@ -710,46 +694,6 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
                             )}
                           </div>
                         )}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {bottomTab === "debug" && (
-                  <div className="space-y-4 font-mono text-xs">
-                    {!executionResult?.debugInfo ? (
-                      <div className="text-gray-500 text-center py-10">Run code to inspect complete Judge0 debug diagnostics.</div>
-                    ) : (
-                      <div className="space-y-4">
-                        <div>
-                          <div className="text-amber-400 font-bold mb-1">1. Editor Code</div>
-                          <pre className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-gray-200">{executionResult.debugInfo.editorCode}</pre>
-                        </div>
-
-                        <div>
-                          <div className="text-amber-400 font-bold mb-1">2. Final Generated Source (Length: {executionResult.debugInfo.sourceLength} chars | SHA256: {executionResult.debugInfo.sha256})</div>
-                          <pre className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-gray-200 whitespace-pre-wrap">{executionResult.debugInfo.finalGeneratedSource}</pre>
-                        </div>
-
-                        <div>
-                          <div className="text-amber-400 font-bold mb-1">3. Judge0 Request Payload</div>
-                          <pre className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-cyan-300 whitespace-pre-wrap">{JSON.stringify(executionResult.debugInfo.judge0RequestPayload, null, 2)}</pre>
-                        </div>
-
-                        <div>
-                          <div className="text-amber-400 font-bold mb-1">4. Raw Judge0 Response JSON</div>
-                          <pre className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-emerald-300 whitespace-pre-wrap">{JSON.stringify(executionResult.debugInfo.rawJudge0ResponseJSON, null, 2)}</pre>
-                        </div>
-
-                        <div>
-                          <div className="text-amber-400 font-bold mb-1">5. Output Comparison</div>
-                          <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-purple-300">{executionResult.debugInfo.outputComparison}</div>
-                        </div>
-
-                        <div>
-                          <div className="text-amber-400 font-bold mb-1">6. Final Verdict</div>
-                          <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-white font-bold">{executionResult.debugInfo.verdict}</div>
-                        </div>
                       </div>
                     )}
                   </div>

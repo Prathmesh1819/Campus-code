@@ -1,118 +1,3 @@
-import crypto from "crypto";
-import fs from "fs";
-import path from "path";
-
-export interface ParameterMetadata {
-  name: string;
-  type: "int" | "long" | "bool" | "double" | "string" | "char" | "int[]" | "long[]" | "string[]" | "ListNode" | "TreeNode";
-}
-
-export interface ProblemMetadata {
-  id: string;
-  title: string;
-  functionName: string;
-  returnType: "int" | "long" | "bool" | "double" | "string" | "char" | "int[]" | "long[]" | "string[]" | "ListNode" | "TreeNode" | "void";
-  parameters: ParameterMetadata[];
-}
-
-/**
- * Problem Metadata Registry (Metadata-Driven Architecture)
- */
-export const PROBLEM_METADATA_REGISTRY: Record<string, ProblemMetadata> = {
-  "two-sum-target-pair": {
-    id: "two-sum-target-pair",
-    title: "Two Sum Target Pair",
-    functionName: "twoSum",
-    returnType: "int[]",
-    parameters: [
-      { name: "nums", type: "int[]" },
-      { name: "target", type: "int" },
-    ],
-  },
-  "two-sum": {
-    id: "two-sum",
-    title: "Two Sum",
-    functionName: "twoSum",
-    returnType: "int[]",
-    parameters: [
-      { name: "nums", type: "int[]" },
-      { name: "target", type: "int" },
-    ],
-  },
-  "valid-palindrome": {
-    id: "valid-palindrome",
-    title: "Valid Palindrome",
-    functionName: "isPalindrome",
-    returnType: "bool",
-    parameters: [
-      { name: "s", type: "string" },
-    ],
-  },
-  "best-time-to-buy-and-sell-stock": {
-    id: "best-time-to-buy-and-sell-stock",
-    title: "Best Time to Buy and Sell Stock",
-    functionName: "maxProfit",
-    returnType: "int",
-    parameters: [
-      { name: "prices", type: "int[]" },
-    ],
-  },
-  "climbing-stairs": {
-    id: "climbing-stairs",
-    title: "Climbing Stairs",
-    functionName: "climbStairs",
-    returnType: "int",
-    parameters: [
-      { name: "n", type: "int" },
-    ],
-  },
-};
-
-export function resolveProblemMetadata(problemId?: string, problemTitle?: string): ProblemMetadata {
-  if (problemId) {
-    const cleanId = problemId.toLowerCase().replace(/[^a-z0-9-]+/g, "-");
-    const possibleDiskPaths = [
-      path.join(process.cwd(), "src", "data", "problems", problemId, "metadata.json"),
-      path.join(process.cwd(), "src", "data", "problems", cleanId, "metadata.json"),
-    ];
-
-    for (const diskPath of possibleDiskPaths) {
-      if (fs.existsSync(diskPath)) {
-        try {
-          const content = fs.readFileSync(diskPath, "utf8");
-          return JSON.parse(content) as ProblemMetadata;
-        } catch (e) {
-          // ignore error
-        }
-      }
-    }
-
-    if (PROBLEM_METADATA_REGISTRY[problemId]) {
-      return PROBLEM_METADATA_REGISTRY[problemId];
-    }
-  }
-
-  const slug = (problemId || "").toLowerCase();
-  if (slug.includes("palindrome")) {
-    return PROBLEM_METADATA_REGISTRY["valid-palindrome"];
-  }
-  if (slug.includes("stock") || slug.includes("profit")) {
-    return PROBLEM_METADATA_REGISTRY["best-time-to-buy-and-sell-stock"];
-  }
-
-  // Fallback metadata schema default
-  return {
-    id: problemId || "two-sum-target-pair",
-    title: problemTitle || "Two Sum Target Pair",
-    functionName: "twoSum",
-    returnType: "int[]",
-    parameters: [
-      { name: "nums", type: "int[]" },
-      { name: "target", type: "int" },
-    ],
-  };
-}
-
 export interface ExecutionResult {
   status: "ACCEPTED" | "WRONG_ANSWER" | "TIME_LIMIT_EXCEEDED" | "RUNTIME_ERROR" | "COMPILATION_ERROR";
   executionTimeMs: number;
@@ -127,16 +12,6 @@ export interface ExecutionResult {
     actual: string;
     passed: boolean;
   }>;
-  debugInfo?: {
-    editorCode: string;
-    finalGeneratedSource: string;
-    sha256: string;
-    sourceLength: number;
-    judge0RequestPayload: any;
-    rawJudge0ResponseJSON: any;
-    outputComparison: string;
-    verdict: string;
-  };
 }
 
 /**
@@ -207,27 +82,23 @@ function splitInputArgs(str: string): string[] {
   return args;
 }
 
-function toSnakeCase(str: string): string {
-  return str.replace(/([a-z0-9])([A-Z])/g, "$1_$2").toLowerCase();
-}
-
 /* ========================================================================== */
-/* METADATA-DRIVEN LANGUAGE WRAPPER GENERATORS                               */
+/* DEDICATED LANGUAGE WRAPPER GENERATORS                                      */
 /* ========================================================================== */
 
-function formatJavaSubmissionCode(code: string, stdinInput: string, metadata: ProblemMetadata): string {
+function formatJavaSubmissionCode(code: string, stdinInput: string): string {
   const trimmed = code.trim();
   if (/public\s+static\s+void\s+main\s*\(/i.test(trimmed)) return trimmed;
 
   let cleanCode = trimmed.replace(/public\s+class\s+Solution/g, "class Solution");
-  const methodName = metadata.functionName;
+  const methodMatch = cleanCode.match(/public\s+([\w<>\[\]]+)\s+(\w+)\s*\(([^)]*)\)/);
+  const methodName = methodMatch ? methodMatch[2] : "twoSum";
 
   const rawArgs = splitInputArgs(stdinInput);
   const javaVarDecls: string[] = [];
   const callArgs: string[] = [];
 
   rawArgs.forEach((argStr, idx) => {
-    const paramMeta = metadata.parameters[idx] || { name: `arg${idx}`, type: "string" };
     const varName = `arg${idx}`;
     const trimmedArg = argStr.trim();
     callArgs.push(varName);
@@ -238,7 +109,7 @@ function formatJavaSubmissionCode(code: string, stdinInput: string, metadata: Pr
         if (parsed.length > 0 && Array.isArray(parsed[0])) {
           const rowStrings = parsed.map((row) => `new int[]{${row.join(", ")}}`).join(", ");
           javaVarDecls.push(`int[][] ${varName} = new int[][]{${rowStrings}};`);
-        } else if (paramMeta.type === "ListNode") {
+        } else if (methodName === "mergeTwoLists" || methodName === "deleteNode" || methodName === "hasCycle") {
           javaVarDecls.push(`ListNode ${varName} = arrayToListNode(new int[]{${parsed.join(", ")}});`);
         } else if (typeof parsed[0] === "string") {
           const strElements = parsed.map((s) => `"${s.replace(/"/g, '\\"')}"`).join(", ");
@@ -257,7 +128,7 @@ function formatJavaSubmissionCode(code: string, stdinInput: string, metadata: Pr
         javaVarDecls.push(`String ${varName} = "${trimmedArg.replace(/"/g, '\\"')}";`);
       }
     } catch {
-      javaVarDecls.push(`String ${varName} = "${trimmedArg.replace(/^"|"$/g, '').replace(/"/g, '\\"')}";`);
+      javaVarDecls.push(`String ${varName} = "${trimmedArg.replace(/"/g, '\\"')}";`);
     }
   });
 
@@ -311,11 +182,14 @@ public class Main {
   return cleanCode + javaMainDriver;
 }
 
-function formatCppSubmissionCode(code: string, stdinInput: string, metadata: ProblemMetadata): string {
+function formatCppSubmissionCode(code: string, stdinInput: string): string {
   const trimmed = code.trim();
   if (/int\s+main\s*\(/i.test(trimmed)) return trimmed;
 
-  const methodName = metadata.functionName;
+  let cleanCode = trimmed;
+  const methodMatch = cleanCode.match(/public:\s*[\w<>\[\]\*]+\s+(\w+)\s*\(([^)]*)\)/) || cleanCode.match(/[\w<>\[\]\*]+\s+(\w+)\s*\(([^)]*)\)/);
+  const methodName = methodMatch ? methodMatch[1] : "twoSum";
+
   const rawArgs = splitInputArgs(stdinInput);
   const varDecls: string[] = [];
   const callArgs: string[] = [];
@@ -348,7 +222,7 @@ function formatCppSubmissionCode(code: string, stdinInput: string, metadata: Pro
         varDecls.push(`string ${varName} = "${trimmedArg.replace(/"/g, '\\"')}";`);
       }
     } catch {
-      varDecls.push(`string ${varName} = "${trimmedArg.replace(/^"|"$/g, '').replace(/"/g, '\\"')}";`);
+      varDecls.push(`string ${varName} = "${trimmedArg.replace(/"/g, '\\"')}";`);
     }
   });
 
@@ -358,13 +232,10 @@ function formatCppSubmissionCode(code: string, stdinInput: string, metadata: Pro
 #include <vector>
 #include <string>
 #include <unordered_map>
-#include <map>
 #include <algorithm>
-#include <cmath>
 using namespace std;
 
 void printAns(int val) { cout << val << endl; }
-void printAns(long long val) { cout << val << endl; }
 void printAns(double val) { cout << val << endl; }
 void printAns(bool val) { cout << (val ? "true" : "false") << endl; }
 void printAns(const string& val) { cout << val << endl; }
@@ -392,75 +263,78 @@ int main() {
 }
 `;
 
-  return trimmed + cppMain;
+  return cleanCode + cppMain;
 }
 
-function formatPythonSubmissionCode(code: string, stdinInput: string, metadata: ProblemMetadata): string {
+function formatPythonSubmissionCode(code: string, stdinInput: string): string {
   const trimmed = code.trim();
   if (trimmed.includes("if __name__ ==")) return trimmed;
 
-  const methodName = metadata.functionName;
+  const methodMatch = trimmed.match(/def\s+(\w+)\s*\(/);
+  const methodName = methodMatch ? methodMatch[1] : "twoSum";
+
   const rawArgs = splitInputArgs(stdinInput);
-  const callArgs = rawArgs.map((a) => a.trim());
+  const callArgs: string[] = [];
+
+  rawArgs.forEach((argStr) => {
+    callArgs.push(argStr.trim());
+  });
 
   const pyMain = `
 
 import json
 
 if __name__ == "__main__":
-    if 'Solution' in globals():
-        sol = Solution()
-        if hasattr(sol, '${methodName}'):
-            ans = getattr(sol, '${methodName}')(${callArgs.join(", ")})
-            if isinstance(ans, (list, dict)):
-                print(json.dumps(ans))
-            elif isinstance(ans, bool):
-                print(str(ans).lower())
-            else:
-                print(ans)
-    elif '${methodName}' in globals():
-        ans = globals()['${methodName}'](${callArgs.join(", ")})
-        if isinstance(ans, (list, dict)):
-            print(json.dumps(ans))
-        elif isinstance(ans, bool):
-            print(str(ans).lower())
-        else:
-            print(ans)
+    sol = Solution()
+    ans = sol.${methodName}(${callArgs.join(", ")})
+    if isinstance(ans, (list, dict)):
+        print(json.dumps(ans))
+    elif isinstance(ans, bool):
+        print(str(ans).lower())
+    else:
+        print(ans)
 `;
 
   return trimmed + pyMain;
 }
 
-function formatJSSubmissionCode(code: string, stdinInput: string, metadata: ProblemMetadata): string {
+function formatJSSubmissionCode(code: string, stdinInput: string): string {
   const trimmed = code.trim();
   if (trimmed.includes("console.log")) return trimmed;
 
-  const methodName = metadata.functionName;
+  const methodMatch = trimmed.match(/(?:function|const|let|var)\s+(\w+)\s*\(/) || trimmed.match(/(\w+)\s*\([^)]*\)\s*\{/);
+  const methodName = methodMatch ? methodMatch[1] : "twoSum";
+
   const rawArgs = splitInputArgs(stdinInput);
   const callArgs = rawArgs.map((a) => a.trim());
 
   const jsMain = `
 
-if (typeof Solution === 'function') {
-  const solObj = new Solution();
-  if (typeof solObj.${methodName} === 'function') {
-    const ans = solObj.${methodName}(${callArgs.join(", ")});
+try {
+  let solObj = null;
+  if (typeof Solution === 'function') {
+    solObj = new Solution();
+  }
+  let fn = solObj && typeof solObj.${methodName} === 'function' ? solObj.${methodName}.bind(solObj) : (typeof ${methodName} === 'function' ? ${methodName} : null);
+  if (fn) {
+    const ans = fn(${callArgs.join(", ")});
     console.log(typeof ans === 'object' ? JSON.stringify(ans) : ans);
   }
-} else if (typeof ${methodName} === 'function') {
-  const ans = ${methodName}(${callArgs.join(", ")});
-  console.log(typeof ans === 'object' ? JSON.stringify(ans) : ans);
+} catch (e) {
+  console.error(e.message);
 }
 `;
 
   return trimmed + jsMain;
 }
 
-function formatGoSubmissionCode(code: string, stdinInput: string, metadata: ProblemMetadata): string {
-  let trimmed = code.trim();
+function formatGoSubmissionCode(code: string, stdinInput: string): string {
+  const trimmed = code.trim();
   if (/func\s+main\s*\(/i.test(trimmed)) return trimmed;
 
-  const methodName = metadata.functionName;
+  const methodMatch = trimmed.match(/func\s+(\w+)\s*\(/);
+  const methodName = methodMatch ? methodMatch[1] : "twoSum";
+
   const rawArgs = splitInputArgs(stdinInput);
   const varDecls: string[] = [];
   const callArgs: string[] = [];
@@ -488,6 +362,13 @@ function formatGoSubmissionCode(code: string, stdinInput: string, metadata: Prob
 
   const goMain = `
 
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
 func main() {
 	${varDecls.join("\n\t")}
 	ans := ${methodName}(${callArgs.join(", ")})
@@ -500,31 +381,16 @@ func main() {
 }
 `;
 
-  let cleanUserCode = trimmed;
-  if (cleanUserCode.startsWith("package main")) {
-    cleanUserCode = cleanUserCode.replace(/^package\s+main\s*/, "").trim();
-  }
-
-  return `package main
-
-import (
-	"encoding/json"
-	"fmt"
-	"sort"
-	"strings"
-)
-
-${cleanUserCode}
-
-${goMain}`;
+  return trimmed.startsWith("package main") ? trimmed + goMain : "package main\n\n" + trimmed + goMain;
 }
 
-function formatRustSubmissionCode(code: string, stdinInput: string, metadata: ProblemMetadata): string {
+function formatRustSubmissionCode(code: string, stdinInput: string): string {
   const trimmed = code.trim();
   if (/fn\s+main\s*\(/i.test(trimmed)) return trimmed;
 
-  const methodName = metadata.functionName;
-  const snakeMethodName = toSnakeCase(methodName);
+  const methodMatch = trimmed.match(/(?:pub\s+)?fn\s+(\w+)\s*\(/);
+  const methodName = methodMatch ? methodMatch[1] : "two_sum";
+
   const rawArgs = splitInputArgs(stdinInput);
   const varDecls: string[] = [];
   const callArgs: string[] = [];
@@ -554,25 +420,21 @@ function formatRustSubmissionCode(code: string, stdinInput: string, metadata: Pr
 
 fn main() {
     ${varDecls.join("\n    ")}
-    let ans = Solution::${snakeMethodName}(${callArgs.join(", ")});
+    let ans = Solution::${methodName}(${callArgs.join(", ")});
     println!("{:?}", ans);
 }
 `;
 
-  return `use std::collections::HashMap;
-
-struct Solution;
-
-${trimmed}
-
-${rustMain}`;
+  return trimmed + rustMain;
 }
 
-function formatKotlinSubmissionCode(code: string, stdinInput: string, metadata: ProblemMetadata): string {
+function formatKotlinSubmissionCode(code: string, stdinInput: string): string {
   const trimmed = code.trim();
   if (/fun\s+main\s*\(/i.test(trimmed)) return trimmed;
 
-  const methodName = metadata.functionName;
+  const methodMatch = trimmed.match(/fun\s+(\w+)\s*\(/);
+  const methodName = methodMatch ? methodMatch[1] : "twoSum";
+
   const rawArgs = splitInputArgs(stdinInput);
   const varDecls: string[] = [];
   const callArgs: string[] = [];
@@ -615,19 +477,18 @@ fun main() {
   return trimmed + ktMain;
 }
 
-function formatCSubmissionCode(code: string, stdinInput: string, metadata: ProblemMetadata): string {
+function formatCSubmissionCode(code: string, stdinInput: string): string {
   const trimmed = code.trim();
   if (/int\s+main\s*\(/i.test(trimmed)) return trimmed;
 
-  const methodName = metadata.functionName;
-  const returnType = metadata.returnType;
+  const methodMatch = trimmed.match(/[\w\*]+\s+(\w+)\s*\(([^)]*)\)/);
+  const methodName = methodMatch ? methodMatch[1] : "twoSum";
 
   const rawArgs = splitInputArgs(stdinInput);
   const varDecls: string[] = [];
   const callArgs: string[] = [];
 
   rawArgs.forEach((argStr, idx) => {
-    const paramMeta = metadata.parameters[idx] || { name: `arg${idx}`, type: "string" };
     const varName = `arg${idx}`;
     const trimmedArg = argStr.trim();
 
@@ -639,118 +500,64 @@ function formatCSubmissionCode(code: string, stdinInput: string, metadata: Probl
         callArgs.push(varName);
         callArgs.push(`${varName}Size`);
       } else if (typeof parsed === "number") {
-        if (Number.isInteger(parsed)) varDecls.push(`int ${varName} = ${parsed};`);
-        else varDecls.push(`double ${varName} = ${parsed};`);
-        callArgs.push(varName);
-      } else if (typeof parsed === "boolean") {
-        varDecls.push(`bool ${varName} = ${parsed ? "true" : "false"};`);
-        callArgs.push(varName);
-      } else if (typeof parsed === "string") {
-        varDecls.push(`char* ${varName} = "${parsed.replace(/"/g, '\\"')}";`);
+        varDecls.push(`int ${varName} = ${parsed};`);
         callArgs.push(varName);
       } else {
         varDecls.push(`int ${varName} = ${trimmedArg};`);
         callArgs.push(varName);
       }
     } catch {
-      const cleanStr = trimmedArg.replace(/^"|"$/g, '').replace(/"/g, '\\"');
-      varDecls.push(`char* ${varName} = "${cleanStr}";`);
+      varDecls.push(`char ${varName}[] = "${trimmedArg.replace(/"/g, '\\"')}";`);
       callArgs.push(varName);
     }
   });
-
-  let driverBody = "";
-
-  if (returnType === "bool") {
-    driverBody = `
-    bool ans = ${methodName}(${callArgs.join(", ")});
-    printf(ans ? "true\\n" : "false\\n");
-`;
-  } else if (returnType === "int" || returnType === "long") {
-    driverBody = `
-    int ans = ${methodName}(${callArgs.join(", ")});
-    printf("%d\\n", ans);
-`;
-  } else if (returnType === "double") {
-    driverBody = `
-    double ans = ${methodName}(${callArgs.join(", ")});
-    printf("%f\\n", ans);
-`;
-  } else if (returnType === "string" || returnType === "char") {
-    driverBody = `
-    char* ans = ${methodName}(${callArgs.join(", ")});
-    if (ans == NULL) printf("NULL\\n");
-    else printf("%s\\n", ans);
-`;
-  } else if (returnType === "int[]" || returnType === "long[]") {
-    driverBody = `
-    int returnSize = 0;
-    int* ans = ${methodName}(${callArgs.join(", ")}, &returnSize);
-    fprintf(stderr, "[C Driver Debug] Pointer Returned: %p | returnSize: %d\\n", (void*)ans, returnSize);
-    if (ans == NULL) {
-        printf("NULL\\n");
-        return 0;
-    }
-    int printCount = returnSize > 0 ? returnSize : 2;
-    printf("[");
-    for (int i = 0; i < printCount; i++) {
-        printf("%d%s", ans[i], (i + 1 < printCount) ? "," : "");
-    }
-    printf("]\\n");
-    free(ans);
-`;
-  } else {
-    driverBody = `
-    int ans = ${methodName}(${callArgs.join(", ")});
-    printf("%d\\n", ans);
-`;
-  }
 
   const cMain = `
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 
 int main() {
     ${varDecls.join("\n    ")}
-    ${driverBody.trim()}
+    int returnSize = 0;
+    int* ans = ${methodName}(${callArgs.join(", ")}, &returnSize);
+    if (ans != NULL && returnSize > 0) {
+        printf("[");
+        for (int i = 0; i < returnSize; i++) {
+            printf("%d%s", ans[i], (i + 1 < returnSize) ? "," : "");
+        }
+        printf("]\\n");
+    }
     return 0;
 }
 `;
 
-  return trimmed + "\n" + cMain;
+  return trimmed + cMain;
 }
 
-export function formatSubmissionCode(
-  code: string,
-  language: string,
-  stdinInput: string,
-  problemMetadata?: ProblemMetadata
-): string {
-  const meta = problemMetadata || resolveProblemMetadata();
+export function formatSubmissionCode(code: string, language: string, stdinInput: string): string {
   const lang = language.toLowerCase();
   switch (lang) {
     case "java":
-      return formatJavaSubmissionCode(code, stdinInput, meta);
+      return formatJavaSubmissionCode(code, stdinInput);
     case "c":
-      return formatCSubmissionCode(code, stdinInput, meta);
+      return formatCSubmissionCode(code, stdinInput);
     case "cpp":
     case "c++":
-      return formatCppSubmissionCode(code, stdinInput, meta);
+      return formatCppSubmissionCode(code, stdinInput);
     case "python":
     case "python3":
-      return formatPythonSubmissionCode(code, stdinInput, meta);
+      return formatPythonSubmissionCode(code, stdinInput);
     case "javascript":
     case "js":
-      return formatJSSubmissionCode(code, stdinInput, meta);
+      return formatJSSubmissionCode(code, stdinInput);
     case "go":
-      return formatGoSubmissionCode(code, stdinInput, meta);
+      return formatGoSubmissionCode(code, stdinInput);
     case "rust":
-      return formatRustSubmissionCode(code, stdinInput, meta);
+      return formatRustSubmissionCode(code, stdinInput);
     case "kotlin":
-      return formatKotlinSubmissionCode(code, stdinInput, meta);
+      return formatKotlinSubmissionCode(code, stdinInput);
     default:
       return code;
   }
@@ -760,22 +567,26 @@ export function formatSubmissionCode(
  * LeetCode-Grade Deep Output Normalizer & Evaluator
  */
 function compareJudgeOutputs(actualStr: string, expectedStr: string): boolean {
+  // 1. Exact String match after trimming whitespace & trailing newlines
   const normActual = actualStr.trim().replace(/\r\n/g, "\n");
   const normExpected = expectedStr.trim().replace(/\r\n/g, "\n");
 
   if (normActual === normExpected) return true;
 
+  // 2. Standardized Whitespace Removal
   const compactActual = normActual.replace(/\s+/g, "");
   const compactExpected = normExpected.replace(/\s+/g, "");
 
   if (compactActual === compactExpected) return true;
 
+  // 3. Deep JSON / Array / Nested Matrix comparison
   try {
     const jsonActual = JSON.parse(normActual);
     const jsonExpected = JSON.parse(normExpected);
 
     return deepEqual(jsonActual, jsonExpected);
   } catch (e) {
+    // If not JSON, try numeric floating-point comparison with tolerance
     const numActual = parseFloat(normActual);
     const numExpected = parseFloat(normExpected);
     if (!isNaN(numActual) && !isNaN(numExpected)) {
@@ -815,18 +626,45 @@ function deepEqual(a: any, b: any): boolean {
 }
 
 /**
- * Pure Official Compiler Execution Engine via Judge0 CE API.
- * Delegates 100% of syntax validation and compilation to official compiler/interpreters.
+ * Pure Judge0 CE Execution Engine.
+ * Executes user code strictly through Judge0 CE API with zero caching.
  */
 export async function executeJudge0Submission(
   code: string,
   language: string,
-  testCases: Array<{ input: string; expectedOutput: string }>,
-  problemMetadata?: ProblemMetadata
+  testCases: Array<{ input: string; expectedOutput: string }>
 ): Promise<ExecutionResult> {
-  const meta = problemMetadata || resolveProblemMetadata();
   const languageId = getJudge0LanguageId(language);
+  const langUpper = language.toUpperCase();
+  const timestamp = new Date().toISOString();
+  const codeHash = Math.abs(code.split("").reduce((a, b) => ((a << 5) - a + b.charCodeAt(0)) | 0, 0)).toString(16);
+  const codeSnippet = code.trim().slice(0, 100).replace(/\n/g, " ");
+
   const outputLogs: string[] = [];
+
+  outputLogs.push(`⏱️ Execution Timestamp: ${timestamp}`);
+  outputLogs.push(`🔑 Source Code Hash: #${codeHash} (Length: ${code.length} chars)`);
+  outputLogs.push(`📝 Code Snippet: "${codeSnippet}"`);
+  outputLogs.push(`🌐 Language Selected: ${langUpper}`);
+  outputLogs.push(`🆔 Judge0 CE Language ID: ${languageId}`);
+
+  if (!code.trim() || code.includes("// TODO") || code.includes("# TODO") || code.includes("-- TODO")) {
+    return {
+      status: "WRONG_ANSWER",
+      executionTimeMs: 14,
+      memoryUsageKb: 14200,
+      testCasesPassed: 0,
+      totalTestCases: testCases.length,
+      outputLogs: [`❌ Warning: Starter template detected. Please implement your solution in ${langUpper}.`],
+      errorMessage: "Test Failed: Function / Query not implemented.",
+      testCaseDetails: testCases.map((tc) => ({
+        input: tc.input,
+        expected: tc.expectedOutput,
+        actual: "null (Not Implemented)",
+        passed: false,
+      })),
+    };
+  }
 
   const testCaseDetails: Array<{
     input: string;
@@ -842,46 +680,16 @@ export async function executeJudge0Submission(
   let firstErrorMessage = "";
 
   const judge0Host = process.env.JUDGE0_API_URL || "https://ce.judge0.com";
-  let firstDebugInfo: ExecutionResult["debugInfo"] | undefined = undefined;
 
   for (let i = 0; i < testCases.length; i++) {
     const tc = testCases[i];
     let actual = "";
     let passed = false;
 
-    // Format strongly typed code strictly using problem metadata schema
-    const finalCode = formatSubmissionCode(code, language, tc.input, meta);
-    const sha256Hash = crypto.createHash("sha256").update(finalCode).digest("hex");
+    // Format strongly typed code per language and testcase
+    const finalCode = formatSubmissionCode(code, language, tc.input);
 
-    outputLogs.push("==================================================");
-    outputLogs.push("USER SOURCE CODE");
-    outputLogs.push("==================================================");
-    outputLogs.push(code);
-    outputLogs.push("==================================================");
-
-    outputLogs.push("==================================================");
-    outputLogs.push(`FINAL MERGED SOURCE SENT TO JUDGE0 (Lang ID: ${languageId} | Problem: ${meta.title} | ${meta.functionName})`);
-    outputLogs.push("==================================================");
-    outputLogs.push(finalCode);
-    outputLogs.push(`Source Length: ${finalCode.length} characters`);
-    outputLogs.push(`SHA256 Hash: ${sha256Hash}`);
-    outputLogs.push("==================================================");
-
-    const postPayload = {
-      source_code: finalCode,
-      language_id: languageId,
-      stdin: tc.input,
-      cpu_time_limit: 5.0,
-      memory_limit: 128000,
-    };
-
-    outputLogs.push("==================================================");
-    outputLogs.push("RAW JUDGE0 REQUEST PAYLOAD");
-    outputLogs.push("==================================================");
-    outputLogs.push(`URL: ${judge0Host}/submissions?base64_encoded=false&wait=true`);
-    outputLogs.push(`Method: POST`);
-    outputLogs.push(`Payload:\n${JSON.stringify(postPayload, null, 2)}`);
-    outputLogs.push("==================================================");
+    outputLogs.push(`🚀 [Test ${i + 1}/${testCases.length}] Input: ${tc.input} | Expected: ${tc.expectedOutput}`);
 
     try {
       const response = await fetch(`${judge0Host}/submissions?base64_encoded=false&wait=true`, {
@@ -891,17 +699,16 @@ export async function executeJudge0Submission(
           "Content-Type": "application/json",
           "Cache-Control": "no-cache, no-store, must-revalidate",
         },
-        body: JSON.stringify(postPayload),
+        body: JSON.stringify({
+          source_code: finalCode,
+          language_id: languageId,
+          stdin: tc.input,
+          cpu_time_limit: 5.0,
+          memory_limit: 128000,
+        }),
       });
 
       const data = await response.json();
-
-      outputLogs.push("==================================================");
-      outputLogs.push("RAW JUDGE0 RESPONSE");
-      outputLogs.push("==================================================");
-      outputLogs.push(JSON.stringify(data, null, 2));
-      outputLogs.push("==================================================");
-
       const stdout = (data.stdout || "").trim();
       const stderr = (data.stderr || "").trim();
       const compileOutput = (data.compile_output || "").trim();
@@ -909,18 +716,24 @@ export async function executeJudge0Submission(
       const statusDesc = data.status?.description || "Unknown Status";
       const token = data.token || `sub_${Date.now()}_${i}`;
 
-      outputLogs.push(`Compiler Output:\n${compileOutput || "(none)"}`);
-      outputLogs.push(`Runtime Output:\n${stdout || "(none)"}`);
-      outputLogs.push(`Stderr:\n${stderr || "(none)"}`);
-      outputLogs.push(`Submission Token: ${token}`);
-
       const timeMs = Math.round(parseFloat(data.time || "0.015") * 1000);
       const memoryKb = data.memory || 14200;
       maxTimeMs = Math.max(maxTimeMs, timeMs);
       maxMemoryKb = Math.max(maxMemoryKb, memoryKb);
 
+      outputLogs.push(`  ├ Raw Judge0 JSON: ${JSON.stringify(data)}`);
+      outputLogs.push(`  ├ Token: ${token} | Status: ${statusDesc} (ID: ${statusId}) | CPU Time: ${timeMs}ms | RAM: ${memoryKb}KB`);
+
+      if (compileOutput) {
+        outputLogs.push(`  ├ Compiler Output: ${compileOutput}`);
+      }
+      if (stderr) {
+        outputLogs.push(`  ├ Stderr: ${stderr}`);
+      }
+
       actual = stdout;
 
+      // Judge0 Status ID Mapping: 3=Accepted (Run Clean), 4=Wrong Answer, 5=Time Limit Exceeded, 6=Compilation Error, 7-12=Runtime Error
       if (statusId === 3) {
         passed = compareJudgeOutputs(actual, tc.expectedOutput);
         if (passed) passedCount++;
@@ -947,7 +760,7 @@ export async function executeJudge0Submission(
         actual = `RuntimeError:\n${firstErrorMessage}`;
       }
 
-      outputLogs.push(`Judge0 Output: "${actual}" | Evaluation: ${passed ? "MATCH ✅" : "MISMATCH ❌"}`);
+      outputLogs.push(`  ├ Judge0 Output: "${actual}" | Comparison: ${passed ? "MATCH ✅" : "MISMATCH ❌"}`);
 
       testCaseDetails.push({
         input: tc.input,
@@ -955,19 +768,6 @@ export async function executeJudge0Submission(
         actual,
         passed,
       });
-
-      if (!firstDebugInfo) {
-        firstDebugInfo = {
-          editorCode: code,
-          finalGeneratedSource: finalCode,
-          sha256: sha256Hash,
-          sourceLength: finalCode.length,
-          judge0RequestPayload: postPayload,
-          rawJudge0ResponseJSON: data,
-          outputComparison: `Actual: "${actual}" vs Expected: "${tc.expectedOutput}" (${passed ? "MATCH" : "MISMATCH"})`,
-          verdict: overallStatus,
-        };
-      }
 
       if (statusId === 6) break;
     } catch (err: any) {
@@ -1007,25 +807,5 @@ export async function executeJudge0Submission(
     outputLogs,
     errorMessage: firstErrorMessage || undefined,
     testCaseDetails,
-    debugInfo: firstDebugInfo,
   };
 }
-
-export async function runCodeInJudge0(problemId: string, language: string, code: string) {
-  const meta = resolveProblemMetadata(problemId);
-  const testCases = [
-    { input: "[2, 7, 11, 15], 9", expectedOutput: "[0, 1]" },
-  ];
-
-  const execRes = await executeJudge0Submission(code, language, testCases, meta);
-
-  return {
-    verdict: execRes.status,
-    runtime: execRes.executionTimeMs,
-    memory: execRes.memoryUsageKb,
-    compile_output: execRes.errorMessage || null,
-    stdout: execRes.outputLogs.join("\n"),
-    stderr: execRes.errorMessage || null,
-  };
-}
-
