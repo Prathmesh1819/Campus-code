@@ -172,6 +172,7 @@ export async function syncPersistentUsersToPrisma() {
           name: userName,
           email: su.email.toLowerCase(),
           avatar: su.profile_image || undefined,
+          rollNumber: su.roll_number || undefined,
           xp: su.xp || 0,
           level: su.level || 1,
           coins: su.coins || 0,

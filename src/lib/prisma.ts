@@ -3,9 +3,27 @@ import path from "path";
 import fs from "fs";
 
 function getDatabaseUrl(): string {
-  const envDbUrl = process.env.DATABASE_URL || process.env.POSTGRES_PRISMA_URL || process.env.DIRECT_URL;
-  if (envDbUrl) {
+  const envDbUrl = process.env.DATABASE_URL;
+  if (envDbUrl && envDbUrl.startsWith("file:")) {
     return envDbUrl;
+  }
+
+  if (process.env.VERCEL || process.env.NODE_ENV === "production") {
+    const tmpDbPath = "/tmp/dev.db";
+    const seedDbPath = path.join(process.cwd(), "prisma", "dev.db");
+
+    try {
+      if (!fs.existsSync(tmpDbPath)) {
+        if (fs.existsSync(seedDbPath)) {
+          fs.copyFileSync(seedDbPath, tmpDbPath);
+        } else {
+          fs.writeFileSync(tmpDbPath, "");
+        }
+      }
+    } catch (e) {
+      console.error("Error setting up Vercel writable SQLite db:", e);
+    }
+    return `file:${tmpDbPath}`;
   }
 
   return `file:${path.join(process.cwd(), "prisma", "dev.db")}`;
