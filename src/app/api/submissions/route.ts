@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { syncPersistentSubmissionsToPrisma } from "@/lib/user-sync";
+
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 
 export async function GET(req: Request) {
   try {
@@ -8,31 +10,54 @@ export async function GET(req: Request) {
     const userId = searchParams.get("userId");
     const problemId = searchParams.get("problemId");
 
-    await syncPersistentSubmissionsToPrisma(userId);
-
     const whereClause: any = {};
-    if (userId) whereClause.userId = userId;
+    if (userId) whereClause.user_id = userId;
+
     if (problemId) {
-      const p = await prisma.problem.findFirst({
+      const p = await prisma.problems.findFirst({
         where: { OR: [{ id: problemId }, { slug: problemId }] },
         select: { id: true },
       });
       if (p) {
-        whereClause.problemId = p.id;
+        whereClause.problem_id = p.id;
       } else {
-        whereClause.problemId = problemId;
+        whereClause.problem_id = problemId;
       }
     }
 
-    const submissions = await prisma.submission.findMany({
+    const submissions = await prisma.submissions.findMany({
       where: whereClause,
       include: {
-        problem: { select: { title: true, difficulty: true, category: true } },
+        problems: { select: { id: true, title: true, slug: true, difficulty: true } },
+        languages: { select: { name: true, slug: true } },
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { created_at: "desc" },
     });
 
-    return NextResponse.json({ submissions });
+    const formattedSubmissions = submissions.map((s) => ({
+      id: s.id,
+      userId: s.user_id,
+      problemId: s.problem_id,
+      code: s.source_code,
+      language: s.languages?.slug || s.languages?.name || "java",
+      status: s.status || s.verdict,
+      verdict: s.verdict || s.status,
+      executionTimeMs: s.execution_time || s.runtime_ms || 0,
+      memoryUsageKb: s.memory_kb || 0,
+      testCasesPassed: s.passed_test_cases || 0,
+      totalTestCases: s.total_test_cases || 0,
+      createdAt: s.created_at || s.submitted_at,
+      problem: s.problems
+        ? {
+            id: s.problems.id,
+            title: s.problems.title,
+            slug: s.problems.slug,
+            difficulty: s.problems.difficulty,
+          }
+        : undefined,
+    }));
+
+    return NextResponse.json({ submissions: formattedSubmissions });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || "Failed to fetch submissions" }, { status: 500 });
   }

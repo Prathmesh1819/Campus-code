@@ -1,38 +1,48 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const difficulty = searchParams.get("difficulty");
-    const category = searchParams.get("category");
-    const company = searchParams.get("company");
     const search = searchParams.get("search");
 
     const whereClause: any = {};
     if (difficulty && difficulty !== "ALL") whereClause.difficulty = difficulty;
-    if (category && category !== "ALL") whereClause.category = category;
-    if (company && company !== "ALL") {
-      whereClause.companyTags = { contains: company };
-    }
     if (search) {
       whereClause.OR = [
-        { title: { contains: search } },
-        { category: { contains: search } },
-        { description: { contains: search } },
-        { companyTags: { contains: search } },
+        { title: { contains: search, mode: "insensitive" } },
+        { description: { contains: search, mode: "insensitive" } },
       ];
     }
 
-    const problems = await prisma.problem.findMany({
+    const rawProblems = await prisma.problems.findMany({
       where: whereClause,
       include: {
         _count: {
           select: { submissions: true },
         },
       },
-      orderBy: { frequency: "desc" },
+      orderBy: { created_at: "desc" },
     });
+
+    const problems = rawProblems.map((p) => ({
+      id: p.id,
+      title: p.title,
+      slug: p.slug,
+      difficulty: p.difficulty,
+      category: "Algorithms",
+      description: p.description,
+      constraints: p.constraints,
+      acceptanceRate: p.acceptance_rate ? parseFloat(p.acceptance_rate.toString()) : 0,
+      frequency: 90,
+      companyTags: ["Google", "Amazon", "Meta"],
+      submissionsCount: p._count.submissions,
+      createdAt: p.created_at,
+    }));
 
     return NextResponse.json({ problems });
   } catch (error: any) {
@@ -43,29 +53,25 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { title, slug, difficulty, category, description, examples, constraints, hints, editorial, testCases, companyTags, frequency } = body;
+    const { title, slug, difficulty, description, constraints, testCases } = body;
 
-    const problem = await prisma.problem.create({
+    const newSlug = slug || title.toLowerCase().replace(/\s+/g, "-");
+    const problem = await prisma.problems.create({
       data: {
         title,
-        slug: slug || title.toLowerCase().replace(/\s+/g, "-"),
-        difficulty,
-        category,
-        description,
-        examples: typeof examples === "string" ? examples : JSON.stringify(examples || []),
+        slug: newSlug,
+        difficulty: difficulty || "EASY",
+        description: description || title,
         constraints: constraints || "1 <= N <= 10^5",
-        hints: typeof hints === "string" ? hints : JSON.stringify(hints || []),
-        editorial: editorial || "Editorial explanation coming soon.",
-        acceptedLanguages: JSON.stringify(["c", "cpp", "java", "python", "javascript", "go", "rust", "kotlin"]),
-        companyTags: typeof companyTags === "string" ? companyTags : JSON.stringify(companyTags || ["Google", "Meta"]),
-        frequency: frequency || 85,
-        testCases: {
-          create: testCases || [
-            { input: "sample_input", expectedOutput: "sample_output", isHidden: false },
-          ],
+        test_cases: {
+          create: (testCases || []).map((tc: any) => ({
+            input: tc.input || "",
+            expected_output: tc.expectedOutput || tc.output || "",
+            is_hidden: tc.isHidden || false,
+          })),
         },
       },
-      include: { testCases: true },
+      include: { test_cases: true },
     });
 
     return NextResponse.json({ message: "Problem created successfully", problem });

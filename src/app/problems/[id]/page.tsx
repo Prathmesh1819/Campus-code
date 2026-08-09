@@ -219,7 +219,7 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
         },
         cache: "no-store",
         body: JSON.stringify({
-          problemId: problem?.id || resolvedParams.id || "two-sum-target-pair",
+          problemId: problem?.id || resolvedParams.id,
           userId: targetUserId,
           code: currentCode,
           language,

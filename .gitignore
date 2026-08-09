@@ -27,4 +27,9 @@ yarn-error.log*
 next-env.d.ts
 
 # database
+*.db
 *.db-journal
+
+# backup folders
+.CampusCode-*
+

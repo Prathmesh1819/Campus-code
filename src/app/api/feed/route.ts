@@ -1,21 +1,50 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export async function GET(req: Request) {
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+
+export async function GET(_req: Request) {
   try {
-    const posts = await prisma.post.findMany({
+    const rawPosts = await prisma.discussion_posts.findMany({
       include: {
-        user: { select: { id: true, name: true, avatar: true, branch: true, role: true } },
-        likes: true,
-        comments: {
+        users: { select: { id: true, full_name: true, username: true, profile_image: true, roles: true } },
+        discussion_votes: true,
+        discussion_comments: {
           include: {
-            user: { select: { id: true, name: true, avatar: true } },
+            users: { select: { id: true, full_name: true, username: true, profile_image: true } },
           },
-          orderBy: { createdAt: "desc" },
+          orderBy: { created_at: "desc" },
         },
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { created_at: "desc" },
     });
+
+    const posts = rawPosts.map((p) => ({
+      id: p.id,
+      userId: p.user_id,
+      content: p.content,
+      title: p.title,
+      codeSnippet: null,
+      mediaUrl: null,
+      tags: JSON.stringify(p.tags || []),
+      likesCount: p.discussion_votes.length,
+      commentsCount: p.discussion_comments.length,
+      createdAt: p.created_at,
+      user: {
+        id: p.users.id,
+        name: p.users.full_name || p.users.username || "Community Member",
+        avatar: p.users.profile_image,
+        role: p.users.roles?.name ? p.users.roles.name.toUpperCase() : "STUDENT",
+      },
+      likes: p.discussion_votes.map((v) => ({ userId: v.user_id })),
+      comments: p.discussion_comments.map((c) => ({
+        id: c.id,
+        content: c.comment,
+        createdAt: c.created_at,
+        user: { id: c.users.id, name: c.users.full_name || c.users.username, avatar: c.users.profile_image },
+      })),
+    }));
 
     return NextResponse.json({ posts });
   } catch (error: any) {
@@ -26,52 +55,71 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { action, userId, postId, content, codeSnippet, mediaUrl, tags, comment } = body;
+    const { action, userId, postId, content, comment } = body;
 
     // Toggle Like
     if (action === "like") {
-      const existing = await prisma.postLike.findUnique({
-        where: { userId_postId: { userId, postId } },
+      const existing = await prisma.discussion_votes.findUnique({
+        where: { discussion_id_user_id: { discussion_id: postId, user_id: userId } },
       });
 
       if (existing) {
-        await prisma.postLike.delete({ where: { id: existing.id } });
-        await prisma.post.update({ where: { id: postId }, data: { likesCount: { decrement: 1 } } });
+        await prisma.discussion_votes.delete({
+          where: { discussion_id_user_id: { discussion_id: postId, user_id: userId } },
+        });
         return NextResponse.json({ liked: false });
       } else {
-        await prisma.postLike.create({ data: { userId, postId } });
-        await prisma.post.update({ where: { id: postId }, data: { likesCount: { increment: 1 } } });
+        await prisma.discussion_votes.create({
+          data: { discussion_id: postId, user_id: userId, vote_type: "UPVOTE" },
+        });
         return NextResponse.json({ liked: true });
       }
     }
 
     // Add Comment
     if (action === "comment") {
-      const newComment = await prisma.postComment.create({
-        data: { userId, postId, content: comment },
-        include: { user: { select: { id: true, name: true, avatar: true } } },
+      const newComment = await prisma.discussion_comments.create({
+        data: { discussion_id: postId, user_id: userId, comment: comment || "" },
+        include: { users: { select: { id: true, full_name: true, username: true, profile_image: true } } },
       });
-      await prisma.post.update({ where: { id: postId }, data: { commentsCount: { increment: 1 } } });
-      return NextResponse.json({ comment: newComment });
+      return NextResponse.json({
+        comment: {
+          id: newComment.id,
+          content: newComment.comment,
+          user: { id: newComment.users.id, name: newComment.users.full_name || newComment.users.username, avatar: newComment.users.profile_image },
+        },
+      });
     }
 
     // Create New Post
-    const newPost = await prisma.post.create({
+    const newPost = await prisma.discussion_posts.create({
       data: {
-        userId,
-        content,
-        codeSnippet,
-        mediaUrl,
-        tags: typeof tags === "string" ? tags : JSON.stringify(tags || []),
+        user_id: userId,
+        title: content ? content.substring(0, 60) : "Discussion Post",
+        content: content || "",
+        category: "General",
       },
       include: {
-        user: { select: { id: true, name: true, avatar: true, branch: true, role: true } },
-        likes: true,
-        comments: true,
+        users: { select: { id: true, full_name: true, username: true, profile_image: true, roles: true } },
       },
     });
 
-    return NextResponse.json({ post: newPost });
+    return NextResponse.json({
+      post: {
+        id: newPost.id,
+        userId: newPost.user_id,
+        content: newPost.content,
+        title: newPost.title,
+        user: {
+          id: newPost.users.id,
+          name: newPost.users.full_name || newPost.users.username,
+          avatar: newPost.users.profile_image,
+          role: newPost.users.roles?.name ? newPost.users.roles.name.toUpperCase() : "STUDENT",
+        },
+        likes: [],
+        comments: [],
+      },
+    });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || "Failed to post to feed" }, { status: 500 });
   }
