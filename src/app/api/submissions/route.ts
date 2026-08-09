@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { syncPersistentSubmissionsToPrisma } from "@/lib/user-sync";
 
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get("userId");
     const problemId = searchParams.get("problemId");
+
+    await syncPersistentSubmissionsToPrisma(userId);
 
     const whereClause: any = {};
     if (userId) whereClause.userId = userId;

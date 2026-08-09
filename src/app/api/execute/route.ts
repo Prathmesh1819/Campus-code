@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { executeJudge0Submission } from "@/lib/code-runner";
 import { calculateAndUpdateStreak } from "@/lib/streak";
 import { verifyAccessToken } from "@/lib/auth";
+import { syncSubmissionToPersistentStore } from "@/lib/user-sync";
 import { cookies } from "next/headers";
 
 export const dynamic = "force-dynamic";
@@ -96,6 +97,8 @@ export async function POST(req: Request) {
         const streakDays = await calculateAndUpdateStreak(effectiveUserId);
         updatedUserRecord = { ...updatedUser, streakDays };
       }
+
+      await syncSubmissionToPersistentStore(submissionRecord, updatedUserRecord || { id: effectiveUserId });
     }
 
     return NextResponse.json({
