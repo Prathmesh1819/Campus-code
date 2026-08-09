@@ -3,14 +3,14 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
+export const revalidate = 0;
 
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
     const problem = await prisma.problems.findFirst({
-      where: {
-        OR: [{ id: id }, { slug: id }],
-      },
+      where: isUuid ? { OR: [{ id: id }, { slug: id }] } : { slug: id },
       include: {
         test_cases: true,
         starter_codes: {

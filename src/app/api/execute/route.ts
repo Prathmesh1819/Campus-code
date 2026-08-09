@@ -17,8 +17,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Code and language are required" }, { status: 400 });
     }
 
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(problemId);
     const problem = await prisma.problems.findFirst({
-      where: { OR: [{ id: problemId }, { slug: problemId }] },
+      where: isUuid ? { OR: [{ id: problemId }, { slug: problemId }] } : { slug: problemId },
       include: { test_cases: true },
     });
 

@@ -14,13 +14,14 @@ export async function GET(req: Request) {
     if (userId) whereClause.user_id = userId;
 
     if (problemId) {
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(problemId);
       const p = await prisma.problems.findFirst({
-        where: { OR: [{ id: problemId }, { slug: problemId }] },
+        where: isUuid ? { OR: [{ id: problemId }, { slug: problemId }] } : { slug: problemId },
         select: { id: true },
       });
       if (p) {
         whereClause.problem_id = p.id;
-      } else {
+      } else if (isUuid) {
         whereClause.problem_id = problemId;
       }
     }

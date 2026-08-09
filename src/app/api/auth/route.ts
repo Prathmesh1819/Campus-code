@@ -44,11 +44,13 @@ export async function GET(req: Request) {
     const identifier = userId || username;
 
     if (identifier) {
-      // Try finding by ID first
-      let user = await prisma.users.findUnique({
-        where: { id: identifier },
-        include: { roles: true, classes: true, daily_streaks: true },
-      });
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifier);
+      let user = isUuid
+        ? await prisma.users.findUnique({
+            where: { id: identifier },
+            include: { roles: true, classes: true, daily_streaks: true },
+          })
+        : null;
 
       // If not found by ID, try matching by username, email, or name
       if (!user) {

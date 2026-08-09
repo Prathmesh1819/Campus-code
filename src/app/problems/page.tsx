@@ -57,7 +57,7 @@ export default function ProblemsPage() {
       if (selectedCompany !== "ALL") query.append("company", selectedCompany);
       if (search) query.append("search", search);
 
-      const res = await fetch(`/api/problems?${query.toString()}`);
+      const res = await fetch(`/api/problems?${query.toString()}&t=${Date.now()}`, { cache: "no-store" });
       const data = await res.json();
       if (data.problems) {
         setProblems(data.problems);

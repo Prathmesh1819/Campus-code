@@ -3,22 +3,26 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
+export const revalidate = 0;
 
 const TOP_COMPANIES = ["Google", "Meta", "Amazon", "Microsoft", "Apple", "Netflix", "Uber", "Adobe"];
+const ALL_CATEGORIES = ["Arrays", "Strings", "Linked List", "Stack", "Trees", "Graphs", "Dynamic Programming", "Searching", "Math", "SQL"];
 
-function deriveCategory(title: string, description: string, dbTags: string[]): string {
+function deriveCategory(title: string, description: string, dbTags: string[], problemId: string): string {
   const text = (title + " " + description + " " + dbTags.join(" ")).toLowerCase();
   if (text.includes("sql") || text.includes("table") || text.includes("query")) return "SQL";
   if (text.includes("linked list") || text.includes("listnode")) return "Linked List";
-  if (text.includes("stack") || text.includes("parenthes") || text.includes("reverse polish")) return "Stack";
-  if (text.includes("tree") || text.includes("binary tree")) return "Trees";
-  if (text.includes("graph") || text.includes("dfs") || text.includes("bfs")) return "Graphs";
-  if (text.includes("dynamic programming") || text.includes("fibonacci") || text.includes("min coins")) return "Dynamic Programming";
-  if (text.includes("binary search") || text.includes("searching")) return "Searching";
+  if (text.includes("stack") || text.includes("parenthes") || text.includes("reverse polish") || text.includes("borrow")) return "Stack";
+  if (text.includes("tree") || text.includes("binary tree") || text.includes("seating")) return "Trees";
+  if (text.includes("graph") || text.includes("dfs") || text.includes("bfs") || text.includes("route") || text.includes("shuttle")) return "Graphs";
+  if (text.includes("dynamic programming") || text.includes("fibonacci") || text.includes("min coins") || text.includes("dp")) return "Dynamic Programming";
+  if (text.includes("binary search") || text.includes("searching") || text.includes("locator")) return "Searching";
   if (text.includes("string") || text.includes("substring") || text.includes("anagram") || text.includes("palindrome")) return "Strings";
-  if (text.includes("math") || text.includes("factorial") || text.includes("gcd")) return "Math";
-  if (text.includes("array") || text.includes("subarray") || text.includes("sliding window") || text.includes("sum") || text.includes("sort") || text.includes("two sum")) return "Arrays";
-  return "Arrays";
+  if (text.includes("math") || text.includes("factorial") || text.includes("gcd") || text.includes("calculator") || text.includes("fine")) return "Math";
+  if (text.includes("array") || text.includes("subarray") || text.includes("sliding window") || text.includes("sum") || text.includes("sort")) return "Arrays";
+
+  const hash = Math.abs(problemId.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0));
+  return ALL_CATEGORIES[hash % ALL_CATEGORIES.length];
 }
 
 function deriveCompanies(problemId: string, dbCompanies: string[]): string[] {
@@ -63,7 +67,7 @@ export async function GET(req: Request) {
       const dbTagNames = p.problem_tags?.map((pt) => pt.tags.name) || [];
       const dbCompanyNames = p.problem_companies?.map((pc) => pc.companies.name) || [];
 
-      const probCategory = deriveCategory(p.title, p.description, dbTagNames);
+      const probCategory = deriveCategory(p.title, p.description, dbTagNames, p.id);
       const probCompanies = deriveCompanies(p.id, dbCompanyNames);
 
       const freqHash = Math.abs(p.id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0));
