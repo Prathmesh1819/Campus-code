@@ -1,6 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "./prisma";
 
 function getISTDateStr(date: Date): string {
   return new Date(date).toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });

@@ -190,6 +190,7 @@ export async function syncPersistentUsersToPrisma() {
           xp: su.xp || 0,
           level: su.level || 1,
           coins: su.coins || 0,
+          streakDays: 0,
           bio: su.bio || null,
           githubUrl: su.github_url || null,
           linkedinUrl: su.linkedin_url || null,
