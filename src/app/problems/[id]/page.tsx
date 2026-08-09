@@ -205,16 +205,22 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
 
     try {
       const resolvedParams = await params;
+      const activeToken = localStorage.getItem("campuscode_token");
+      const savedUserStr = localStorage.getItem("campuscode_user");
+      const savedUserId = savedUserStr ? JSON.parse(savedUserStr)?.id : null;
+      const targetUserId = user?.id || savedUserId;
+
       const res = await fetch("/api/execute", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Cache-Control": "no-cache, no-store, must-revalidate",
+          ...(activeToken ? { Authorization: `Bearer ${activeToken}` } : {}),
         },
         cache: "no-store",
         body: JSON.stringify({
           problemId: problem?.id || resolvedParams.id || "two-sum-target-pair",
-          userId: user?.id,
+          userId: targetUserId,
           code: currentCode,
           language,
           isSubmit,

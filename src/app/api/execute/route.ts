@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { executeJudge0Submission } from "@/lib/code-runner";
 import { calculateAndUpdateStreak } from "@/lib/streak";
 import { verifyAccessToken } from "@/lib/auth";
-import { syncSubmissionToPersistentStore } from "@/lib/user-sync";
+import { syncSubmissionToPersistentStore, syncPersistentUsersToPrisma } from "@/lib/user-sync";
 import { cookies } from "next/headers";
 
 export const dynamic = "force-dynamic";
@@ -51,10 +51,17 @@ export async function POST(req: Request) {
     } catch {}
 
     if (effectiveUserId) {
-      const existingUser = await prisma.user.findUnique({
+      let existingUser = await prisma.user.findUnique({
         where: { id: effectiveUserId },
         select: { id: true },
       });
+      if (!existingUser) {
+        await syncPersistentUsersToPrisma();
+        existingUser = await prisma.user.findUnique({
+          where: { id: effectiveUserId },
+          select: { id: true },
+        });
+      }
       if (!existingUser) {
         effectiveUserId = null;
       }
