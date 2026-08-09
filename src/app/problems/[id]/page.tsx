@@ -475,23 +475,49 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
           </div>
 
           {/* Code Editor Window */}
-          <div className="flex-1 relative overflow-hidden">
+          <div className="flex-1 w-full h-full min-h-[350px] relative overflow-hidden bg-[#0b0f19]">
             <Editor
               height="100%"
-              language={language === "c" || language === "cpp" ? "cpp" : language}
+              width="100%"
+              language={
+                language === "c" || language === "cpp"
+                  ? "cpp"
+                  : language === "js"
+                  ? "javascript"
+                  : language === "python3"
+                  ? "python"
+                  : language
+              }
               theme="vs-dark"
               value={code}
+              loading={
+                <div className="flex flex-col items-center justify-center h-full bg-[#0b0f19] text-purple-400 text-xs font-mono space-y-2">
+                  <div className="w-5 h-5 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+                  <span>Initializing Monaco Code Editor...</span>
+                </div>
+              }
               onMount={(editor) => {
                 editorRef.current = editor;
+                try {
+                  editor.focus();
+                } catch {}
               }}
               onChange={(value) => setCode(value || "")}
               options={{
                 fontSize: 13,
-                fontFamily: "JetBrains Mono, monospace",
+                fontFamily: "JetBrains Mono, Menlo, Monaco, Consolas, 'Courier New', monospace",
                 minimap: { enabled: false },
                 scrollBeyondLastLine: false,
                 automaticLayout: true,
-                padding: { top: 12 },
+                padding: { top: 12, bottom: 12 },
+                lineNumbers: "on",
+                glyphMargin: false,
+                folding: true,
+                lineDecorationsWidth: 10,
+                lineNumbersMinChars: 3,
+                renderLineHighlight: "all",
+                cursorBlinking: "smooth",
+                cursorSmoothCaretAnimation: "on",
               }}
             />
           </div>
