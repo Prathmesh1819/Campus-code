@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Sidebar } from "@/components/Sidebar";
 import { useAuth } from "@/context/AuthContext";
@@ -21,12 +21,13 @@ import {
   Lock,
   Mail,
   Building2,
+  RefreshCw,
 } from "lucide-react";
 
 export default function ClassroomsPage() {
   const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [selectedClass, setSelectedClass] = useState(user?.className || "TY BSc CS");
+  const [selectedClass, setSelectedClass] = useState<string>(user?.className || "TY BSc CS");
   const [activeTab, setActiveTab] = useState<"classmates" | "projects" | "notes" | "announcements">("classmates");
 
   const isTeacherOrAdmin = user?.role === "TEACHER" || user?.role === "ADMIN" || user?.role === "SUPER_ADMIN";
@@ -39,7 +40,15 @@ export default function ClassroomsPage() {
     projects: [],
     announcements: [],
   });
+
   const [loading, setLoading] = useState(true);
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  // Client-side Classroom Cache (key -> data)
+  const classroomCacheRef = useRef<Map<string, any>>(new Map());
+  // Race condition cancellation & sequence tracking
+  const activeAbortControllerRef = useRef<AbortController | null>(null);
+  const requestSeqRef = useRef<number>(0);
 
   // Upload Notes Modal state
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -49,45 +58,115 @@ export default function ClassroomsPage() {
   const [noteFileUrl, setNoteFileUrl] = useState("");
   const [noteFileType, setNoteFileType] = useState("PDF");
 
-  const fetchClassroomData = async (className: string, classId?: string) => {
-    setLoading(true);
-    setClassroomData((prev: any) => ({
-      ...prev,
-      classmates: [],
-    }));
-    try {
-      const url = classId
-        ? `/api/classrooms?classId=${encodeURIComponent(classId)}&className=${encodeURIComponent(className)}&t=${Date.now()}`
-        : `/api/classrooms?className=${encodeURIComponent(className)}&t=${Date.now()}`;
-      const res = await fetch(url, { cache: "no-store" });
-      const data = await res.json();
-      if (res.ok) {
-        setClassroomData(data);
+  const fetchClassroomData = useCallback(
+    async (className: string, classId?: string) => {
+      // Abort previous in-flight fetch to prevent race conditions
+      if (activeAbortControllerRef.current) {
+        activeAbortControllerRef.current.abort();
       }
-    } catch {
-      setClassroomData({
-        classroom: {
-          name: className,
-          branch: "Computer Science",
-          academicYear: "2026-27",
-          teacher: {
-            name: "Department Faculty",
-            email: "faculty@campuscode.com",
-            avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&auto=format&fit=crop&q=80",
-          },
-        },
-        classmates: [],
-        notes: [],
-        projects: [],
-        announcements: [],
-      });
-    } finally {
+      const controller = new AbortController();
+      activeAbortControllerRef.current = controller;
+
+      const currentSeq = ++requestSeqRef.current;
+      const cacheKey = classId || className;
+      const cached = classroomCacheRef.current.get(cacheKey) || classroomCacheRef.current.get(className);
+
+      if (cached) {
+        // Instant rendering from client-side cache
+        setClassroomData(cached);
+        setLoading(false);
+        setIsSyncing(true);
+      } else {
+        // No cache yet: set localized loading state ONLY
+        setLoading(true);
+      }
+
+      try {
+        const url = classId
+          ? `/api/classrooms?classId=${encodeURIComponent(classId)}&className=${encodeURIComponent(className)}`
+          : `/api/classrooms?className=${encodeURIComponent(className)}`;
+
+        const res = await fetch(url, { signal: controller.signal, cache: "no-store" });
+        const data = await res.json();
+
+        // Race-condition check: ignore stale completed request if user clicked another class
+        if (currentSeq !== requestSeqRef.current) return;
+
+        if (res.ok) {
+          classroomCacheRef.current.set(className, data);
+          if (data.classId) classroomCacheRef.current.set(data.classId, data);
+
+          setClassroomData(data);
+        }
+      } catch (err: any) {
+        if (err.name === "AbortError") return; // Normal request cancellation
+
+        // Fallback state on error
+        if (currentSeq === requestSeqRef.current && !cached) {
+          setClassroomData({
+            classroom: {
+              name: className,
+              branch: "Computer Science",
+              academicYear: "2026-27",
+              teacher: {
+                name: "Department Faculty",
+                email: "faculty@campuscode.com",
+                avatar:
+                  "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&auto=format&fit=crop&q=80",
+              },
+            },
+            classmates: [],
+            notes: [],
+            projects: [],
+            announcements: [],
+          });
+        }
+      } finally {
+        if (currentSeq === requestSeqRef.current) {
+          setLoading(false);
+          setIsSyncing(false);
+        }
+      }
+    },
+    []
+  );
+
+  const handleSelectClassroom = (className: string, classId?: string) => {
+    setSelectedClass(className);
+
+    // Instant UI switch if cached
+    const cacheKey = classId || className;
+    const cached = classroomCacheRef.current.get(cacheKey) || classroomCacheRef.current.get(className);
+    if (cached) {
+      setClassroomData(cached);
       setLoading(false);
     }
+
+    fetchClassroomData(className, classId);
+  };
+
+  const handlePrefetchClassroom = (className: string, classId?: string) => {
+    const cacheKey = classId || className;
+    if (classroomCacheRef.current.has(cacheKey) || classroomCacheRef.current.has(className)) {
+      return;
+    }
+    const url = classId
+      ? `/api/classrooms?classId=${encodeURIComponent(classId)}&className=${encodeURIComponent(className)}`
+      : `/api/classrooms?className=${encodeURIComponent(className)}`;
+
+    fetch(url, { cache: "no-store" })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.className) {
+          classroomCacheRef.current.set(className, data);
+          if (data.classId) classroomCacheRef.current.set(data.classId, data);
+        }
+      })
+      .catch(() => {});
   };
 
   useEffect(() => {
-    const targetClass = (user?.className && user?.role === "STUDENT") ? user.className : selectedClass;
+    const targetClass = user?.className && user?.role === "STUDENT" ? user.className : selectedClass;
     if (user?.className && user?.role === "STUDENT") {
       setSelectedClass(user.className);
     }
@@ -95,20 +174,12 @@ export default function ClassroomsPage() {
 
     const channel = supabase
       .channel("classrooms-realtime-channel")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "announcements" },
-        () => {
-          fetchClassroomData(targetClass);
-        }
-      )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "teacher_notes" },
-        () => {
-          fetchClassroomData(targetClass);
-        }
-      )
+      .on("postgres_changes", { event: "*", schema: "public", table: "announcements" }, () => {
+        fetchClassroomData(targetClass);
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "teacher_notes" }, () => {
+        fetchClassroomData(targetClass);
+      })
       .subscribe((status, err) => {
         if (err) {
           console.warn("[Realtime Classrooms] Subscription error:", err);
@@ -118,7 +189,7 @@ export default function ClassroomsPage() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user?.className, user?.role, selectedClass]);
+  }, [user?.className, user?.role, fetchClassroomData]);
 
   const handleUploadNote = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -143,6 +214,9 @@ export default function ClassroomsPage() {
         setNoteTitle("");
         setNoteDesc("");
         setNoteFileUrl("");
+
+        // Invalidate cache for current classroom to force fresh fetch
+        classroomCacheRef.current.delete(selectedClass);
         fetchClassroomData(selectedClass);
       }
     } catch (err: any) {
@@ -173,7 +247,9 @@ export default function ClassroomsPage() {
                   classroomData.assignedClasses.map((item: any) => (
                     <button
                       key={item.id + (item.courseId || item.name)}
-                      onClick={() => setSelectedClass(item.name)}
+                      onClick={() => handleSelectClassroom(item.name, item.id)}
+                      onMouseEnter={() => handlePrefetchClassroom(item.name, item.id)}
+                      onFocus={() => handlePrefetchClassroom(item.name, item.id)}
                       className={`px-3 py-1 rounded-xl text-xs font-bold transition-all flex items-center gap-1 ${
                         selectedClass === item.name
                           ? "bg-purple-600 text-white shadow-glow"
@@ -202,10 +278,20 @@ export default function ClassroomsPage() {
           <div className="rounded-3xl glass-card border border-purple-500/30 p-6 sm:p-8 relative overflow-hidden space-y-6">
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
               <div className="space-y-2 flex-1">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-bold">
-                  <BookOpen className="w-3.5 h-3.5" />
-                  <span>CLASSROOM HUB • {selectedClass}</span>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-bold">
+                    <BookOpen className="w-3.5 h-3.5" />
+                    <span>CLASSROOM HUB • {selectedClass}</span>
+                  </div>
+
+                  {isSyncing && (
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-[10px] font-bold animate-pulse">
+                      <RefreshCw className="w-3 h-3 animate-spin text-cyan-400" />
+                      <span>Syncing...</span>
+                    </div>
+                  )}
                 </div>
+
                 <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
                   {selectedClass} Virtual Classroom & Notes Hub
                 </h2>
@@ -325,227 +411,234 @@ export default function ClassroomsPage() {
             )}
           </div>
 
-          {/* TAB 1: CLASSMATES / ENROLLED STUDENTS ROSTER */}
-          {activeTab === "classmates" && (() => {
-            const rawMates = classroomData.classmates || [];
-            const mergedMates = [...rawMates];
-            if (user && user.role === "STUDENT") {
-              const exists = mergedMates.some(
-                (m: any) => m.id === user.id || m.email === user.email || (m.name && m.name.toLowerCase() === user.name.toLowerCase())
-              );
-              if (!exists) {
-                mergedMates.push({
-                  id: user.id || "current-user",
-                  name: user.name,
-                  email: user.email,
-                  rollNumber: user.rollNumber || "A-244002",
-                  className: user.className || selectedClass,
-                  branch: user.branch || "Computer Science",
-                  avatar: user.avatar || "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&auto=format&fit=crop&q=80",
-                  xp: user.xp || 0,
-                  level: user.level || 1,
-                  streakDays: user.streakDays || 0,
-                  bio: user.bio || "Student at Sarhad College",
-                });
-              }
-            }
-
-            return (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {mergedMates.length === 0 ? (
-                  <div className="col-span-full text-center py-12 text-gray-500 glass-card rounded-3xl">
-                    No registered students found in {selectedClass} yet.
+          {/* LOCALIZED CONTENT SKELETON (Renders ONLY when loading for the first time without cached data) */}
+          {loading && !classroomData.classroom ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="rounded-3xl glass-card border border-slate-800 p-5 space-y-4 animate-pulse">
+                  <div className="flex items-start gap-4">
+                    <div className="w-14 h-14 rounded-2xl bg-slate-800" />
+                    <div className="space-y-2 flex-1">
+                      <div className="h-4 bg-slate-800 rounded w-3/4" />
+                      <div className="h-3 bg-slate-800/60 rounded w-1/2" />
+                      <div className="h-3 bg-slate-800/40 rounded w-full" />
+                    </div>
                   </div>
-                ) : (
-                  mergedMates.map((mate: any) => (
-                    <div
-                      key={mate.id}
-                      className="rounded-3xl glass-card border border-slate-800 p-5 flex flex-col justify-between space-y-4 hover:border-purple-500/40 transition-all group"
-                    >
-                      <div className="flex items-start gap-4">
-                        <img
-                          src={mate.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80"}
-                          alt={mate.name}
-                          className="w-14 h-14 rounded-2xl object-cover ring-2 ring-purple-500/30 group-hover:scale-105 transition-transform"
-                        />
-                        <div className="space-y-1">
-                          <h4 className="text-sm font-bold text-white group-hover:text-purple-300 transition-colors flex items-center gap-1.5">
-                            <span>{mate.name}</span>
-                            {user && (mate.email === user.email || mate.id === user.id) && (
-                              <span className="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 text-[9px] font-black uppercase">
-                                (You)
-                              </span>
-                            )}
-                          </h4>
-                          <p className="text-[11px] font-mono text-purple-400">{mate.rollNumber || "Registered Student"}</p>
-                          <p className="text-xs text-gray-400 line-clamp-2">{mate.bio || "Student at CampusCode"}</p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between pt-3 border-t border-slate-800/80">
-                        <div className="text-xs font-mono">
-                          <span className="text-emerald-400 font-bold">⚡ {mate.xp || 0} XP</span>
-                          <span className="text-gray-400 text-[10px] block">Level {mate.level || 1}</span>
-                        </div>
-
-                        <Link
-                          href={`/profile/${mate.name.toLowerCase().replace(/\s+/g, "")}`}
-                          className="px-3 py-1.5 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-bold hover:bg-purple-500/20 transition-all flex items-center gap-1"
-                        >
-                          <span>View Profile</span>
-                        </Link>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            );
-          })()}
-
-          {/* TAB 2: CLASS PROJECTS SHOWCASE */}
-          {activeTab === "projects" && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {classroomData.projects?.length === 0 ? (
-                <div className="col-span-full text-center py-12 text-gray-500 glass-card rounded-3xl">
-                  No projects submitted by students in {selectedClass} yet.
+                  <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between">
+                    <div className="h-4 bg-slate-800 rounded w-1/3" />
+                    <div className="h-6 bg-slate-800 rounded w-1/4" />
+                  </div>
                 </div>
-              ) : (
-                classroomData.projects?.map((proj: any) => {
-                  const tags: string[] = typeof proj.tags === "string" ? JSON.parse(proj.tags) : proj.tags || [];
-                  return (
-                    <div key={proj.id} className="rounded-3xl glass-card border border-slate-800 overflow-hidden flex flex-col justify-between">
-                      <div className="h-44 w-full bg-slate-900 relative">
-                        <img src={proj.imageUrl || "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&auto=format&fit=crop&q=80"} alt={proj.title} className="w-full h-full object-cover" />
-                        {proj.isHackathonWinner && (
-                          <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-amber-500 text-slate-950 text-[10px] font-black uppercase tracking-wider flex items-center gap-1 shadow-lg">
-                            <Award className="w-3 h-3" /> Hackathon Winner
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="p-6 space-y-4">
-                        <div>
-                          <div className="flex items-center gap-2 mb-1">
-                            <img src={proj.user?.avatar} alt={proj.user?.name} className="w-5 h-5 rounded-full object-cover" />
-                            <span className="text-xs text-purple-300 font-bold">{proj.user?.name}</span>
-                          </div>
-                          <h3 className="text-base font-bold text-white">{proj.title}</h3>
-                          <p className="text-xs text-gray-400 mt-1 line-clamp-2">{proj.description}</p>
-                        </div>
-
-                        <div className="flex flex-wrap gap-1.5">
-                          {tags.map((t, idx) => (
-                            <span key={idx} className="px-2.5 py-0.5 rounded-lg bg-slate-900 border border-slate-800 text-purple-300 text-[10px] font-semibold">
-                              {t}
-                            </span>
-                          ))}
-                        </div>
-
-                        <div className="flex items-center justify-between pt-3 border-t border-slate-800 text-xs">
-                          <div className="flex items-center gap-3">
-                            {proj.githubUrl && (
-                              <a href={proj.githubUrl} target="_blank" className="text-gray-400 hover:text-white flex items-center gap-1 font-bold">
-                                <Github className="w-3.5 h-3.5" /> Source Code
-                              </a>
-                            )}
-                            {proj.liveDemoUrl && (
-                              <a href={proj.liveDemoUrl} target="_blank" className="text-cyan-400 hover:underline flex items-center gap-1 font-bold">
-                                <ExternalLink className="w-3.5 h-3.5" /> Live Demo
-                              </a>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+              ))}
+            </div>
+          ) : (
+            <>
+              {/* TAB 1: CLASSMATES / ENROLLED STUDENTS ROSTER */}
+              {activeTab === "classmates" && (() => {
+                const rawMates = classroomData.classmates || [];
+                const mergedMates = [...rawMates];
+                if (user && user.role === "STUDENT") {
+                  const exists = mergedMates.some(
+                    (m: any) => m.id === user.id || m.email === user.email || (m.name && m.name.toLowerCase() === user.name.toLowerCase())
                   );
-                })
-              )}
-            </div>
-          )}
+                  if (!exists) {
+                    mergedMates.push({
+                      id: user.id || "current-user",
+                      name: user.name,
+                      email: user.email,
+                      rollNumber: user.rollNumber || "A-244002",
+                      className: user.className || selectedClass,
+                      branch: user.branch || "Computer Science",
+                      avatar: user.avatar || "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&auto=format&fit=crop&q=80",
+                      xp: user.xp || 0,
+                      level: user.level || 1,
+                      streakDays: user.streakDays || 0,
+                      bio: user.bio || "Student at Sarhad College",
+                    });
+                  }
+                }
 
-          {/* TAB 3: IMPORTANT NOTES & STUDY MATERIALS */}
-          {activeTab === "notes" && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-cyan-400" />
-                  <span>Important Study Notes Shared by {isClassTeacher ? "Class Teacher" : "Subject Teacher"}</span>
-                </h3>
-              </div>
+                return (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {mergedMates.length === 0 ? (
+                      <div className="col-span-full text-center py-12 text-gray-500 glass-card rounded-3xl">
+                        No registered students found in {selectedClass} yet.
+                      </div>
+                    ) : (
+                      mergedMates.map((mate: any) => (
+                        <div
+                          key={mate.id}
+                          className="rounded-3xl glass-card border border-slate-800 p-5 flex flex-col justify-between space-y-4 hover:border-purple-500/40 transition-all group"
+                        >
+                          <div className="flex items-start gap-4">
+                            <img
+                              src={mate.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80"}
+                              alt={mate.name}
+                              className="w-14 h-14 rounded-2xl object-cover ring-2 ring-purple-500/30 group-hover:scale-105 transition-transform"
+                            />
+                            <div className="space-y-1">
+                              <h4 className="text-sm font-bold text-white group-hover:text-purple-300 transition-colors flex items-center gap-1.5">
+                                <span>{mate.name}</span>
+                                {user && (mate.email === user.email || mate.id === user.id) && (
+                                  <span className="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 text-[9px] font-black uppercase">
+                                    (You)
+                                  </span>
+                                )}
+                              </h4>
+                              <p className="text-[11px] font-mono text-purple-400">{mate.rollNumber || "Registered Student"}</p>
+                              <p className="text-xs text-gray-400 line-clamp-2">{mate.bio || "Student at CampusCode"}</p>
+                            </div>
+                          </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {classroomData.notes?.length === 0 ? (
-                  <div className="col-span-full text-center py-12 text-gray-500 glass-card rounded-3xl">
-                    No notes uploaded for {selectedClass} yet.
+                          <div className="flex items-center justify-between pt-3 border-t border-slate-800/80">
+                            <div className="text-xs font-mono">
+                              <span className="text-emerald-400 font-bold">⚡ {mate.xp || 0} XP</span>
+                              <span className="text-gray-400 text-[10px] block">Level {mate.level || 1}</span>
+                            </div>
+
+                            <Link
+                              href={`/profile/${mate.name.toLowerCase().replace(/\s+/g, "")}`}
+                              className="px-3 py-1.5 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-bold hover:bg-purple-500/20 transition-all flex items-center gap-1"
+                            >
+                              <span>View Profile</span>
+                            </Link>
+                          </div>
+                        </div>
+                      ))
+                    )}
                   </div>
-                ) : (
-                  classroomData.notes?.map((note: any) => (
-                    <div key={note.id} className="p-5 rounded-3xl glass-card border border-slate-800 flex items-start justify-between gap-4">
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <span className="px-2.5 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 text-[10px] font-black uppercase">
-                            {note.fileType || "PDF"}
-                          </span>
-                          <span className="text-xs font-bold text-purple-400">{note.subject}</span>
+                );
+              })()}
+
+              {/* TAB 2: CLASS PROJECTS */}
+              {activeTab === "projects" && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {classroomData.projects?.length === 0 ? (
+                    <div className="col-span-full text-center py-12 text-gray-500 glass-card rounded-3xl">
+                      No student projects published for {selectedClass} yet.
+                    </div>
+                  ) : (
+                    classroomData.projects?.map((p: any) => (
+                      <div key={p.id} className="rounded-3xl glass-card border border-slate-800 p-6 space-y-4 hover:border-purple-500/40 transition-all">
+                        <div className="flex items-start justify-between gap-4">
+                          <div>
+                            <h4 className="text-base font-bold text-white mb-1">{p.title}</h4>
+                            <p className="text-xs text-gray-400 leading-relaxed">{p.description}</p>
+                          </div>
                         </div>
 
-                        <h4 className="text-sm font-bold text-white">{note.title}</h4>
-                        <p className="text-xs text-gray-400 leading-relaxed">{note.description}</p>
+                        <div className="flex items-center justify-between pt-3 border-t border-slate-800/80">
+                          <div className="flex items-center gap-2">
+                            <img
+                              src={p.user?.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80"}
+                              alt={p.user?.name}
+                              className="w-6 h-6 rounded-full object-cover"
+                            />
+                            <span className="text-xs font-semibold text-gray-300">{p.user?.name}</span>
+                          </div>
 
-                        <p className="text-[10px] text-gray-500">
-                          Uploaded by: <b>{note.teacher?.name || "Department Faculty"}</b> • {new Date(note.createdAt).toLocaleDateString()}
-                        </p>
+                          <div className="flex items-center gap-2">
+                            {p.githubUrl && (
+                              <a
+                                href={p.githubUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-gray-400 hover:text-white transition-all"
+                              >
+                                <Github className="w-3.5 h-3.5" />
+                              </a>
+                            )}
+                            {p.liveDemoUrl && (
+                              <a
+                                href={p.liveDemoUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="p-2 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-300 hover:text-white transition-all"
+                              >
+                                <ExternalLink className="w-3.5 h-3.5" />
+                              </a>
+                            )}
+                          </div>
+                        </div>
                       </div>
-
-                      <a
-                        href={note.fileUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="px-3.5 py-2 rounded-xl gradient-bg text-white text-xs font-bold shadow-glow hover:opacity-95 flex items-center gap-1.5 shrink-0"
-                      >
-                        <Download className="w-3.5 h-3.5" />
-                        <span>Download</span>
-                      </a>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* TAB 4: CLASS ANNOUNCEMENTS */}
-          {activeTab === "announcements" && (
-            <div className="space-y-4">
-              {classroomData.announcements?.length === 0 ? (
-                <div className="text-center py-12 text-gray-500 glass-card rounded-3xl">
-                  No notices posted for {selectedClass} yet.
+                    ))
+                  )}
                 </div>
-              ) : (
-                classroomData.announcements?.map((anc: any) => (
-                  <div key={anc.id} className="p-5 rounded-3xl glass-card border border-purple-500/30 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="px-2.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30 text-[10px] font-black uppercase">
-                        Class Announcement
-                      </span>
-                      <span className="text-xs text-gray-400">{new Date(anc.createdAt).toLocaleDateString()}</span>
-                    </div>
-                    <h3 className="text-base font-bold text-white">{anc.title}</h3>
-                    <p className="text-xs text-gray-300 leading-relaxed">{anc.content}</p>
-                  </div>
-                ))
               )}
-            </div>
+
+              {/* TAB 3: TEACHER NOTES & STUDY MATERIALS */}
+              {activeTab === "notes" && (
+                <div className="space-y-3">
+                  {classroomData.notes?.length === 0 ? (
+                    <div className="text-center py-12 text-gray-500 glass-card rounded-3xl">
+                      No study notes published by Class Teacher for {selectedClass} yet.
+                    </div>
+                  ) : (
+                    classroomData.notes?.map((n: any) => (
+                      <div key={n.id} className="rounded-2xl glass-card border border-slate-800 p-4 flex items-center justify-between gap-4 hover:border-purple-500/40 transition-all">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-300 flex items-center justify-center font-bold">
+                            <FileText className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <h4 className="text-sm font-bold text-white">{n.title}</h4>
+                            <p className="text-xs text-gray-400">{n.description || "Course study material"}</p>
+                            <span className="text-[10px] text-purple-400 font-mono">Subject: {n.subject || "Computer Science"}</span>
+                          </div>
+                        </div>
+
+                        <a
+                          href={n.fileUrl || "#"}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="px-3.5 py-2 rounded-xl bg-purple-600 text-white text-xs font-bold shadow-glow hover:opacity-95 transition-all flex items-center gap-1.5 shrink-0"
+                        >
+                          <Download className="w-3.5 h-3.5" />
+                          <span>Download {n.fileType || "PDF"}</span>
+                        </a>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+
+              {/* TAB 4: NOTICES & ANNOUNCEMENTS */}
+              {activeTab === "announcements" && (
+                <div className="space-y-3">
+                  {classroomData.announcements?.length === 0 ? (
+                    <div className="text-center py-12 text-gray-500 glass-card rounded-3xl">
+                      No official notices posted for {selectedClass} yet.
+                    </div>
+                  ) : (
+                    classroomData.announcements?.map((a: any) => (
+                      <div key={a.id} className="rounded-2xl glass-card border border-slate-800 p-5 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                            <Building2 className="w-4 h-4 text-purple-400" />
+                            <span>{a.title}</span>
+                          </h4>
+                          <span className="text-[10px] text-gray-500 font-mono">
+                            {a.createdAt ? new Date(a.createdAt).toLocaleDateString() : "Recent Notice"}
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-300 leading-relaxed">{a.message}</p>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+            </>
           )}
         </main>
       </div>
 
-      {/* Teacher Upload Notes Modal */}
+      {/* UPLOAD NOTES MODAL */}
       {showUploadModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-          <div className="relative w-full max-w-lg glass-card border border-purple-500/30 rounded-3xl p-6 space-y-4">
+        <div className="fixed inset-0 z-[999] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-lg glass-card border border-purple-500/40 rounded-3xl p-6 relative space-y-4 animate-in zoom-in-95 duration-200">
             <button
               onClick={() => setShowUploadModal(false)}
-              className="absolute top-4 right-4 p-2 rounded-xl text-gray-400 hover:text-white"
+              className="absolute top-5 right-5 p-1 rounded-lg text-gray-400 hover:text-white"
             >
               <X className="w-5 h-5" />
             </button>
