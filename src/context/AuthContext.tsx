@@ -120,9 +120,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setToken(null);
     localStorage.removeItem("campuscode_user");
     localStorage.removeItem("campuscode_token");
-    setTimeout(() => {
-      window.location.href = "/";
-    }, 1000);
   };
 
   const updateUserAvatar = async (newAvatarUrl: string) => {

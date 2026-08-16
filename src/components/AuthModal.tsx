@@ -468,7 +468,7 @@ export function AuthModal({ isOpen = false, onClose = () => {}, defaultMode = "l
               className="w-2/3 py-3 rounded-xl gradient-bg text-white font-bold shadow-glow hover:opacity-95 transition-all text-xs flex items-center justify-center gap-2"
             >
               {loading ? (
-                "Processing..."
+                mode === "login" ? "Signing in..." : mode === "register" ? "Creating account..." : mode === "forgot" ? "Sending OTP..." : "Verifying..."
               ) : mode === "login" ? (
                 "Sign In"
               ) : mode === "register" ? (
