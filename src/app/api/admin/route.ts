@@ -11,25 +11,25 @@ export async function GET(_req: Request) {
     const studentRole = await prisma.roles.findFirst({ where: { name: { equals: "student", mode: "insensitive" } } });
     const teacherRole = await prisma.roles.findFirst({ where: { name: { equals: "teacher", mode: "insensitive" } } });
     const adminRole = await prisma.roles.findFirst({ where: { name: { equals: "admin", mode: "insensitive" } } });
+    const superAdminRole = await prisma.roles.findFirst({ where: { name: { equals: "super_admin", mode: "insensitive" } } });
 
-    const totalStudents = await prisma.users.count({
-      where: {
-        AND: [
-          teacherRole ? { role_id: { not: teacherRole.id } } : {},
-          adminRole ? { role_id: { not: adminRole.id } } : {},
-          {
-            OR: [
-              studentRole ? { role_id: studentRole.id } : {},
-              { roles: { name: { equals: "student", mode: "insensitive" } } },
-              { role_id: null },
-            ],
+    const totalStudents = studentRole
+      ? await prisma.users.count({
+          where: {
+            role_id: studentRole.id,
           },
+        })
+      : 0;
+
+    const totalTeachers = teacherRole ? await prisma.users.count({ where: { role_id: teacherRole.id } }) : 0;
+    const totalAdmins = await prisma.users.count({
+      where: {
+        OR: [
+          adminRole ? { role_id: adminRole.id } : {},
+          superAdminRole ? { role_id: superAdminRole.id } : {},
         ],
       },
     });
-
-    const totalTeachers = teacherRole ? await prisma.users.count({ where: { role_id: teacherRole.id } }) : 0;
-    const totalAdmins = adminRole ? await prisma.users.count({ where: { role_id: adminRole.id } }) : 0;
 
     const totalProblems = await prisma.problems.count({ where: { status: "published" } });
     const totalSubmissions = await prisma.submissions.count();

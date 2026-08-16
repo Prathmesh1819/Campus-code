@@ -153,9 +153,9 @@ export default function DashboardPage() {
   const stats = isAdmin
     ? [
         {
-          label: "Enrolled Students",
+          label: "Total Registered Students",
           value: `${teacherStats.students} Students`,
-          sub: "Total registered students across CampusCode",
+          sub: "Total registered student accounts across CampusCode",
           icon: Users,
           color: "from-purple-500 to-indigo-600",
         },

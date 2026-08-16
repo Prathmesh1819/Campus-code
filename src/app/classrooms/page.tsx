@@ -343,9 +343,7 @@ export default function ClassroomsPage() {
                   {isTeacherOrAdmin ? "Enrolled Students" : "Classmates"}
                 </span>
                 <span className="text-lg font-black text-white">
-                  {user && user.role === "STUDENT" && !classroomData.classmates?.some((m: any) => m.email === user.email)
-                    ? (classroomData.classmates?.length || 0) + 1
-                    : classroomData.classmates?.length || 0} Students
+                  {classroomData.classmates?.length || 0} Students
                 </span>
               </div>
               <div className="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800">
@@ -372,7 +370,7 @@ export default function ClassroomsPage() {
                   activeTab === "classmates" ? "bg-purple-600/20 text-purple-300 border border-purple-500/30" : "text-gray-400 hover:text-white"
                 }`}
               >
-                Classmates ({user && user.role === "STUDENT" && !classroomData.classmates?.some((m: any) => m.email === user.email) ? (classroomData.classmates?.length || 0) + 1 : classroomData.classmates?.length || 0})
+                Classmates ({classroomData.classmates?.length || 0})
               </button>
               <button
                 onClick={() => setActiveTab("projects")}
@@ -435,37 +433,16 @@ export default function ClassroomsPage() {
             <>
               {/* TAB 1: CLASSMATES / ENROLLED STUDENTS ROSTER */}
               {activeTab === "classmates" && (() => {
-                const rawMates = classroomData.classmates || [];
-                const mergedMates = [...rawMates];
-                if (user && user.role === "STUDENT") {
-                  const exists = mergedMates.some(
-                    (m: any) => m.id === user.id || m.email === user.email || (m.name && m.name.toLowerCase() === user.name.toLowerCase())
-                  );
-                  if (!exists) {
-                    mergedMates.push({
-                      id: user.id || "current-user",
-                      name: user.name,
-                      email: user.email,
-                      rollNumber: user.rollNumber || "A-244002",
-                      className: user.className || selectedClass,
-                      branch: user.branch || "Computer Science",
-                      avatar: user.avatar || "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&auto=format&fit=crop&q=80",
-                      xp: user.xp || 0,
-                      level: user.level || 1,
-                      streakDays: user.streakDays || 0,
-                      bio: user.bio || "Student at Sarhad College",
-                    });
-                  }
-                }
+                const mates = classroomData.classmates || [];
 
                 return (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {mergedMates.length === 0 ? (
+                    {mates.length === 0 ? (
                       <div className="col-span-full text-center py-12 text-gray-500 glass-card rounded-3xl">
                         No registered students found in {selectedClass} yet.
                       </div>
                     ) : (
-                      mergedMates.map((mate: any) => (
+                      mates.map((mate: any) => (
                         <div
                           key={mate.id}
                           className="rounded-3xl glass-card border border-slate-800 p-5 flex flex-col justify-between space-y-4 hover:border-purple-500/40 transition-all group"
