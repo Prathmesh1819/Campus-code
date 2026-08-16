@@ -42,7 +42,7 @@ export default function ProblemsPage() {
   const [sampleExplanation, setSampleExplanation] = useState("Because nums[0] + nums[1] == 9, we return [0, 1].");
   const [targetCompaniesStr, setTargetCompaniesStr] = useState("Google, Meta, Amazon");
 
-  const isTeacherOrAdmin = user?.role === "TEACHER" || user?.role === "ADMIN";
+  const isTeacherOrAdmin = user?.role === "TEACHER" || user?.role === "ADMIN" || user?.role === "SUPER_ADMIN";
 
   useEffect(() => {
     fetchProblems();

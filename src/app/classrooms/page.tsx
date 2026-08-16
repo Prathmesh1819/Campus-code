@@ -29,7 +29,7 @@ export default function ClassroomsPage() {
   const [selectedClass, setSelectedClass] = useState(user?.className || "TY BSc CS");
   const [activeTab, setActiveTab] = useState<"classmates" | "projects" | "notes" | "announcements">("classmates");
 
-  const isTeacherOrAdmin = user?.role === "TEACHER" || user?.role === "ADMIN";
+  const isTeacherOrAdmin = user?.role === "TEACHER" || user?.role === "ADMIN" || user?.role === "SUPER_ADMIN";
   const isClassTeacher = selectedClass === "TY BSc CS";
 
   const [classroomData, setClassroomData] = useState<any>({

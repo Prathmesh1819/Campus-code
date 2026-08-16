@@ -167,7 +167,7 @@ export function Navbar({ onToggleSidebar }: NavbarProps) {
                   <span className="text-amber-400 flex items-center gap-1">
                     <GraduationCap className="w-3.5 h-3.5" /> TEACHER
                   </span>
-                ) : user?.role === "ADMIN" ? (
+                ) : (user?.role === "ADMIN" || user?.role === "SUPER_ADMIN") ? (
                   <span className="text-rose-400 flex items-center gap-1">
                     <ShieldCheck className="w-3.5 h-3.5" /> ADMIN
                   </span>

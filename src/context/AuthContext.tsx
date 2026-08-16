@@ -7,7 +7,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  role: "STUDENT" | "TEACHER" | "ADMIN";
+  role: "STUDENT" | "TEACHER" | "ADMIN" | "SUPER_ADMIN";
   rollNumber?: string;
   className?: string;
   branch?: string;
@@ -28,7 +28,7 @@ interface AuthContextType {
   login: (userData: User, token: string) => void;
   logout: () => void;
   refreshUserData: (updatedFields?: Partial<User>) => Promise<void>;
-  switchRole: (role: "STUDENT" | "TEACHER" | "ADMIN") => Promise<void>;
+  switchRole: (role: "STUDENT" | "TEACHER" | "ADMIN" | "SUPER_ADMIN") => Promise<void>;
   updateUserAvatar: (newAvatarUrl: string) => Promise<void>;
   updateUserProfile: (updatedFields: Partial<User>) => Promise<void>;
   isAuthModalOpen: boolean;
@@ -174,7 +174,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const switchRole = async (role: "STUDENT" | "TEACHER" | "ADMIN") => {
+  const switchRole = async (role: "STUDENT" | "TEACHER" | "ADMIN" | "SUPER_ADMIN") => {
     try {
       const res = await fetch("/api/auth", {
         method: "POST",

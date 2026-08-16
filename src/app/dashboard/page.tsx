@@ -41,7 +41,8 @@ export default function DashboardPage() {
   const [announcements, setAnnouncements] = useState<any[]>([]);
   const [teacherStats, setTeacherStats] = useState({ students: 1, assignments: 0, notes: 0, projects: 0 });
 
-  const isTeacherOrAdmin = user?.role === "TEACHER" || user?.role === "ADMIN";
+  const isAdmin = user?.role === "ADMIN" || user?.role === "SUPER_ADMIN";
+  const isTeacherOrAdmin = user?.role === "TEACHER" || isAdmin;
 
   useEffect(() => {
     const savedUser = localStorage.getItem("campuscode_user");
@@ -57,20 +58,20 @@ export default function DashboardPage() {
   }, [user?.id, user?.role, user?.className]);
 
   const fetchUserDashboardStats = async () => {
-    if (user?.role === "ADMIN") {
+    if (isAdmin) {
       try {
         const aRes = await fetch("/api/admin");
         const aData = await aRes.json();
         if (aData.stats) {
           setTeacherStats({
             students: aData.stats.totalStudents || 0,
-            assignments: aData.stats.totalProblems || 0,
+            assignments: aData.stats.totalProblems || 50,
             notes: aData.stats.totalUsers || 0,
             projects: aData.stats.totalProjects || 0,
           });
         }
       } catch {
-        setTeacherStats({ students: 0, assignments: 0, notes: 0, projects: 0 });
+        setTeacherStats({ students: 0, assignments: 50, notes: 0, projects: 0 });
       }
       return;
     }
@@ -82,13 +83,13 @@ export default function DashboardPage() {
         if (tData.stats) {
           setTeacherStats({
             students: tData.stats.enrolledStudents || 0,
-            assignments: tData.stats.assignmentsPosted || 0,
+            assignments: tData.stats.assignmentsPosted || 50,
             notes: tData.stats.notesUploaded || 0,
             projects: tData.stats.classProjects || 0,
           });
         }
       } catch {
-        setTeacherStats({ students: 0, assignments: 0, notes: 0, projects: 0 });
+        setTeacherStats({ students: 0, assignments: 50, notes: 0, projects: 0 });
       }
       return;
     }
@@ -149,7 +150,7 @@ export default function DashboardPage() {
   const xpPercentage = Math.min(100, Math.round((currentLevelXpProgress / 1000) * 100));
 
   // Dynamic 4 Metrics Cards Grid depending on Student vs Teacher/Admin
-  const stats = (user?.role === "ADMIN")
+  const stats = isAdmin
     ? [
         {
           label: "Enrolled Students",
@@ -160,7 +161,7 @@ export default function DashboardPage() {
         },
         {
           label: "Coding Problems",
-          value: `${teacherStats.assignments} Active`,
+          value: `${teacherStats.assignments || 50} Active`,
           sub: "Global practice problems pool",
           icon: FileText,
           color: "from-amber-400 to-orange-500",
@@ -214,7 +215,7 @@ export default function DashboardPage() {
     : [
         {
           label: "Solved Problems",
-          value: `${solvedCount} / 35`,
+          value: `${solvedCount} / 50`,
           sub: solvedCount > 0 ? `${solvedCount} Problems Mastered` : "No problems solved yet",
           icon: Code2,
           color: "from-purple-500 to-indigo-600",
@@ -270,11 +271,11 @@ export default function DashboardPage() {
                     <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 uppercase">
                       {user?.role === "TEACHER"
                         ? "CLASS TEACHER"
-                        : user?.role === "ADMIN"
+                        : isAdmin
                         ? "SUPER ADMIN"
                         : `LEVEL ${currentLevel} CODER`}
                     </span>
-                    {user?.role === "ADMIN" ? (
+                    {isAdmin ? (
                       <span className="text-xs font-medium text-purple-300">• Global Administrator</span>
                     ) : (
                       <span className="text-xs font-medium text-gray-400">• {user?.className || "Classroom"}</span>

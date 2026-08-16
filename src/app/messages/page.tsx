@@ -257,7 +257,7 @@ export default function MessagesPage() {
                           </h4>
                           <span
                             className={`text-[9px] font-black uppercase px-1.5 py-0.5 rounded ${
-                              c.role === "ADMIN"
+                              c.role === "ADMIN" || c.role === "SUPER_ADMIN"
                                 ? "bg-rose-500/20 text-rose-300"
                                 : c.role === "TEACHER"
                                 ? "bg-amber-500/20 text-amber-300"
@@ -294,7 +294,7 @@ export default function MessagesPage() {
                           <span>{activePeer.name}</span>
                           <span
                             className={`text-[9px] font-black uppercase px-2 py-0.5 rounded ${
-                              activePeer.role === "ADMIN"
+                              activePeer.role === "ADMIN" || activePeer.role === "SUPER_ADMIN"
                                 ? "bg-rose-500/20 text-rose-300"
                                 : activePeer.role === "TEACHER"
                                 ? "bg-amber-500/20 text-amber-300"

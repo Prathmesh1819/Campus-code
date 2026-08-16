@@ -44,7 +44,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
   const roleNavigation = user?.role === "TEACHER"
     ? [{ name: "Teacher Portal", href: "/teacher", icon: GraduationCap, badge: "Faculty" }]
-    : user?.role === "ADMIN"
+    : (user?.role === "ADMIN" || user?.role === "SUPER_ADMIN")
     ? [{ name: "Admin Console", href: "/admin", icon: ShieldCheck, badge: "Admin" }]
     : [];
 
@@ -166,7 +166,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 {user?.name || "Aarav Sharma"}
               </h4>
               <p className="text-[10px] text-purple-400 font-semibold truncate">
-                {user?.role === "ADMIN" ? "Global Administrator" : user?.role === "TEACHER" ? "Faculty Member" : user?.className || "Campus Student"}
+                {(user?.role === "ADMIN" || user?.role === "SUPER_ADMIN") ? "Global Administrator" : user?.role === "TEACHER" ? "Faculty Member" : user?.className || "Campus Student"}
               </p>
             </div>
             <Settings className="w-4 h-4 text-gray-400 group-hover:text-white" />
