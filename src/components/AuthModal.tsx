@@ -44,10 +44,11 @@ export function AuthModal({ isOpen = false, onClose = () => {}, defaultMode = "l
   const [newPassword, setNewPassword] = useState("");
   const [name, setName] = useState("");
   const [role, setRole] = useState<"STUDENT" | "TEACHER">("STUDENT");
+  const [facultyType, setFacultyType] = useState<"CLASS_TEACHER" | "SUBJECT_TEACHER" | "BOTH" | "OTHER">("BOTH");
   const [rollNumber, setRollNumber] = useState("");
   const [className, setClassName] = useState(availableClassrooms[0]);
   const [branch, setBranch] = useState(availableStreams[0]);
-  const [academicYear, setAcademicYear] = useState("2025-26");
+  const [academicYear, setAcademicYear] = useState("2026-27");
 
   // OTP Inputs start completely empty for manual user entry
   const [otp, setOtp] = useState(["", "", "", ""]);
@@ -88,6 +89,7 @@ export function AuthModal({ isOpen = false, onClose = () => {}, defaultMode = "l
             email,
             password,
             role,
+            facultyType,
             rollNumber,
             className,
             branch,
@@ -265,7 +267,7 @@ export function AuthModal({ isOpen = false, onClose = () => {}, defaultMode = "l
                 </button>
               </div>
 
-              {/* 2-Column Grid for Name & Roll Number */}
+              {/* 2-Column Grid for Name & Roll Number / Faculty Type */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="font-bold text-gray-300 block mb-1">Full Name</label>
@@ -282,7 +284,7 @@ export function AuthModal({ isOpen = false, onClose = () => {}, defaultMode = "l
                   </div>
                 </div>
 
-                {role === "STUDENT" && (
+                {role === "STUDENT" ? (
                   <div>
                     <label className="font-bold text-gray-300 block mb-1">Roll Number</label>
                     <input
@@ -292,6 +294,20 @@ export function AuthModal({ isOpen = false, onClose = () => {}, defaultMode = "l
                       onChange={(e) => setRollNumber(e.target.value)}
                       className="w-full bg-slate-900 border border-slate-800 focus:border-purple-500 rounded-xl py-2.5 px-3 text-white focus:outline-none"
                     />
+                  </div>
+                ) : (
+                  <div>
+                    <label className="font-bold text-gray-300 block mb-1">Faculty Role Type</label>
+                    <select
+                      value={facultyType}
+                      onChange={(e: any) => setFacultyType(e.target.value)}
+                      className="w-full bg-slate-900 border border-slate-800 focus:border-purple-500 rounded-xl py-2.5 px-3 text-white focus:outline-none"
+                    >
+                      <option value="CLASS_TEACHER">Class Teacher</option>
+                      <option value="SUBJECT_TEACHER">Subject Teacher</option>
+                      <option value="BOTH">Both (Class & Subject Teacher)</option>
+                      <option value="OTHER">Other Faculty</option>
+                    </select>
                   </div>
                 )}
               </div>

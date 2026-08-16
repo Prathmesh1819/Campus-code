@@ -1,8 +1,30 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { verifyAccessToken } from "@/lib/auth";
+import { cookies } from "next/headers";
 
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
+
+async function getAuthUser(req: Request) {
+  let token = "";
+  const authHeader = req.headers.get("authorization");
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    token = authHeader.substring(7);
+  } else {
+    const cookieStore = await cookies();
+    token = cookieStore.get("token")?.value || "";
+  }
+
+  if (!token) return null;
+  const payload = verifyAccessToken(token);
+  if (!payload?.userId) return null;
+
+  return await prisma.users.findUnique({
+    where: { id: payload.userId },
+    include: { roles: true },
+  });
+}
 
 export async function GET(_req: Request) {
   try {
@@ -41,7 +63,7 @@ export async function GET(_req: Request) {
       title: a.title,
       content: a.message,
       createdAt: a.created_at,
-      author: a.users ? { name: a.users.full_name || a.users.username, avatar: a.users.profile_image } : { name: "Dr. Vikramaditya Gupta" },
+      author: a.users ? { name: a.users.full_name || a.users.username, avatar: a.users.profile_image } : { name: "Department Faculty" },
     }));
 
     const rawAssignments = await prisma.assignments.findMany({
@@ -74,18 +96,44 @@ export async function GET(_req: Request) {
 
 export async function POST(req: Request) {
   try {
+    const authUser = await getAuthUser(req);
+    const userRole = authUser?.roles?.name?.toLowerCase() || "";
+
+    if (!authUser || (userRole !== "teacher" && userRole !== "admin" && userRole !== "super_admin")) {
+      return NextResponse.json({ error: "Unauthorized. Only Faculty & Teachers can access teacher portal actions." }, { status: 403 });
+    }
+
     const body = await req.json();
-    const { type, teacherId, title, description, content } = body;
+    const { type, courseId, title, description, content } = body;
+
+    const course = courseId ? await prisma.courses.findUnique({ where: { id: courseId } }) : await prisma.courses.findFirst();
+
+    if (!course) {
+      return NextResponse.json({ assignment: { id: "asgn-" + Date.now(), title, description } });
+    }
+
+    // Teacher authorization check: Must have active teaching assignment if not Admin
+    if (userRole === "teacher") {
+      const assignmentCount = await prisma.faculty_teaching_assignments.count({
+        where: {
+          teacher_id: authUser.id,
+          OR: [{ course_id: course.id }, { course_id: null }],
+        },
+      });
+
+      if (assignmentCount === 0) {
+        return NextResponse.json(
+          { error: "Access Denied. You do not have an active teaching assignment for this course/class." },
+          { status: 403 }
+        );
+      }
+    }
 
     if (type === "assignment") {
-      const course = await prisma.courses.findFirst();
-      if (!course) {
-        return NextResponse.json({ assignment: { id: "asgn-" + Date.now(), title, description } });
-      }
       const assignment = await prisma.assignments.create({
         data: {
           course_id: course.id,
-          created_by: teacherId || null,
+          created_by: authUser.id,
           title: title || "New Assignment",
           description: description || title || "Assignment description",
           due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
@@ -95,14 +143,10 @@ export async function POST(req: Request) {
     }
 
     if (type === "announcement") {
-      const course = await prisma.courses.findFirst();
-      if (!course) {
-        return NextResponse.json({ announcement: { id: "ann-" + Date.now(), title, content } });
-      }
       const announcement = await prisma.announcements.create({
         data: {
           course_id: course.id,
-          posted_by: teacherId || null,
+          posted_by: authUser.id,
           title: title || "Class Announcement",
           message: content || title || "Announcement details",
         },

@@ -441,7 +441,7 @@ export default function ProblemsPage() {
                 <span className="font-bold text-purple-300 uppercase tracking-wider block">Sample Test Case #1</span>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="text-gray-400 block mb-1">Sample Input</label>
+                    <label className="text-gray-400 block mb-1">Input</label>
                     <input
                       type="text"
                       required

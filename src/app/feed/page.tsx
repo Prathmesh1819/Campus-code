@@ -4,19 +4,15 @@ import React, { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Sidebar } from "@/components/Sidebar";
 import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/lib/supabase";
 import {
   MessageSquareShare,
   Heart,
   MessageSquare,
   Share2,
   Code2,
-  Image as ImageIcon,
   Send,
-  Sparkles,
-  TrendingUp,
-  Bookmark,
   UserCheck,
-  Hash,
 } from "lucide-react";
 
 export default function FeedPage() {
@@ -30,17 +26,20 @@ export default function FeedPage() {
   const [codeSnippet, setCodeSnippet] = useState("");
   const [showCodeInput, setShowCodeInput] = useState(false);
 
-  useEffect(() => {
-    fetchPosts();
-  }, []);
-
   const fetchPosts = async () => {
     try {
       const res = await fetch("/api/feed");
       const data = await res.json();
-      if (data.posts) setPosts(data.posts);
+      if (data.posts) {
+        setPosts((prevPosts) => {
+          // Deduplicate incoming posts by ID
+          const existingMap = new Map(prevPosts.map((p) => [p.id, p]));
+          data.posts.forEach((newP: any) => existingMap.set(newP.id, newP));
+          return data.posts;
+        });
+      }
     } catch {
-      // Fallback posts
+      // Fallback posts if API is unreachable
       setPosts([
         {
           id: "post-1",
@@ -64,6 +63,44 @@ export default function FeedPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchPosts();
+
+    // Setup Supabase Realtime channel subscription
+    const channel = supabase
+      .channel("feed-realtime-channel")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "discussion_posts" },
+        () => {
+          fetchPosts();
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "discussion_comments" },
+        () => {
+          fetchPosts();
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "discussion_votes" },
+        () => {
+          fetchPosts();
+        }
+      )
+      .subscribe((status, err) => {
+        if (err) {
+          console.warn("[Realtime Feed] Subscription error:", err);
+        }
+      });
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();

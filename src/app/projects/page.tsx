@@ -4,20 +4,16 @@ import React, { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Sidebar } from "@/components/Sidebar";
 import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/lib/supabase";
 import {
   FolderGit2,
   Heart,
-  MessageSquare,
   ExternalLink,
   Github,
   Plus,
   Search,
-  Sparkles,
   Trophy,
-  Tag,
   Eye,
-  Share2,
-  Bookmark,
   X,
 } from "lucide-react";
 
@@ -39,10 +35,6 @@ export default function ProjectsPage() {
   const [liveDemoUrl, setLiveDemoUrl] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [isHackathonWinner, setIsHackathonWinner] = useState(false);
-
-  useEffect(() => {
-    fetchProjects();
-  }, [selectedCategory, search]);
 
   const fetchProjects = async () => {
     try {
@@ -89,6 +81,43 @@ export default function ProjectsPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchProjects();
+
+    const channel = supabase
+      .channel("projects-realtime-channel")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "projects" },
+        () => {
+          fetchProjects();
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "project_likes" },
+        () => {
+          fetchProjects();
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "project_comments" },
+        () => {
+          fetchProjects();
+        }
+      )
+      .subscribe((status, err) => {
+        if (err) {
+          console.warn("[Realtime Projects] Subscription error:", err);
+        }
+      });
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [selectedCategory, search]);
 
   const handleLike = async (projectId: string) => {
     try {

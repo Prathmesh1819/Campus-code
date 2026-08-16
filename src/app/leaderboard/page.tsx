@@ -3,20 +3,15 @@
 import React, { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Sidebar } from "@/components/Sidebar";
-import Link from "next/link";
+import { supabase } from "@/lib/supabase";
 import {
   Trophy,
   Crown,
-  Sparkles,
   Flame,
-  Zap,
   TrendingUp,
   TrendingDown,
   Minus,
-  Filter,
   Medal,
-  Award,
-  Search,
 } from "lucide-react";
 
 export default function LeaderboardPage() {
@@ -25,10 +20,6 @@ export default function LeaderboardPage() {
   const [period, setPeriod] = useState<"WEEKLY" | "MONTHLY" | "ALL_TIME">("ALL_TIME");
   const [rankings, setRankings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchLeaderboard();
-  }, [scope, period]);
 
   const fetchLeaderboard = async () => {
     try {
@@ -41,6 +32,29 @@ export default function LeaderboardPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchLeaderboard();
+
+    const channel = supabase
+      .channel("leaderboard-realtime-channel")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "solved_problems" },
+        () => {
+          fetchLeaderboard();
+        }
+      )
+      .subscribe((status, err) => {
+        if (err) {
+          console.warn("[Realtime Leaderboard] Subscription error:", err);
+        }
+      });
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [scope, period]);
 
   const top3 = rankings.slice(0, 3);
   const remainingRankings = rankings.slice(3);

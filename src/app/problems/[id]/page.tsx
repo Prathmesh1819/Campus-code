@@ -137,6 +137,29 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
     }
   }, [user?.id, problem?.id]);
 
+  useEffect(() => {
+    if (problem && typeof window !== "undefined") {
+      let parsedEx = [];
+      try {
+        parsedEx = problem.examples ? JSON.parse(problem.examples) : [];
+      } catch {}
+      (window as any).__CAMPUSCODE_PROBLEM_CONTEXT__ = {
+        title: problem.title,
+        difficulty: problem.difficulty,
+        category: problem.category,
+        description: problem.description,
+        constraints: problem.constraints,
+        examples: parsedEx,
+        userCode: editorRef.current ? editorRef.current.getValue() : code,
+      };
+    }
+    return () => {
+      if (typeof window !== "undefined") {
+        delete (window as any).__CAMPUSCODE_PROBLEM_CONTEXT__;
+      }
+    };
+  }, [problem, code]);
+
   const fetchProblemDetail = async () => {
     try {
       const resolvedParams = await params;
@@ -380,8 +403,11 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
                     <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Examples</h3>
                     {parsedExamples.map((ex: any, i: number) => (
                       <div key={i} className="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800/80 space-y-1.5 text-xs font-mono">
+                        {parsedExamples.length > 1 && (
+                          <div className="text-[11px] font-bold text-purple-300 font-sans mb-1">Example {i + 1}</div>
+                        )}
                         <div><span className="text-purple-400 font-bold">Input:</span> <span className="text-gray-200">{ex.input}</span></div>
-                        <div><span className="text-emerald-400 font-bold">Output:</span> <span className="text-gray-200">{ex.output}</span></div>
+                        <div><span className="text-emerald-400 font-bold">Output:</span> <span className="text-gray-200">{ex.output || ex.expectedOutput}</span></div>
                         {ex.explanation && (
                           <div className="text-[11px] text-gray-400 font-sans mt-1">
                             <span className="font-semibold text-gray-300">Explanation:</span> {ex.explanation}

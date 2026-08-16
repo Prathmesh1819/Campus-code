@@ -30,7 +30,7 @@ import { availableStreams, availableClassrooms } from "@/components/AuthModal";
 export default function AdminPage() {
   const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"users" | "posts" | "ai_assistant">("users");
+  const [activeTab, setActiveTab] = useState<"users" | "faculty" | "posts" | "ai_assistant">("users");
   const [aiSettings, setAiSettings] = useState({
     aiName: "Ido",
     aiAvatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop&q=80",
@@ -57,6 +57,19 @@ export default function AdminPage() {
   const [userRolesState, setUserRolesState] = useState<Record<string, string>>({});
   const [updateMsg, setUpdateMsg] = useState("");
 
+  // Faculty Assignments State
+  const [facultyData, setFacultyData] = useState<any[]>([]);
+  const [classesList, setClassesList] = useState<any[]>([]);
+  const [coursesList, setCoursesList] = useState<any[]>([]);
+  const [semestersList, setSemestersList] = useState<any[]>([]);
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [assignTeacherId, setAssignTeacherId] = useState("");
+  const [assignType, setAssignType] = useState<"CLASS_TEACHER" | "SUBJECT_TEACHER">("CLASS_TEACHER");
+  const [assignClassId, setAssignClassId] = useState("");
+  const [assignCourseId, setAssignCourseId] = useState("");
+  const [assignSemesterId, setAssignSemesterId] = useState("");
+  const [assigning, setAssigning] = useState(false);
+
   // Add User Modal State
   const [showAddUserModal, setShowAddUserModal] = useState(false);
   const [newUserName, setNewUserName] = useState("");
@@ -82,8 +95,80 @@ export default function AdminPage() {
 
   useEffect(() => {
     fetchAdminData();
+    fetchFacultyAssignments();
     fetchAiSettings();
   }, []);
+
+  const fetchFacultyAssignments = async () => {
+    try {
+      const res = await fetch(`/api/admin/faculty-assignments?t=${Date.now()}`);
+      const data = await res.json();
+      if (res.ok) {
+        setFacultyData(data.faculty || []);
+        setClassesList(data.classes || []);
+        setCoursesList(data.courses || []);
+        setSemestersList(data.semesters || []);
+      }
+    } catch (err) {
+      console.error("Error loading faculty assignments:", err);
+    }
+  };
+
+  const handleCreateAssignment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!assignTeacherId || !assignClassId) {
+      alert("Please select a Faculty member and Class.");
+      return;
+    }
+    if (assignType === "SUBJECT_TEACHER" && !assignCourseId) {
+      alert("Please select a Subject / Course for Subject Teacher assignment.");
+      return;
+    }
+    setAssigning(true);
+    try {
+      const res = await fetch("/api/admin/faculty-assignments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          teacherId: assignTeacherId,
+          classId: assignClassId,
+          courseId: assignType === "SUBJECT_TEACHER" ? assignCourseId : null,
+          semesterId: assignSemesterId || null,
+          assignmentType: assignType,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setUpdateMsg("Faculty teaching assignment created successfully! 🎉");
+        setShowAssignModal(false);
+        fetchFacultyAssignments();
+        setTimeout(() => setUpdateMsg(""), 3000);
+      } else {
+        alert("Assignment failed: " + data.error);
+      }
+    } catch (err: any) {
+      alert("Error: " + err.message);
+    } finally {
+      setAssigning(false);
+    }
+  };
+
+  const handleRemoveAssignment = async (assignmentId: string) => {
+    if (!confirm("Are you sure you want to revoke this teaching assignment?")) return;
+    try {
+      const res = await fetch(`/api/admin/faculty-assignments?assignmentId=${assignmentId}`, { method: "DELETE" });
+      const data = await res.json();
+      if (res.ok) {
+        setUpdateMsg("Teaching assignment revoked.");
+        fetchFacultyAssignments();
+        setTimeout(() => setUpdateMsg(""), 3000);
+      } else {
+        alert("Revoke failed: " + data.error);
+      }
+    } catch (err: any) {
+      alert("Error: " + err.message);
+    }
+  };
 
   const fetchAiSettings = async () => {
     try {
@@ -371,6 +456,18 @@ export default function AdminPage() {
               </button>
 
               <button
+                onClick={() => setActiveTab("faculty")}
+                className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
+                  activeTab === "faculty"
+                    ? "bg-rose-600 text-white shadow-glow"
+                    : "bg-slate-900 text-gray-400 hover:text-white"
+                }`}
+              >
+                <GraduationCap className="w-4 h-4 text-amber-400" />
+                <span>Faculty Management & Assignments ({facultyData.length})</span>
+              </button>
+
+              <button
                 onClick={() => setActiveTab("posts")}
                 className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
                   activeTab === "posts"
@@ -489,6 +586,155 @@ export default function AdminPage() {
                     )}
                   </tbody>
                 </table>
+              </div>
+            </div>
+          )}
+
+          {/* TAB: FACULTY MANAGEMENT & TEACHING ASSIGNMENTS */}
+          {activeTab === "faculty" && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-black text-white flex items-center gap-2">
+                    <GraduationCap className="w-5 h-5 text-amber-400" />
+                    Faculty Roster & Teaching Assignments
+                  </h3>
+                  <p className="text-xs text-gray-400">
+                    Assign faculty members as Class Teachers or Subject Teachers. Assignments determine Virtual Classroom access.
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    fetchFacultyAssignments();
+                    setShowAssignModal(true);
+                  }}
+                  className="px-4 py-2.5 rounded-xl gradient-bg text-white text-xs font-bold shadow-glow hover:opacity-95 flex items-center gap-1.5"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Assign Teaching Role</span>
+                </button>
+              </div>
+
+              <div className="rounded-3xl glass-card border border-slate-800 overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs text-gray-300">
+                    <thead className="bg-slate-900/80 text-gray-400 font-mono text-[11px] uppercase border-b border-slate-800">
+                      <tr>
+                        <th className="px-6 py-4">Faculty Member</th>
+                        <th className="px-6 py-4">Faculty Type</th>
+                        <th className="px-6 py-4">Department</th>
+                        <th className="px-6 py-4">Assigned Class(es)</th>
+                        <th className="px-6 py-4">Assigned Subject(s)</th>
+                        <th className="px-6 py-4 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-800/50">
+                      {facultyData.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} className="text-center py-12 text-gray-500">
+                            No faculty members found in roster yet.
+                          </td>
+                        </tr>
+                      ) : (
+                        facultyData.map((f: any) => {
+                          const classAssignments = f.assignments.filter((a: any) => a.assignmentType === "CLASS_TEACHER");
+                          const subjectAssignments = f.assignments.filter((a: any) => a.assignmentType === "SUBJECT_TEACHER");
+
+                          return (
+                            <tr key={f.id} className="hover:bg-slate-900/40 transition-all">
+                              <td className="px-6 py-4">
+                                <div className="font-bold text-white text-sm">{f.name}</div>
+                                <div className="text-[11px] text-gray-400 font-mono">{f.email}</div>
+                              </td>
+                              <td className="px-6 py-4">
+                                <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                                  f.facultyType === "CLASS_TEACHER"
+                                    ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
+                                    : f.facultyType === "SUBJECT_TEACHER"
+                                    ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30"
+                                    : "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                                }`}>
+                                  {f.facultyType === "CLASS_TEACHER"
+                                    ? "Class Teacher"
+                                    : f.facultyType === "SUBJECT_TEACHER"
+                                    ? "Subject Teacher"
+                                    : f.facultyType === "BOTH"
+                                    ? "Class & Subject Teacher"
+                                    : "Other Faculty"}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 text-gray-300 font-medium">
+                                {f.department || "Computer Science"}
+                              </td>
+                              <td className="px-6 py-4">
+                                {classAssignments.length === 0 ? (
+                                  <span className="text-gray-500 italic text-[11px]">Unassigned</span>
+                                ) : (
+                                  <div className="flex flex-wrap gap-1.5">
+                                    {classAssignments.map((a: any) => (
+                                      <span key={a.id} className="px-2 py-0.5 rounded bg-purple-950/80 border border-purple-500/40 text-purple-300 text-[11px] font-bold flex items-center gap-1">
+                                        {a.className}
+                                        <button
+                                          onClick={() => handleRemoveAssignment(a.id)}
+                                          title="Revoke Assignment"
+                                          className="text-gray-400 hover:text-rose-400"
+                                        >
+                                          ×
+                                        </button>
+                                      </span>
+                                    ))}
+                                  </div>
+                                )}
+                              </td>
+                              <td className="px-6 py-4">
+                                {subjectAssignments.length === 0 ? (
+                                  <span className="text-gray-500 italic text-[11px]">Unassigned</span>
+                                ) : (
+                                  <div className="flex flex-wrap gap-1.5">
+                                    {subjectAssignments.map((a: any) => (
+                                      <span key={a.id} className="px-2 py-0.5 rounded bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 text-[11px] font-bold flex items-center gap-1">
+                                        {a.courseTitle || "Subject"} ({a.className})
+                                        <button
+                                          onClick={() => handleRemoveAssignment(a.id)}
+                                          title="Revoke Assignment"
+                                          className="text-gray-400 hover:text-rose-400"
+                                        >
+                                          ×
+                                        </button>
+                                      </span>
+                                    ))}
+                                  </div>
+                                )}
+                              </td>
+                              <td className="px-6 py-4 text-right">
+                                <button
+                                  onClick={() => {
+                                    setAssignTeacherId(f.id);
+                                    setAssignType("CLASS_TEACHER");
+                                    setShowAssignModal(true);
+                                  }}
+                                  className="px-3 py-1.5 rounded-lg bg-purple-600/30 hover:bg-purple-600/50 text-purple-300 border border-purple-500/30 font-bold text-[11px] mr-2 transition-all"
+                                >
+                                  + Class
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setAssignTeacherId(f.id);
+                                    setAssignType("SUBJECT_TEACHER");
+                                    setShowAssignModal(true);
+                                  }}
+                                  className="px-3 py-1.5 rounded-lg bg-cyan-600/30 hover:bg-cyan-600/50 text-cyan-300 border border-cyan-500/30 font-bold text-[11px] transition-all"
+                                >
+                                  + Subject
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           )}
@@ -935,6 +1181,142 @@ export default function AdminPage() {
                 <UserPlus className="w-4 h-4" />
                 <span>Create Account Now</span>
               </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ASSIGN TEACHING ROLE MODAL */}
+      {showAssignModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+          <div className="w-full max-w-md glass-card border border-purple-500/30 rounded-3xl p-6 space-y-5 shadow-2xl">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-black text-white flex items-center gap-2">
+                <GraduationCap className="w-5 h-5 text-purple-400" />
+                Assign Teaching Role
+              </h3>
+              <button
+                onClick={() => setShowAssignModal(false)}
+                className="p-1 rounded-lg text-gray-400 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateAssignment} className="space-y-4 text-xs">
+              <div>
+                <label className="font-bold text-gray-300 block mb-1">Select Faculty Member</label>
+                <select
+                  required
+                  value={assignTeacherId}
+                  onChange={(e) => setAssignTeacherId(e.target.value)}
+                  className="w-full bg-slate-900 border border-slate-800 focus:border-purple-500 rounded-xl py-2.5 px-3 text-white focus:outline-none"
+                >
+                  <option value="">-- Choose Faculty --</option>
+                  {facultyData.map((f: any) => (
+                    <option key={f.id} value={f.id}>
+                      {f.name} ({f.email})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="font-bold text-gray-300 block mb-1">Assignment Type</label>
+                <div className="grid grid-cols-2 gap-2 p-1 bg-slate-950 rounded-xl border border-slate-800">
+                  <button
+                    type="button"
+                    onClick={() => setAssignType("CLASS_TEACHER")}
+                    className={`py-2 rounded-lg font-bold text-xs transition-all ${
+                      assignType === "CLASS_TEACHER"
+                        ? "bg-purple-600 text-white shadow-glow"
+                        : "text-gray-400 hover:text-white"
+                    }`}
+                  >
+                    Class Teacher
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAssignType("SUBJECT_TEACHER")}
+                    className={`py-2 rounded-lg font-bold text-xs transition-all ${
+                      assignType === "SUBJECT_TEACHER"
+                        ? "bg-cyan-600 text-white shadow-glow"
+                        : "text-gray-400 hover:text-white"
+                    }`}
+                  >
+                    Subject Teacher
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="font-bold text-gray-300 block mb-1">Target Class</label>
+                <select
+                  required
+                  value={assignClassId}
+                  onChange={(e) => setAssignClassId(e.target.value)}
+                  className="w-full bg-slate-900 border border-slate-800 focus:border-purple-500 rounded-xl py-2.5 px-3 text-white focus:outline-none"
+                >
+                  <option value="">-- Select Class --</option>
+                  {classesList.map((c: any) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name} ({c.code})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {assignType === "SUBJECT_TEACHER" && (
+                <div>
+                  <label className="font-bold text-gray-300 block mb-1">Subject / Course</label>
+                  <select
+                    required
+                    value={assignCourseId}
+                    onChange={(e) => setAssignCourseId(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-800 focus:border-cyan-500 rounded-xl py-2.5 px-3 text-white focus:outline-none"
+                  >
+                    <option value="">-- Select Course / Subject --</option>
+                    {coursesList.map((cr: any) => (
+                      <option key={cr.id} value={cr.id}>
+                        {cr.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              <div>
+                <label className="font-bold text-gray-300 block mb-1">Semester (Optional)</label>
+                <select
+                  value={assignSemesterId}
+                  onChange={(e) => setAssignSemesterId(e.target.value)}
+                  className="w-full bg-slate-900 border border-slate-800 focus:border-purple-500 rounded-xl py-2.5 px-3 text-white focus:outline-none"
+                >
+                  <option value="">-- Select Semester --</option>
+                  {semestersList.map((s: any) => (
+                    <option key={s.id} value={s.id}>
+                      Semester {s.number}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex items-center gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowAssignModal(false)}
+                  className="w-1/3 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-gray-300 font-bold"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={assigning}
+                  className="w-2/3 py-2.5 rounded-xl gradient-bg text-white font-bold shadow-glow"
+                >
+                  {assigning ? "Saving..." : "Confirm Teaching Assignment"}
+                </button>
+              </div>
             </form>
           </div>
         </div>

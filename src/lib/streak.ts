@@ -1,7 +1,9 @@
 import { prisma } from "./prisma";
 
-function getISTDateStr(date: Date): string {
-  return new Date(date).toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
+export function getISTDateStr(dateInput: Date | string | number): string {
+  const d = new Date(dateInput);
+  if (isNaN(d.getTime())) return "";
+  return d.toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
 }
 
 export async function calculateAndUpdateStreak(userId: string): Promise<number> {
@@ -33,14 +35,15 @@ export async function calculateAndUpdateStreak(userId: string): Promise<number> 
     }
 
     const activeDates = new Set(
-      submissions.map((s) => getISTDateStr(s.created_at || s.submitted_at))
+      submissions
+        .map((s) => getISTDateStr(s.created_at || s.submitted_at))
+        .filter(Boolean)
     );
 
     const now = new Date();
     const todayStr = getISTDateStr(now);
 
-    const yesterday = new Date(now);
-    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterday = new Date(now.getTime() - 86400000);
     const yesterdayStr = getISTDateStr(yesterday);
 
     if (!activeDates.has(todayStr) && !activeDates.has(yesterdayStr)) {
@@ -57,13 +60,14 @@ export async function calculateAndUpdateStreak(userId: string): Promise<number> 
     }
 
     let streak = 0;
-    let curr = activeDates.has(todayStr) ? new Date(now) : yesterday;
+    let dayOffset = activeDates.has(todayStr) ? 0 : 1;
 
     while (true) {
-      const currStr = getISTDateStr(curr);
-      if (activeDates.has(currStr)) {
+      const checkDate = new Date(now.getTime() - dayOffset * 86400000);
+      const checkStr = getISTDateStr(checkDate);
+      if (activeDates.has(checkStr)) {
         streak++;
-        curr.setDate(curr.getDate() - 1);
+        dayOffset++;
       } else {
         break;
       }

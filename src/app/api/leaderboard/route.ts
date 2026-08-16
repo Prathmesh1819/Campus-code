@@ -14,11 +14,25 @@ export async function GET(req: Request) {
     const studentRole = await prisma.roles.findFirst({
       where: { name: { equals: "student", mode: "insensitive" } },
     });
+    const teacherRole = await prisma.roles.findFirst({
+      where: { name: { equals: "teacher", mode: "insensitive" } },
+    });
+    const adminRole = await prisma.roles.findFirst({
+      where: { name: { equals: "admin", mode: "insensitive" } },
+    });
+    const superAdminRole = await prisma.roles.findFirst({
+      where: { name: { equals: "super_admin", mode: "insensitive" } },
+    });
 
-    const whereClause: any = {};
-    if (studentRole) {
-      whereClause.role_id = studentRole.id;
-    }
+    const nonStudentRoleIds = [teacherRole?.id, adminRole?.id, superAdminRole?.id].filter(Boolean) as string[];
+
+    const whereClause: any = {
+      AND: [
+        studentRole ? { role_id: studentRole.id } : { roles: { name: { equals: "student", mode: "insensitive" } } },
+        { role_id: { notIn: nonStudentRoleIds } },
+        { roles: { name: { notIn: ["admin", "super_admin", "teacher", "faculty", "staff"] } } },
+      ],
+    };
 
     if (scope === "CLASS" || className) {
       const targetClass = className || "TY BSc CS";
@@ -26,11 +40,11 @@ export async function GET(req: Request) {
         where: { name: { equals: targetClass, mode: "insensitive" } },
       });
       if (classRecord) {
-        whereClause.class_id = classRecord.id;
+        whereClause.AND.push({ class_id: classRecord.id });
       }
     } else if (scope === "DEPARTMENT" || departmentId) {
       if (departmentId) {
-        whereClause.department_id = departmentId;
+        whereClause.AND.push({ department_id: departmentId });
       }
     }
 

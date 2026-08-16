@@ -151,7 +151,7 @@ export default function TeacherPage() {
                   <span>VERIFIED FACULTY & TEACHER PORTAL</span>
                 </div>
                 <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                  {user?.name || "Dr. Vikramaditya Gupta"}
+                  {user?.name || "Department Faculty"}
                 </h1>
                 <p className="text-xs text-gray-400 mt-0.5">
                   Class Teacher & Faculty Lead • {user?.className || "TY BSc CS"} Batch

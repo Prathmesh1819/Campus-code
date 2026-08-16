@@ -42,7 +42,9 @@ export async function GET(req: Request) {
     const company = searchParams.get("company");
     const search = searchParams.get("search");
 
-    const whereClause: any = {};
+    const whereClause: any = {
+      status: "published",
+    };
     if (difficulty && difficulty !== "ALL") whereClause.difficulty = difficulty;
     if (search) {
       whereClause.OR = [

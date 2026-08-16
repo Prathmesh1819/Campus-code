@@ -15,7 +15,6 @@ import {
   Zap,
   Flame,
   CheckCircle2,
-  Terminal,
   Cpu,
   Sun,
   Moon,
@@ -252,13 +251,6 @@ export default function HomePage() {
             </button>
           )}
 
-          <Link
-            href="/dashboard"
-            className="w-full sm:w-auto px-8 py-4 rounded-2xl text-sm font-bold text-gray-300 bg-slate-900 border border-slate-800 hover:border-slate-700 transition-all flex items-center justify-center gap-2"
-          >
-            <Terminal className="w-4 h-4 text-purple-400" />
-            <span>Explore Demo Dashboard</span>
-          </Link>
         </div>
       </section>
 

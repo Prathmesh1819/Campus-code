@@ -57,20 +57,38 @@ export default function DashboardPage() {
   }, [user?.id, user?.role, user?.className]);
 
   const fetchUserDashboardStats = async () => {
-    if (isTeacherOrAdmin) {
+    if (user?.role === "ADMIN") {
+      try {
+        const aRes = await fetch("/api/admin");
+        const aData = await aRes.json();
+        if (aData.stats) {
+          setTeacherStats({
+            students: aData.stats.totalStudents || 0,
+            assignments: aData.stats.totalProblems || 0,
+            notes: aData.stats.totalUsers || 0,
+            projects: aData.stats.totalProjects || 0,
+          });
+        }
+      } catch {
+        setTeacherStats({ students: 0, assignments: 0, notes: 0, projects: 0 });
+      }
+      return;
+    }
+
+    if (user?.role === "TEACHER") {
       try {
         const tRes = await fetch("/api/teacher");
         const tData = await tRes.json();
         if (tData.stats) {
           setTeacherStats({
-            students: tData.stats.enrolledStudents || 1,
+            students: tData.stats.enrolledStudents || 0,
             assignments: tData.stats.assignmentsPosted || 0,
             notes: tData.stats.notesUploaded || 0,
             projects: tData.stats.classProjects || 0,
           });
         }
       } catch {
-        setTeacherStats({ students: 1, assignments: 0, notes: 0, projects: 0 });
+        setTeacherStats({ students: 0, assignments: 0, notes: 0, projects: 0 });
       }
       return;
     }
@@ -131,12 +149,43 @@ export default function DashboardPage() {
   const xpPercentage = Math.min(100, Math.round((currentLevelXpProgress / 1000) * 100));
 
   // Dynamic 4 Metrics Cards Grid depending on Student vs Teacher/Admin
-  const stats = isTeacherOrAdmin
+  const stats = (user?.role === "ADMIN")
     ? [
         {
           label: "Enrolled Students",
           value: `${teacherStats.students} Students`,
-          sub: `${teacherStats.students} Registered in ${user?.className || "TY BSc CS"}`,
+          sub: "Total registered students across CampusCode",
+          icon: Users,
+          color: "from-purple-500 to-indigo-600",
+        },
+        {
+          label: "Coding Problems",
+          value: `${teacherStats.assignments} Active`,
+          sub: "Global practice problems pool",
+          icon: FileText,
+          color: "from-amber-400 to-orange-500",
+        },
+        {
+          label: "Class Projects",
+          value: `${teacherStats.projects} Projects`,
+          sub: "Global student project submissions",
+          icon: FolderGit2,
+          color: "from-cyan-500 to-blue-600",
+        },
+        {
+          label: "Platform Users",
+          value: `${teacherStats.notes} Accounts`,
+          sub: "Registered students, faculty & admins",
+          icon: BookOpen,
+          color: "from-emerald-500 to-teal-600",
+        },
+      ]
+    : user?.role === "TEACHER"
+    ? [
+        {
+          label: "Enrolled Students",
+          value: `${teacherStats.students} Students`,
+          sub: "Assigned classroom students",
           icon: Users,
           color: "from-purple-500 to-indigo-600",
         },
@@ -225,7 +274,11 @@ export default function DashboardPage() {
                         ? "SUPER ADMIN"
                         : `LEVEL ${currentLevel} CODER`}
                     </span>
-                    <span className="text-xs font-medium text-gray-400">• {user?.className || "TY BSc CS"}</span>
+                    {user?.role === "ADMIN" ? (
+                      <span className="text-xs font-medium text-purple-300">• Global Administrator</span>
+                    ) : (
+                      <span className="text-xs font-medium text-gray-400">• {user?.className || "Classroom"}</span>
+                    )}
                   </div>
                   <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight mt-1">
                     Welcome back, <span className="gradient-text">{user?.name || "User"}</span>! 👋
@@ -487,7 +540,7 @@ export default function DashboardPage() {
                   <span className="px-2.5 py-0.5 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 text-[10px] font-bold uppercase">
                     Academic Term
                   </span>
-                  <h4 className="font-bold text-white">Academic Term 2025-26 Active</h4>
+                  <h4 className="font-bold text-white">Academic Term 2026–27 Active</h4>
                   <p className="text-gray-400 text-[11px] leading-relaxed">
                     Check your virtual classroom for lecture notes, practical code submissions, and class projects.
                   </p>

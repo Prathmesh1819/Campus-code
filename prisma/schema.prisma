@@ -170,14 +170,15 @@ model certificates {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model classes {
-  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  stream_id  String?  @db.Uuid
-  name       String
-  code       String   @unique
-  year       String?
-  created_at DateTime @default(now()) @db.Timestamptz(6)
-  streams    streams? @relation(fields: [stream_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  users      users[]
+  id                           String                         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  stream_id                    String?                        @db.Uuid
+  name                         String
+  code                         String                         @unique
+  year                         String?
+  created_at                   DateTime                       @default(now()) @db.Timestamptz(6)
+  streams                      streams?                       @relation(fields: [stream_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  faculty_teaching_assignments faculty_teaching_assignments[]
+  users                        users[]
 
   @@index([stream_id], map: "idx_classes_stream")
 }
@@ -522,29 +523,30 @@ model course_modules {
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model courses {
-  id                  String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  title               String
-  description         String
-  thumbnail           String?
-  teacher_id          String                @db.Uuid
-  department_id       String?               @db.Uuid
-  stream_id           String?               @db.Uuid
-  semester_id         String?               @db.Uuid
-  visibility          String                @default("Public")
-  status              String                @default("Published")
-  created_at          DateTime              @default(now()) @db.Timestamptz(6)
-  updated_at          DateTime              @default(now()) @db.Timestamptz(6)
-  announcements       announcements[]
-  assignments         assignments[]
-  course_certificates course_certificates[]
-  course_enrollments  course_enrollments[]
-  course_modules      course_modules[]
-  departments         departments?          @relation(fields: [department_id], references: [id], onUpdate: NoAction)
-  semesters           semesters?            @relation(fields: [semester_id], references: [id], onUpdate: NoAction)
-  streams             streams?              @relation(fields: [stream_id], references: [id], onUpdate: NoAction)
-  users               users                 @relation(fields: [teacher_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  learning_progress   learning_progress[]
-  teacher_notes       teacher_notes[]
+  id                           String                         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title                        String
+  description                  String
+  thumbnail                    String?
+  teacher_id                   String                         @db.Uuid
+  department_id                String?                        @db.Uuid
+  stream_id                    String?                        @db.Uuid
+  semester_id                  String?                        @db.Uuid
+  visibility                   String                         @default("Public")
+  status                       String                         @default("Published")
+  created_at                   DateTime                       @default(now()) @db.Timestamptz(6)
+  updated_at                   DateTime                       @default(now()) @db.Timestamptz(6)
+  announcements                announcements[]
+  assignments                  assignments[]
+  course_certificates          course_certificates[]
+  course_enrollments           course_enrollments[]
+  course_modules               course_modules[]
+  departments                  departments?                   @relation(fields: [department_id], references: [id], onUpdate: NoAction)
+  semesters                    semesters?                     @relation(fields: [semester_id], references: [id], onUpdate: NoAction)
+  streams                      streams?                       @relation(fields: [stream_id], references: [id], onUpdate: NoAction)
+  users                        users                          @relation(fields: [teacher_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  faculty_teaching_assignments faculty_teaching_assignments[]
+  learning_progress            learning_progress[]
+  teacher_notes                teacher_notes[]
 
   @@index([id], map: "idx_courses_course_id")
   @@index([teacher_id], map: "idx_courses_teacher_id")
@@ -1225,12 +1227,13 @@ model scheduled_emails {
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model semesters {
-  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  number        Int
-  academic_year String
-  created_at    DateTime  @default(now()) @db.Timestamptz(6)
-  courses       courses[]
-  users         users[]
+  id                           String                         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  number                       Int
+  academic_year                String
+  created_at                   DateTime                       @default(now()) @db.Timestamptz(6)
+  courses                      courses[]
+  faculty_teaching_assignments faculty_teaching_assignments[]
+  users                        users[]
 
   @@unique([number, academic_year], map: "unique_semester_year")
 }
@@ -1496,97 +1499,121 @@ model user_statistics {
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model users {
-  id                                                String                     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email                                             String                     @unique
-  full_name                                         String
-  username                                          String?                    @unique
-  roll_number                                       String?                    @unique
-  department_id                                     String?                    @db.Uuid
-  stream_id                                         String?                    @db.Uuid
-  class_id                                          String?                    @db.Uuid
-  semester_id                                       String?                    @db.Uuid
-  role_id                                           String?                    @db.Uuid
-  profile_image                                     String?                    @default("https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80")
-  bio                                               String?
-  github_url                                        String?
-  linkedin_url                                      String?
-  portfolio_url                                     String?
-  resume_url                                        String?
-  xp                                                Int?                       @default(0)
-  level                                             Int?                       @default(1)
-  coins                                             Int?                       @default(0)
-  is_verified                                       Boolean?                   @default(false)
-  created_at                                        DateTime                   @default(now()) @db.Timestamptz(6)
-  updated_at                                        DateTime                   @default(now()) @db.Timestamptz(6)
-  announcements                                     announcements[]
-  article_bookmarks                                 article_bookmarks[]
-  article_comments                                  article_comments[]
-  article_likes                                     article_likes[]
-  assignment_submissions                            assignment_submissions[]
-  assignments                                       assignments[]
-  audit_logs                                        audit_logs[]
-  bookmarked_problems                               bookmarked_problems[]
-  certificates                                      certificates[]
-  code_snapshots                                    code_snapshots[]
-  coding_activity                                   coding_activity[]
-  coding_articles                                   coding_articles[]
-  coding_goals                                      coding_goals[]
-  communication_preferences                         communication_preferences?
-  company_applications                              company_applications[]
-  contest_announcements                             contest_announcements[]
-  contest_clarifications                            contest_clarifications[]
-  contest_registrations                             contest_registrations[]
-  contest_results                                   contest_results[]
-  contest_submissions                               contest_submissions[]
-  contests                                          contests[]
-  course_certificates                               course_certificates[]
-  course_enrollments                                course_enrollments[]
-  courses                                           courses[]
-  daily_streaks                                     daily_streaks?
-  discussion_comments                               discussion_comments[]
-  discussion_posts                                  discussion_posts[]
-  discussion_votes                                  discussion_votes[]
-  editorials                                        editorials[]
-  educational_resources                             educational_resources[]
-  email_logs                                        email_logs[]
-  execution_history                                 execution_history[]
-  favorite_problems                                 favorite_problems[]
-  leaderboard_scores                                leaderboard_scores?
-  leaderboard_snapshots                             leaderboard_snapshots[]
-  learning_progress                                 learning_progress[]
-  notification_preferences                          notification_preferences?
-  notification_queue                                notification_queue[]
-  notifications                                     notifications[]
-  placement_profiles                                placement_profiles?
-  platform_announcements                            platform_announcements[]
-  problem_attempts                                  problem_attempts[]
-  problems                                          problems[]
-  profile_badges                                    profile_badges[]
-  project_bookmarks                                 project_bookmarks[]
-  project_comments                                  project_comments[]
-  project_likes                                     project_likes[]
-  projects                                          projects[]
-  roadmap_progress                                  roadmap_progress[]
-  saved_posts                                       saved_posts[]
-  scheduled_emails                                  scheduled_emails[]
-  solved_problems                                   solved_problems[]
-  student_skills                                    student_skills[]
-  submissions                                       submissions[]
-  system_settings                                   system_settings[]
-  teacher_notes                                     teacher_notes[]
-  user_achievements                                 user_achievements[]
-  user_followers_user_followers_follower_idTousers  user_followers[]           @relation("user_followers_follower_idTousers")
-  user_followers_user_followers_following_idTousers user_followers[]           @relation("user_followers_following_idTousers")
-  user_ratings                                      user_ratings?
-  user_statistics                                   user_statistics?
-  classes                                           classes?                   @relation(fields: [class_id], references: [id], onUpdate: NoAction)
-  departments                                       departments?               @relation(fields: [department_id], references: [id], onUpdate: NoAction)
-  roles                                             roles?                     @relation(fields: [role_id], references: [id], onUpdate: NoAction)
-  semesters                                         semesters?                 @relation(fields: [semester_id], references: [id], onUpdate: NoAction)
-  streams                                           streams?                   @relation(fields: [stream_id], references: [id], onUpdate: NoAction)
+  id                                                                          String                         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email                                                                       String                         @unique
+  full_name                                                                   String
+  username                                                                    String?                        @unique
+  roll_number                                                                 String?                        @unique
+  department_id                                                               String?                        @db.Uuid
+  stream_id                                                                   String?                        @db.Uuid
+  class_id                                                                    String?                        @db.Uuid
+  semester_id                                                                 String?                        @db.Uuid
+  role_id                                                                     String?                        @db.Uuid
+  profile_image                                                               String?                        @default("https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80")
+  bio                                                                         String?
+  github_url                                                                  String?
+  linkedin_url                                                                String?
+  portfolio_url                                                               String?
+  resume_url                                                                  String?
+  xp                                                                          Int?                           @default(0)
+  level                                                                       Int?                           @default(1)
+  coins                                                                       Int?                           @default(0)
+  is_verified                                                                 Boolean?                       @default(false)
+  created_at                                                                  DateTime                       @default(now()) @db.Timestamptz(6)
+  updated_at                                                                  DateTime                       @default(now()) @db.Timestamptz(6)
+  faculty_type                                                                String?                        @default("BOTH") @db.VarChar(50)
+  announcements                                                               announcements[]
+  article_bookmarks                                                           article_bookmarks[]
+  article_comments                                                            article_comments[]
+  article_likes                                                               article_likes[]
+  assignment_submissions                                                      assignment_submissions[]
+  assignments                                                                 assignments[]
+  audit_logs                                                                  audit_logs[]
+  bookmarked_problems                                                         bookmarked_problems[]
+  certificates                                                                certificates[]
+  code_snapshots                                                              code_snapshots[]
+  coding_activity                                                             coding_activity[]
+  coding_articles                                                             coding_articles[]
+  coding_goals                                                                coding_goals[]
+  communication_preferences                                                   communication_preferences?
+  company_applications                                                        company_applications[]
+  contest_announcements                                                       contest_announcements[]
+  contest_clarifications                                                      contest_clarifications[]
+  contest_registrations                                                       contest_registrations[]
+  contest_results                                                             contest_results[]
+  contest_submissions                                                         contest_submissions[]
+  contests                                                                    contests[]
+  course_certificates                                                         course_certificates[]
+  course_enrollments                                                          course_enrollments[]
+  courses                                                                     courses[]
+  daily_streaks                                                               daily_streaks?
+  discussion_comments                                                         discussion_comments[]
+  discussion_posts                                                            discussion_posts[]
+  discussion_votes                                                            discussion_votes[]
+  editorials                                                                  editorials[]
+  educational_resources                                                       educational_resources[]
+  email_logs                                                                  email_logs[]
+  execution_history                                                           execution_history[]
+  faculty_teaching_assignments_faculty_teaching_assignments_created_byTousers faculty_teaching_assignments[] @relation("faculty_teaching_assignments_created_byTousers")
+  faculty_teaching_assignments_faculty_teaching_assignments_teacher_idTousers faculty_teaching_assignments[] @relation("faculty_teaching_assignments_teacher_idTousers")
+  favorite_problems                                                           favorite_problems[]
+  leaderboard_scores                                                          leaderboard_scores?
+  leaderboard_snapshots                                                       leaderboard_snapshots[]
+  learning_progress                                                           learning_progress[]
+  notification_preferences                                                    notification_preferences?
+  notification_queue                                                          notification_queue[]
+  notifications                                                               notifications[]
+  placement_profiles                                                          placement_profiles?
+  platform_announcements                                                      platform_announcements[]
+  problem_attempts                                                            problem_attempts[]
+  problems                                                                    problems[]
+  profile_badges                                                              profile_badges[]
+  project_bookmarks                                                           project_bookmarks[]
+  project_comments                                                            project_comments[]
+  project_likes                                                               project_likes[]
+  projects                                                                    projects[]
+  roadmap_progress                                                            roadmap_progress[]
+  saved_posts                                                                 saved_posts[]
+  scheduled_emails                                                            scheduled_emails[]
+  solved_problems                                                             solved_problems[]
+  student_skills                                                              student_skills[]
+  submissions                                                                 submissions[]
+  system_settings                                                             system_settings[]
+  teacher_notes                                                               teacher_notes[]
+  user_achievements                                                           user_achievements[]
+  user_followers_user_followers_follower_idTousers                            user_followers[]               @relation("user_followers_follower_idTousers")
+  user_followers_user_followers_following_idTousers                           user_followers[]               @relation("user_followers_following_idTousers")
+  user_ratings                                                                user_ratings?
+  user_statistics                                                             user_statistics?
+  classes                                                                     classes?                       @relation(fields: [class_id], references: [id], onUpdate: NoAction)
+  departments                                                                 departments?                   @relation(fields: [department_id], references: [id], onUpdate: NoAction)
+  roles                                                                       roles?                         @relation(fields: [role_id], references: [id], onUpdate: NoAction)
+  semesters                                                                   semesters?                     @relation(fields: [semester_id], references: [id], onUpdate: NoAction)
+  streams                                                                     streams?                       @relation(fields: [stream_id], references: [id], onUpdate: NoAction)
 
   @@index([department_id, class_id], map: "idx_users_dept_class")
   @@index([email], map: "idx_users_email")
   @@index([role_id], map: "idx_users_role_id")
   @@index([username], map: "idx_users_username")
+}
+
+model faculty_teaching_assignments {
+  id                                                   String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  teacher_id                                           String     @db.Uuid
+  class_id                                             String     @db.Uuid
+  course_id                                            String?    @db.Uuid
+  semester_id                                          String?    @db.Uuid
+  assignment_type                                      String     @default("CLASS_TEACHER") @db.VarChar(50)
+  created_by                                           String?    @db.Uuid
+  created_at                                           DateTime?  @default(now()) @db.Timestamptz(6)
+  updated_at                                           DateTime?  @default(now()) @db.Timestamptz(6)
+  classes                                              classes    @relation(fields: [class_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  courses                                              courses?   @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users_faculty_teaching_assignments_created_byTousers users?     @relation("faculty_teaching_assignments_created_byTousers", fields: [created_by], references: [id], onUpdate: NoAction)
+  semesters                                            semesters? @relation(fields: [semester_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users_faculty_teaching_assignments_teacher_idTousers users      @relation("faculty_teaching_assignments_teacher_idTousers", fields: [teacher_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([class_id], map: "idx_faculty_assignments_class")
+  @@index([course_id], map: "idx_faculty_assignments_course")
+  @@index([teacher_id], map: "idx_faculty_assignments_teacher")
 }

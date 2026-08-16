@@ -4,21 +4,17 @@ import React, { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Sidebar } from "@/components/Sidebar";
 import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import {
   GraduationCap,
-  Users,
   FileText,
-  FolderGit2,
-  Bell,
   Download,
   Plus,
   Github,
   ExternalLink,
   ShieldCheck,
   Award,
-  Sparkles,
-  Search,
   BookOpen,
   X,
   Upload,
@@ -35,16 +31,6 @@ export default function ClassroomsPage() {
 
   const isTeacherOrAdmin = user?.role === "TEACHER" || user?.role === "ADMIN";
   const isClassTeacher = selectedClass === "TY BSc CS";
-
-  useEffect(() => {
-    // If student, force selectedClass to user's registered classroom
-    if (user?.className && user?.role === "STUDENT") {
-      setSelectedClass(user.className);
-      fetchClassroomData(user.className);
-    } else {
-      fetchClassroomData(selectedClass);
-    }
-  }, [user?.className, user?.role, selectedClass]);
 
   const [classroomData, setClassroomData] = useState<any>({
     classroom: null,
@@ -63,21 +49,30 @@ export default function ClassroomsPage() {
   const [noteFileUrl, setNoteFileUrl] = useState("");
   const [noteFileType, setNoteFileType] = useState("PDF");
 
-  const fetchClassroomData = async (className: string) => {
+  const fetchClassroomData = async (className: string, classId?: string) => {
     setLoading(true);
+    setClassroomData((prev: any) => ({
+      ...prev,
+      classmates: [],
+    }));
     try {
-      const res = await fetch(`/api/classrooms?className=${encodeURIComponent(className)}&t=${Date.now()}`, { cache: "no-store" });
+      const url = classId
+        ? `/api/classrooms?classId=${encodeURIComponent(classId)}&className=${encodeURIComponent(className)}&t=${Date.now()}`
+        : `/api/classrooms?className=${encodeURIComponent(className)}&t=${Date.now()}`;
+      const res = await fetch(url, { cache: "no-store" });
       const data = await res.json();
-      setClassroomData(data);
+      if (res.ok) {
+        setClassroomData(data);
+      }
     } catch {
       setClassroomData({
         classroom: {
           name: className,
           branch: "Computer Science",
-          academicYear: "2025-26",
+          academicYear: "2026-27",
           teacher: {
-            name: "Dr. Vikramaditya Gupta",
-            email: "teacher@campus.edu",
+            name: "Department Faculty",
+            email: "faculty@campuscode.com",
             avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&auto=format&fit=crop&q=80",
           },
         },
@@ -90,6 +85,40 @@ export default function ClassroomsPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const targetClass = (user?.className && user?.role === "STUDENT") ? user.className : selectedClass;
+    if (user?.className && user?.role === "STUDENT") {
+      setSelectedClass(user.className);
+    }
+    fetchClassroomData(targetClass);
+
+    const channel = supabase
+      .channel("classrooms-realtime-channel")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "announcements" },
+        () => {
+          fetchClassroomData(targetClass);
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "teacher_notes" },
+        () => {
+          fetchClassroomData(targetClass);
+        }
+      )
+      .subscribe((status, err) => {
+        if (err) {
+          console.warn("[Realtime Classrooms] Subscription error:", err);
+        }
+      });
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.className, user?.role, selectedClass]);
 
   const handleUploadNote = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -138,21 +167,28 @@ export default function ClassroomsPage() {
 
             {/* Class Switcher Pills: Only visible for Faculty & Admin */}
             {isTeacherOrAdmin ? (
-              <div className="flex items-center gap-2 bg-slate-950 p-1.5 rounded-2xl border border-slate-800">
-                <span className="text-[10px] font-extrabold uppercase text-purple-400 px-2">Select Batch:</span>
-                {["TY BSc CS", "SY BSc CS", "FY BSc CS"].map((cName) => (
-                  <button
-                    key={cName}
-                    onClick={() => setSelectedClass(cName)}
-                    className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
-                      selectedClass === cName
-                        ? "bg-purple-600 text-white shadow-glow"
-                        : "text-gray-400 hover:text-white"
-                    }`}
-                  >
-                    {cName}
-                  </button>
-                ))}
+              <div className="flex items-center gap-2 bg-slate-950 p-1.5 rounded-2xl border border-slate-800 flex-wrap">
+                <span className="text-[10px] font-extrabold uppercase text-purple-400 px-2">Assigned Batches:</span>
+                {classroomData.assignedClasses && classroomData.assignedClasses.length > 0 ? (
+                  classroomData.assignedClasses.map((item: any) => (
+                    <button
+                      key={item.id + (item.courseId || item.name)}
+                      onClick={() => setSelectedClass(item.name)}
+                      className={`px-3 py-1 rounded-xl text-xs font-bold transition-all flex items-center gap-1 ${
+                        selectedClass === item.name
+                          ? "bg-purple-600 text-white shadow-glow"
+                          : "text-gray-400 hover:text-white"
+                      }`}
+                    >
+                      <span>{item.name}</span>
+                      {item.subjectTitle && (
+                        <span className="text-[10px] opacity-75 font-normal">({item.subjectTitle})</span>
+                      )}
+                    </button>
+                  ))
+                ) : (
+                  <span className="text-xs text-amber-400 font-semibold px-2">No active teaching assignments assigned by Admin yet</span>
+                )}
               </div>
             ) : (
               <div className="px-3.5 py-1.5 rounded-2xl bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-bold flex items-center gap-2">
@@ -194,26 +230,22 @@ export default function ClassroomsPage() {
                   }`}
                 />
                 <div className="space-y-1">
-                  {isClassTeacher ? (
-                    <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 text-[10px] font-black uppercase tracking-wider border border-amber-500/40">
-                      <ShieldCheck className="w-3 h-3 text-amber-400" /> Class Teacher
-                    </div>
-                  ) : (
-                    <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-cyan-500/20 text-cyan-300 text-[10px] font-black uppercase tracking-wider border border-cyan-500/40">
-                      <BookOpen className="w-3 h-3 text-cyan-400" /> Subject Teacher
-                    </div>
-                  )}
+                  <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 text-[10px] font-black uppercase tracking-wider border border-amber-500/40">
+                    <ShieldCheck className="w-3 h-3 text-amber-400" /> Class Teacher
+                  </div>
 
                   <h4 className="text-base font-black text-white tracking-tight">
-                    {classroomData.classroom?.teacher?.name || "Dr. Vikramaditya Gupta"}
+                    {classroomData.classroom?.teacher?.name || "Class Teacher Yet to Be Announced"}
                   </h4>
-                  <p className="text-xs font-semibold text-purple-300 flex items-center gap-1">
-                    <Building2 className="w-3 h-3" />
-                    {isClassTeacher ? "Head of DSA & CS Faculty" : `CS Faculty for ${selectedClass}`}
-                  </p>
-                  <p className="text-[11px] font-mono text-gray-400 flex items-center gap-1">
-                    <Mail className="w-3 h-3 text-cyan-400" /> teacher@campus.edu
-                  </p>
+                  {classroomData.classroom?.teacher?.email ? (
+                    <p className="text-[11px] font-mono text-gray-400 flex items-center gap-1">
+                      <Mail className="w-3 h-3 text-cyan-400" /> {classroomData.classroom.teacher.email}
+                    </p>
+                  ) : (
+                    <p className="text-[11px] font-sans text-amber-400/80 italic flex items-center gap-1">
+                      Class Teacher assignment pending for {selectedClass}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -240,7 +272,7 @@ export default function ClassroomsPage() {
               </div>
               <div className="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800">
                 <span className="text-xs font-semibold text-gray-400 block">Academic Year</span>
-                <span className="text-lg font-black text-emerald-300">2025-26</span>
+                <span className="text-lg font-black text-emerald-300">{classroomData.classroom?.academicYear || "2026-27"}</span>
               </div>
             </div>
           </div>
@@ -461,7 +493,7 @@ export default function ClassroomsPage() {
                         <p className="text-xs text-gray-400 leading-relaxed">{note.description}</p>
 
                         <p className="text-[10px] text-gray-500">
-                          Uploaded by: <b>{note.teacher?.name || "Dr. Vikramaditya Gupta"}</b> • {new Date(note.createdAt).toLocaleDateString()}
+                          Uploaded by: <b>{note.teacher?.name || "Department Faculty"}</b> • {new Date(note.createdAt).toLocaleDateString()}
                         </p>
                       </div>
 

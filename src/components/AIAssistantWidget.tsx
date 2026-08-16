@@ -16,6 +16,7 @@ interface Message {
   sender: "user" | "ido";
   text: string;
   timestamp: string;
+  source?: "CAMPUS_DATABASE" | "AI_KNOWLEDGE" | "WEB_SEARCH" | "MIXED";
 }
 
 export function AIAssistantWidget() {
@@ -32,8 +33,9 @@ export function AIAssistantWidget() {
     {
       id: "welcome",
       sender: "ido",
-      text: `Hello ${user?.name || "Student"}! 👋 I'm **Ido** 👩‍💻, your AI Virtual Assistant & Coding Mentor at Sarhad College.\n\nHow can I help you with your coding, DSA problems, or coursework today?`,
+      text: `Hello ${user?.name || "Student"}! 👋 I'm **Ido** 👩‍💻, your AI Virtual Assistant & Coding Mentor at Sarhad College.\n\nAsk me anything! I can answer general knowledge questions, cricket & current news, coding & DSA problems, or campus assignments & leaderboards!`,
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      source: "AI_KNOWLEDGE",
     },
   ]);
   const [input, setInput] = useState("");
@@ -79,14 +81,6 @@ export function AIAssistantWidget() {
     }
   }, [messages, isOpen]);
 
-  const quickPrompts = [
-    { label: `👩‍💻 Who is ${aiSettings.aiName}?`, prompt: `Who are you and how can you help me?` },
-    { label: "💡 Explain Two Sum DSA", prompt: "Explain the optimal Hash Map approach for Two Sum Target Pair" },
-    { label: "🐛 Debug My Code", prompt: "How do I debug array index out of bounds error in C++?" },
-    { label: "🚀 Web Project Ideas", prompt: "Suggest high impact web development project ideas for my resume" },
-    { label: "📚 Exam Prep Tips", prompt: "What are key topics for DSA & Operating Systems semester exams?" },
-  ];
-
   const handleSend = async (textToSend?: string) => {
     const query = textToSend || input;
     if (!query.trim() || loading) return;
@@ -103,6 +97,8 @@ export function AIAssistantWidget() {
     setLoading(true);
 
     try {
+      const activeProblemContext = typeof window !== "undefined" ? (window as any).__CAMPUSCODE_PROBLEM_CONTEXT__ : null;
+
       const res = await fetch("/api/ai-assistant", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -112,6 +108,7 @@ export function AIAssistantWidget() {
           userRole: user?.role || "STUDENT",
           className: user?.className || "TY BSc CS",
           userName: user?.name || "Student",
+          problemContext: activeProblemContext,
         }),
       });
 
@@ -121,6 +118,7 @@ export function AIAssistantWidget() {
         sender: "ido",
         text: data.reply || "I am processing your query. Please ask again!",
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        source: data.source || "AI_KNOWLEDGE",
       };
 
       setMessages((prev) => [...prev, aiMsg]);
@@ -269,13 +267,34 @@ export function AIAssistantWidget() {
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1 text-[10px] text-gray-400 font-semibold border-b border-white/10 pb-1">
-                    <span className="flex items-center gap-1">
+                    <span className="flex items-center gap-1.5">
                       {m.sender === "user" ? (
                         user?.name || "You"
                       ) : (
-                        <span className="text-pink-300 font-bold flex items-center gap-1">
-                          <Sparkles className="w-3 h-3 text-pink-400" /> {aiSettings.aiName} AI
-                        </span>
+                        <>
+                          <span className="text-pink-300 font-bold flex items-center gap-1">
+                            <Sparkles className="w-3 h-3 text-pink-400" /> {aiSettings.aiName} AI
+                          </span>
+                          {m.source && (
+                            <span className={`px-1.5 py-0.2 rounded text-[8px] font-bold uppercase tracking-wider ${
+                              m.source === "CAMPUS_DATABASE"
+                                ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
+                                : m.source === "WEB_SEARCH"
+                                ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30"
+                                : m.source === "MIXED"
+                                ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
+                                : "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                            }`}>
+                              {m.source === "CAMPUS_DATABASE"
+                                ? "🏫 Campus DB"
+                                : m.source === "WEB_SEARCH"
+                                ? "🌐 Web Search"
+                                : m.source === "MIXED"
+                                ? "⚡ Campus + Web"
+                                : "🧠 AI Knowledge"}
+                            </span>
+                          )}
+                        </>
                       )}
                     </span>
                     <div className="flex items-center gap-2">
@@ -306,19 +325,6 @@ export function AIAssistantWidget() {
               </div>
             )}
             <div ref={messagesEndRef} />
-          </div>
-
-          {/* Quick Suggestion Pills */}
-          <div className="px-3 py-2 border-t border-slate-800/80 bg-slate-950/60 ido-chat-footer flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-            {quickPrompts.map((qp, idx) => (
-              <button
-                key={idx}
-                onClick={() => handleSend(qp.prompt)}
-                className="px-2.5 py-1 rounded-xl bg-slate-900 hover:bg-pink-600/20 border border-slate-800 hover:border-pink-500/40 text-pink-300 text-[10px] font-bold whitespace-nowrap transition-all"
-              >
-                {qp.label}
-              </button>
-            ))}
           </div>
 
           {/* Input Footer */}

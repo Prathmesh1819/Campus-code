@@ -47,7 +47,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
       editorial: problem.editorials?.content || "Editorial solution coming soon.",
       examples: problem.examples && problem.examples.length > 0
         ? JSON.stringify(problem.examples.map((e) => ({ input: e.input, output: e.output, explanation: e.explanation })))
-        : JSON.stringify([{ input: "Sample Input", output: "Sample Output", explanation: "Standard test case." }]),
+        : JSON.stringify(problem.test_cases.filter((tc) => !tc.is_hidden).map((tc) => ({ input: tc.input, output: tc.expected_output }))),
       testCases: problem.test_cases.map((tc) => ({
         id: tc.id,
         input: tc.input,

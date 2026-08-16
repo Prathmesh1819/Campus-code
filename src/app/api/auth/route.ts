@@ -20,6 +20,7 @@ function formatUserObject(u: any, streakDays?: number) {
     email: u.email,
     username: u.username,
     role: roleName,
+    facultyType: u.faculty_type || "BOTH",
     avatar: u.profile_image || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80",
     rollNumber: u.roll_number,
     className: className,
@@ -123,6 +124,7 @@ export async function POST(req: Request) {
         }
       }
 
+      const { facultyType } = body;
       const roleName = (role || "STUDENT").toLowerCase();
       const roleRecord = await prisma.roles.findFirst({ where: { name: { equals: roleName, mode: "insensitive" } } });
       const classRecord = className ? await prisma.classes.findFirst({ where: { name: { equals: className, mode: "insensitive" } } }) : null;
@@ -133,6 +135,7 @@ export async function POST(req: Request) {
           full_name: name,
           username: name.toLowerCase().replace(/\s+/g, ""),
           roll_number: rollNumber ? rollNumber.trim().toUpperCase() : null,
+          faculty_type: roleName === "teacher" ? (facultyType || "BOTH") : null,
           profile_image: avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80",
           xp: 0,
           level: 1,

@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Sidebar } from "@/components/Sidebar";
 import { useAuth } from "@/context/AuthContext";
-import { Send, Search, CheckCheck, MessageSquare, MoreVertical, Trash2, Check, Clock } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import { Send, Search, CheckCheck, MessageSquare, MoreVertical, Trash2 } from "lucide-react";
 
 export default function MessagesPage() {
   const { user } = useAuth();
@@ -16,6 +17,17 @@ export default function MessagesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeMenuMsgId, setActiveMenuMsgId] = useState<string | null>(null);
 
+  const activePeerRef = useRef(activePeer);
+  const userRef = useRef(user);
+
+  useEffect(() => {
+    activePeerRef.current = activePeer;
+  }, [activePeer]);
+
+  useEffect(() => {
+    userRef.current = user;
+  }, [user]);
+
   useEffect(() => {
     if (user?.id) {
       fetchContacts();
@@ -25,18 +37,54 @@ export default function MessagesPage() {
   useEffect(() => {
     if (user?.id && activePeer?.id) {
       fetchConversation(user.id, activePeer.id);
-
-      // Save active peer to localStorage so page refresh stays on current chat
       localStorage.setItem(`campuscode_active_peer_${user.id}`, activePeer.id);
-
-      // Poll conversation every 3 seconds for live read receipt and message updates
-      const interval = setInterval(() => {
-        fetchConversation(user.id, activePeer.id);
-      }, 3000);
-
-      return () => clearInterval(interval);
     }
   }, [user?.id, activePeer?.id]);
+
+  // Supabase Realtime Direct Messaging Subscription
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const channel = supabase.channel("messages-realtime-channel", {
+      config: { broadcast: { self: false } },
+    });
+
+    channel
+      .on("broadcast", { event: "new_message" }, (event) => {
+        const payload = event?.payload;
+        if (!payload || !payload.id) return;
+
+        const currentUserId = userRef.current?.id;
+        const currentPeerId = activePeerRef.current?.id;
+
+        // Conversation filtering: Only append message if it belongs to current active peer chat
+        if (
+          currentUserId &&
+          currentPeerId &&
+          ((payload.senderId === currentPeerId && payload.receiverId === currentUserId) ||
+            (payload.senderId === currentUserId && payload.receiverId === currentPeerId))
+        ) {
+          setMessages((prev) => {
+            if (prev.some((m) => m.id === payload.id)) return prev;
+            return [...prev, payload];
+          });
+        }
+
+        // Refresh contacts list preview
+        if (currentUserId && (payload.receiverId === currentUserId || payload.senderId === currentUserId)) {
+          fetchContacts();
+        }
+      })
+      .subscribe((status, err) => {
+        if (err) {
+          console.warn("[Realtime Messages] Subscription error:", err);
+        }
+      });
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id]);
 
   const fetchContacts = async () => {
     try {
@@ -45,13 +93,12 @@ export default function MessagesPage() {
       if (data.contacts && data.contacts.length > 0) {
         setContacts(data.contacts);
 
-        // Restore saved active peer from localStorage or default to most recent contact
         const savedPeerId = localStorage.getItem(`campuscode_active_peer_${user?.id}`);
         const foundSaved = data.contacts.find((c: any) => c.id === savedPeerId);
         if (foundSaved) {
-          setActivePeer(foundSaved);
+          setActivePeer((prev: any) => prev || foundSaved);
         } else {
-          setActivePeer(data.contacts[0]);
+          setActivePeer((prev: any) => prev || data.contacts[0]);
         }
       }
     } catch (err) {
@@ -78,16 +125,27 @@ export default function MessagesPage() {
     const messageContent = inputMessage;
     setInputMessage("");
 
-    // Optimistic UI update
-    const tempMsg = {
-      id: Date.now().toString(),
+    const newMsg = {
+      id: "msg-" + Date.now() + "-" + Math.random().toString(36).substr(2, 4),
       senderId: user.id,
       receiverId: activePeer.id,
       content: messageContent,
       readStatus: false,
       createdAt: new Date().toISOString(),
     };
-    setMessages((prev) => [...prev, tempMsg]);
+
+    // Optimistic UI update for sender
+    setMessages((prev) => [...prev, newMsg]);
+
+    // Broadcast live message event over Supabase Realtime channel
+    try {
+      const channel = supabase.channel("messages-realtime-channel");
+      channel.send({
+        type: "broadcast",
+        event: "new_message",
+        payload: newMsg,
+      });
+    } catch {}
 
     try {
       const res = await fetch("/api/messages", {
@@ -101,7 +159,6 @@ export default function MessagesPage() {
       });
 
       if (res.ok) {
-        fetchConversation(user.id, activePeer.id);
         fetchContacts();
       }
     } catch (err: any) {
@@ -286,7 +343,7 @@ export default function MessagesPage() {
                             >
                               <p className="leading-relaxed whitespace-pre-wrap">{m.content}</p>
 
-                              {/* Footer Timestamp & WhatsApp-Style Seen Status */}
+                              {/* Footer Timestamp & Status */}
                               <div className="flex items-center justify-end gap-1.5 text-[9px] opacity-80 pt-0.5 border-t border-white/10 font-mono">
                                 <span>{timeStr}</span>
 

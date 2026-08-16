@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Sidebar } from "@/components/Sidebar";
 import { useAuth } from "@/context/AuthContext";
+import { getISTDateStr } from "@/lib/streak";
 import {
   User,
   Github,
@@ -133,36 +134,40 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
     document.body.removeChild(link);
   };
 
-  // Filter submissions strictly for selected year
+  // Filter submissions strictly for selected year in Asia/Kolkata timezone
   const selectedYearSubmissions = submissions.filter((sub) => {
     if (!sub.createdAt) return false;
-    const subYear = new Date(sub.createdAt).getFullYear();
+    const istDate = getISTDateStr(sub.createdAt);
+    if (!istDate) return false;
+    const subYear = parseInt(istDate.split("-")[0], 10);
     return subYear === selectedYear;
   });
 
-  // Real-Time 365 Days Date Matrix starting from Jan 1st of selected year
+  // Real-Time 365 Days Date Matrix in Asia/Kolkata timezone starting from Jan 1st of selected year
   const generateRealCalendarData = () => {
     const countsByDate: Record<string, number> = {};
     selectedYearSubmissions.forEach((sub) => {
       if (sub.createdAt) {
-        const dStr = new Date(sub.createdAt).toISOString().split("T")[0];
-        countsByDate[dStr] = (countsByDate[dStr] || 0) + 1;
+        const dStr = getISTDateStr(sub.createdAt);
+        if (dStr) {
+          countsByDate[dStr] = (countsByDate[dStr] || 0) + 1;
+        }
       }
     });
 
     // Start calendar from Jan 1st of selected year up to 52 weeks
-    const startJan = new Date(selectedYear, 0, 1);
     const daysList: { dateStr: string; formattedDate: string; count: number }[] = [];
 
     for (let i = 0; i < 364; i++) {
-      const d = new Date(startJan);
-      d.setDate(d.getDate() + i);
+      // Midday UTC (06:00 UTC = 11:30 IST) to safely iterate over calendar days in Asia/Kolkata
+      const d = new Date(Date.UTC(selectedYear, 0, 1 + i, 6, 0, 0));
 
-      const dateStr = d.toISOString().split("T")[0];
+      const dateStr = getISTDateStr(d);
       const formattedDate = d.toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
         year: "numeric",
+        timeZone: "Asia/Kolkata",
       });
 
       const count = countsByDate[dateStr] || 0;
