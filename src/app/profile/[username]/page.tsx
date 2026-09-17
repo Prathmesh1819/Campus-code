@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Sidebar } from "@/components/Sidebar";
 import { useAuth } from "@/context/AuthContext";
-import { getISTDateStr } from "@/lib/streak";
+import { getISTDateStr } from "@/lib/date-utils";
 import {
   User,
   Github,
@@ -54,27 +54,43 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
       const resolvedParams = await params;
       let targetParam = resolvedParams.username;
 
-      if (targetParam === "user") {
-        if (currentUser?.id) {
-          targetParam = currentUser.id;
-        } else {
-          setProfileUser(null);
-          setLoading(false);
-          return;
-        }
+      const isTargetingSelf =
+        targetParam === "user" ||
+        (currentUser &&
+          (targetParam === currentUser.id ||
+            targetParam === currentUser.username ||
+            targetParam.toLowerCase() === currentUser.email?.toLowerCase() ||
+            targetParam.toLowerCase() === currentUser.name?.toLowerCase().replace(/\s+/g, "")));
+
+      if (isTargetingSelf && currentUser) {
+        setProfileUser(currentUser);
+        setCustomAvatarUrl(currentUser.avatar || "");
+        if (currentUser.id) fetchUserSubmissions(currentUser.id);
       }
 
-      const res = await fetch(`/api/auth?userId=${encodeURIComponent(targetParam)}&username=${encodeURIComponent(targetParam)}`);
+      const queryParam = isTargetingSelf && currentUser?.id ? currentUser.id : targetParam;
+      const res = await fetch(`/api/auth?userId=${encodeURIComponent(queryParam)}&username=${encodeURIComponent(queryParam)}`);
       const data = await res.json();
+
       if (data.user) {
         setProfileUser(data.user);
         setCustomAvatarUrl(data.user.avatar || "");
         fetchUserSubmissions(data.user.id);
-      } else {
+      } else if (isTargetingSelf && currentUser) {
+        setProfileUser(currentUser);
+        setCustomAvatarUrl(currentUser.avatar || "");
+        if (currentUser.id) fetchUserSubmissions(currentUser.id);
+      } else if (!isTargetingSelf) {
         setProfileUser(null);
       }
     } catch {
-      setProfileUser(null);
+      if (currentUser) {
+        setProfileUser(currentUser);
+        setCustomAvatarUrl(currentUser.avatar || "");
+        if (currentUser.id) fetchUserSubmissions(currentUser.id);
+      } else {
+        setProfileUser(null);
+      }
     } finally {
       setLoading(false);
     }
@@ -90,7 +106,13 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
     }
   };
 
-  const isSelfProfile = currentUser?.id === profileUser?.id;
+  const isSelfProfile = !!(
+    currentUser &&
+    profileUser &&
+    (currentUser.id === profileUser.id ||
+      currentUser.email?.toLowerCase() === profileUser.email?.toLowerCase() ||
+      (currentUser.name && profileUser.name && currentUser.name.toLowerCase() === profileUser.name.toLowerCase()))
+  );
 
   const handleDeviceFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -246,7 +268,7 @@ export default function ProfilePage({ params }: { params: Promise<{ username: st
                     </span>
                   </div>
                   <p className="text-xs font-semibold text-purple-400">
-                    @{displayUser?.name?.toLowerCase().replace(/\s+/g, "")} • {displayUser?.className || "TY BSc CS"}
+                    @{displayUser?.name?.toLowerCase().replace(/\s+/g, "")} • {displayUser?.className || "Classroom"}
                   </p>
                   <p className="text-xs text-gray-400 max-w-md">{displayUser?.bio || "Student Programmer at CampusCode"}</p>
                 </div>

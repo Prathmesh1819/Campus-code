@@ -1,85 +1,50 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { verifyAccessToken } from "@/lib/auth";
-import { cookies } from "next/headers";
+import { FirebaseStoreService } from "@/lib/firebase/store";
+import { verifyServerToken } from "@/lib/firebase/auth";
+import { adminDb } from "@/lib/firebase/admin";
+import { COLLECTIONS } from "@/lib/firebase/firestore";
 
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
-async function getAuthUser(req: Request) {
-  let token = "";
-  const authHeader = req.headers.get("authorization");
-  if (authHeader && authHeader.startsWith("Bearer ")) {
-    token = authHeader.substring(7);
-  } else {
-    const cookieStore = await cookies();
-    token = cookieStore.get("token")?.value || "";
-  }
-
-  if (!token) return null;
-  const payload = verifyAccessToken(token);
-  if (!payload?.userId) return null;
-
-  return await prisma.users.findUnique({
-    where: { id: payload.userId },
-    include: { roles: true },
-  });
-}
-
-export async function GET(_req: Request) {
+export async function GET(req: Request) {
   try {
-    const studentRole = await prisma.roles.findFirst({ where: { name: { equals: "student", mode: "insensitive" } } });
-    const rawStudents = await prisma.users.findMany({
-      where: studentRole ? { role_id: studentRole.id } : {},
-      include: {
-        classes: true,
-        daily_streaks: true,
-        _count: { select: { submissions: true } },
-      },
-      orderBy: { xp: "desc" },
-    });
+    const authHeader = req.headers.get("Authorization");
+    const token = authHeader?.startsWith("Bearer ") ? authHeader.substring(7) : "";
+    const authUser = await verifyServerToken(token);
 
-    const students = rawStudents.map((u) => ({
-      id: u.id,
-      name: u.full_name || u.username || u.email.split("@")[0],
+    const users = await FirebaseStoreService.getUsers();
+    const rawStudents = users.filter((u: any) => u.role === "STUDENT");
+
+    const students = rawStudents.map((u: any) => ({
+      id: u.id || u.uid,
+      name: u.full_name || u.name || u.username || u.email?.split("@")[0],
       email: u.email,
-      rollNumber: u.roll_number,
-      className: u.classes?.name || "TY BSc CS",
-      branch: "Computer Science",
+      rollNumber: u.roll_number || u.rollNumber || null,
+      className: u.className || u.class_name || "Unassigned",
+      branch: u.branch || "Unassigned",
       xp: u.xp || 0,
       level: u.level || 1,
-      streakDays: u.daily_streaks?.current_streak || 0,
-      submissionsCount: u._count.submissions,
+      streakDays: u.streakDays || 0,
+      submissionsCount: 0,
     }));
 
-    const rawAnnouncements = await prisma.announcements.findMany({
-      take: 10,
-      include: { users: { select: { full_name: true, username: true, profile_image: true } } },
-      orderBy: { created_at: "desc" },
-    });
+    let announcements: any[] = [];
+    let assignments: any[] = [];
 
-    const announcements = rawAnnouncements.map((a) => ({
-      id: a.id,
-      title: a.title,
-      content: a.message,
-      createdAt: a.created_at,
-      author: a.users ? { name: a.users.full_name || a.users.username, avatar: a.users.profile_image } : { name: "Department Faculty" },
-    }));
+    try {
+      const annSnap = await adminDb.collection(COLLECTIONS.ANNOUNCEMENTS).get();
+      if (!annSnap.empty) {
+        announcements = annSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      }
 
-    const rawAssignments = await prisma.assignments.findMany({
-      take: 10,
-      orderBy: { created_at: "desc" },
-    });
-
-    const assignments = rawAssignments.map((a) => ({
-      id: a.id,
-      title: a.title,
-      description: a.description,
-      deadline: a.due_date,
-      createdAt: a.created_at,
-    }));
-
-    const notesCount = await prisma.teacher_notes.count();
+      const assignSnap = await adminDb.collection("assignments").get();
+      if (!assignSnap.empty) {
+        assignments = assignSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      }
+    } catch (err) {
+      console.warn("Firestore fetch error in teacher route:", err);
+    }
 
     return NextResponse.json({
       assignments,
@@ -87,75 +52,58 @@ export async function GET(_req: Request) {
       students,
       studentsCount: students.length,
       assignmentsCount: assignments.length,
-      notesCount,
+      notesCount: 0,
     });
   } catch (error: any) {
+    console.error("GET /api/teacher error:", error);
     return NextResponse.json({ error: error.message || "Failed to fetch teacher portal data" }, { status: 500 });
   }
 }
 
 export async function POST(req: Request) {
   try {
-    const authUser = await getAuthUser(req);
-    const userRole = authUser?.roles?.name?.toLowerCase() || "";
+    const authHeader = req.headers.get("Authorization");
+    const token = authHeader?.startsWith("Bearer ") ? authHeader.substring(7) : "";
+    const authUser = await verifyServerToken(token);
 
-    if (!authUser || (userRole !== "teacher" && userRole !== "admin" && userRole !== "super_admin")) {
-      return NextResponse.json({ error: "Unauthorized. Only Faculty & Teachers can access teacher portal actions." }, { status: 403 });
+    if (!authUser || (authUser.role !== "TEACHER" && authUser.role !== "ADMIN" && authUser.role !== "SUPER_ADMIN" && authUser.role !== "FACULTY")) {
+      return NextResponse.json({ error: "Unauthorized. Only Faculty & Teachers can perform this action." }, { status: 403 });
     }
 
     const body = await req.json();
-    const { type, courseId, title, description, content } = body;
+    const { action, title, content, description, deadline } = body;
 
-    const course = courseId ? await prisma.courses.findUnique({ where: { id: courseId } }) : await prisma.courses.findFirst();
-
-    if (!course) {
-      return NextResponse.json({ assignment: { id: "asgn-" + Date.now(), title, description } });
+    if (action === "announcement") {
+      const annId = `ann-${Date.now()}`;
+      const ann = {
+        id: annId,
+        title: title || "Class Notice",
+        content: content || title,
+        posted_by: authUser.userId,
+        author: { name: authUser.name, email: authUser.email },
+        createdAt: new Date().toISOString(),
+      };
+      await adminDb.collection(COLLECTIONS.ANNOUNCEMENTS).doc(annId).set(ann);
+      return NextResponse.json({ message: "Announcement created successfully", announcement: ann });
     }
 
-    // Teacher authorization check: Must have active teaching assignment if not Admin
-    if (userRole === "teacher") {
-      const assignmentCount = await prisma.faculty_teaching_assignments.count({
-        where: {
-          teacher_id: authUser.id,
-          OR: [{ course_id: course.id }, { course_id: null }],
-        },
-      });
-
-      if (assignmentCount === 0) {
-        return NextResponse.json(
-          { error: "Access Denied. You do not have an active teaching assignment for this course/class." },
-          { status: 403 }
-        );
-      }
+    if (action === "assignment") {
+      const assignId = `assign-${Date.now()}`;
+      const assign = {
+        id: assignId,
+        title: title || "Course Assignment",
+        description: description || title,
+        deadline: deadline || new Date(Date.now() + 7 * 86400000).toISOString(),
+        teacher_id: authUser.userId,
+        createdAt: new Date().toISOString(),
+      };
+      await adminDb.collection("assignments").doc(assignId).set(assign);
+      return NextResponse.json({ message: "Assignment created successfully", assignment: assign });
     }
 
-    if (type === "assignment") {
-      const assignment = await prisma.assignments.create({
-        data: {
-          course_id: course.id,
-          created_by: authUser.id,
-          title: title || "New Assignment",
-          description: description || title || "Assignment description",
-          due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-        },
-      });
-      return NextResponse.json({ assignment });
-    }
-
-    if (type === "announcement") {
-      const announcement = await prisma.announcements.create({
-        data: {
-          course_id: course.id,
-          posted_by: authUser.id,
-          title: title || "Class Announcement",
-          message: content || title || "Announcement details",
-        },
-      });
-      return NextResponse.json({ announcement });
-    }
-
-    return NextResponse.json({ error: "Invalid teacher portal action" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid action" }, { status: 400 });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Teacher portal action failed" }, { status: 500 });
+    console.error("POST /api/teacher error:", error);
+    return NextResponse.json({ error: error.message || "Action failed" }, { status: 500 });
   }
 }

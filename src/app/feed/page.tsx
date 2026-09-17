@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Sidebar } from "@/components/Sidebar";
 import { useAuth } from "@/context/AuthContext";
-import { supabase } from "@/lib/supabase";
 import {
   MessageSquareShare,
   Heart,
@@ -32,33 +31,13 @@ export default function FeedPage() {
       const data = await res.json();
       if (data.posts) {
         setPosts((prevPosts) => {
-          // Deduplicate incoming posts by ID
           const existingMap = new Map(prevPosts.map((p) => [p.id, p]));
           data.posts.forEach((newP: any) => existingMap.set(newP.id, newP));
           return data.posts;
         });
       }
     } catch {
-      // Fallback posts if API is unreachable
-      setPosts([
-        {
-          id: "post-1",
-          content: "🚀 Just solved 50 Hard Dynamic Programming problems on CampusCode! Here is my key takeaway on 2D DP table space reduction from O(N*M) to O(M):",
-          codeSnippet: "// Space optimization example\nlet dp = new Array(m).fill(0);\nfor(let i = 0; i < n; i++) {\n  let nextDp = [...dp];\n  // ...\n}",
-          tags: '["#DSA", "#DynamicProgramming", "#CampusCode"]',
-          likesCount: 38,
-          commentsCount: 12,
-          user: { name: "Aarav Sharma", avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80", branch: "CSE" },
-        },
-        {
-          id: "post-2",
-          content: "Does anyone want to team up for the upcoming National Inter-College Hackathon next weekend? Looking for a Backend & Cloud Engineer!",
-          tags: '["#Hackathon", "#TeamUp", "#WebDev"]',
-          likesCount: 19,
-          commentsCount: 8,
-          user: { name: "Ananya Roy", avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&auto=format&fit=crop&q=80", branch: "IT" },
-        },
-      ]);
+      setPosts([]);
     } finally {
       setLoading(false);
     }
@@ -66,40 +45,6 @@ export default function FeedPage() {
 
   useEffect(() => {
     fetchPosts();
-
-    // Setup Supabase Realtime channel subscription
-    const channel = supabase
-      .channel("feed-realtime-channel")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "discussion_posts" },
-        () => {
-          fetchPosts();
-        }
-      )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "discussion_comments" },
-        () => {
-          fetchPosts();
-        }
-      )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "discussion_votes" },
-        () => {
-          fetchPosts();
-        }
-      )
-      .subscribe((status, err) => {
-        if (err) {
-          console.warn("[Realtime Feed] Subscription error:", err);
-        }
-      });
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
   }, []);
 
   const handleCreatePost = async (e: React.FormEvent) => {

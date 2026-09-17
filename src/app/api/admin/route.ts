@@ -1,220 +1,215 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { FirebaseStoreService } from "@/lib/firebase/store";
+import { verifyServerToken } from "@/lib/firebase/auth";
+import { adminDb, adminAuth } from "@/lib/firebase/admin";
+import { COLLECTIONS } from "@/lib/firebase/firestore";
 
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 export const revalidate = 0;
 
-export async function GET(_req: Request) {
+export async function GET(req: Request) {
   try {
-    const totalUsers = await prisma.users.count();
-    const studentRole = await prisma.roles.findFirst({ where: { name: { equals: "student", mode: "insensitive" } } });
-    const teacherRole = await prisma.roles.findFirst({ where: { name: { equals: "teacher", mode: "insensitive" } } });
-    const adminRole = await prisma.roles.findFirst({ where: { name: { equals: "admin", mode: "insensitive" } } });
-    const superAdminRole = await prisma.roles.findFirst({ where: { name: { equals: "super_admin", mode: "insensitive" } } });
+    const authHeader = req.headers.get("Authorization");
+    const token = authHeader?.startsWith("Bearer ") ? authHeader.substring(7) : "";
+    const authUser = await verifyServerToken(token);
 
-    const totalStudents = studentRole
-      ? await prisma.users.count({
-          where: {
-            role_id: studentRole.id,
-          },
-        })
-      : 0;
+    if (!authUser || (authUser.role !== "ADMIN" && authUser.role !== "SUPER_ADMIN")) {
+      return NextResponse.json({ error: "Unauthorized. Admin role required." }, { status: 403 });
+    }
 
-    const totalTeachers = teacherRole ? await prisma.users.count({ where: { role_id: teacherRole.id } }) : 0;
-    const totalAdmins = await prisma.users.count({
-      where: {
-        OR: [
-          adminRole ? { role_id: adminRole.id } : {},
-          superAdminRole ? { role_id: superAdminRole.id } : {},
-        ],
-      },
-    });
+    const users = await FirebaseStoreService.getUsers();
 
-    const totalProblems = await prisma.problems.count({ where: { status: "published" } });
-    const totalSubmissions = await prisma.submissions.count();
-    const totalProjects = await prisma.projects.count();
-    const totalPosts = 0;
-
-    const rawUsers = await prisma.users.findMany({
-      include: {
-        roles: true,
-        classes: true,
-      },
-      orderBy: { created_at: "desc" },
-    });
-
-    const users = rawUsers.map((u) => ({
-      id: u.id,
-      name: u.full_name || u.username || u.email.split("@")[0],
+    const formattedUsers = users.map((u: any) => ({
+      id: u.id || u.uid,
+      name: u.full_name || u.name || u.username || u.email?.split("@")[0],
       email: u.email,
-      role: u.roles?.name ? u.roles.name.toUpperCase() : "STUDENT",
-      rollNumber: u.roll_number,
-      className: u.classes?.name || "TY BSc CS",
-      branch: "Computer Science",
+      role: (u.role || "STUDENT").toUpperCase(),
+      rollNumber: u.roll_number || u.rollNumber || null,
+      className: u.className || u.class_name || null,
+      branch: u.branch || null,
+      academicYear: u.academicYear || u.academic_year || null,
       xp: u.xp || 0,
       coins: u.coins || 0,
-      createdAt: u.created_at,
+      createdAt: u.created_at || new Date().toISOString(),
     }));
+
+    const totalStudents = formattedUsers.filter((u: any) => u.role === "STUDENT").length;
+    const totalTeachers = formattedUsers.filter((u: any) => u.role === "TEACHER").length;
+    const totalAdmins = formattedUsers.filter((u: any) => u.role === "ADMIN" || u.role === "SUPER_ADMIN").length;
+
+    const publishedProbs = await FirebaseStoreService.getProblems("published");
+
+    let totalSubmissions = 0;
+    try {
+      const subSnap = await adminDb.collection(COLLECTIONS.SUBMISSIONS).get();
+      totalSubmissions = subSnap.size;
+    } catch {}
+
+    let totalProjects = 0;
+    try {
+      const projSnap = await adminDb.collection(COLLECTIONS.PROJECTS).get();
+      totalProjects = projSnap.size;
+    } catch {}
 
     return NextResponse.json({
       stats: {
-        totalUsers,
+        totalUsers: formattedUsers.length,
         totalStudents,
         totalTeachers,
         totalAdmins,
-        totalProblems,
+        totalProblems: publishedProbs.length,
         totalSubmissions,
         totalProjects,
-        totalPosts,
+        totalPosts: 0,
       },
-      users,
+      users: formattedUsers,
       posts: [],
     });
   } catch (error: any) {
+    console.error("GET /api/admin error:", error);
     return NextResponse.json({ error: error.message || "Admin API error" }, { status: 500 });
   }
 }
 
 export async function POST(req: Request) {
   try {
+    const authHeader = req.headers.get("Authorization");
+    const token = authHeader?.startsWith("Bearer ") ? authHeader.substring(7) : "";
+    const authUser = await verifyServerToken(token);
+
+    if (!authUser || (authUser.role !== "ADMIN" && authUser.role !== "SUPER_ADMIN")) {
+      return NextResponse.json({ error: "Unauthorized. Admin role required." }, { status: 403 });
+    }
+
     const body = await req.json();
-    const { name, email, role, rollNumber, className } = body;
+    const { name, email, password, role, rollNumber, className, branch, academicYear } = body;
 
     if (!name || !email) {
       return NextResponse.json({ error: "Name and email are required" }, { status: 400 });
     }
 
     const cleanEmail = email.trim().toLowerCase();
-    const existingUser = await prisma.users.findUnique({ where: { email: cleanEmail } });
+    const existingUser = await FirebaseStoreService.getUserByEmail(cleanEmail);
     if (existingUser) {
       return NextResponse.json({ error: "User with this email already exists" }, { status: 400 });
     }
 
-    const roleName = (role || "STUDENT").toLowerCase();
-    const roleRecord = await prisma.roles.findFirst({ where: { name: { equals: roleName, mode: "insensitive" } } });
-    const classRecord = className ? await prisma.classes.findFirst({ where: { name: { equals: className, mode: "insensitive" } } }) : null;
+    const roleName = (role || "STUDENT").toUpperCase();
+    const initialPassword = password || "CampusCode@2026";
 
-    const newUser = await prisma.users.create({
-      data: {
-        full_name: name,
-        username: name.toLowerCase().replace(/\s+/g, ""),
+    // 1. Create User in Firebase Auth
+    let createdAuthUser: any = null;
+    try {
+      createdAuthUser = await adminAuth.createUser({
         email: cleanEmail,
-        role_id: roleRecord?.id || null,
-        class_id: classRecord?.id || null,
-        roll_number: rollNumber ? rollNumber.trim().toUpperCase() : null,
-        profile_image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80",
-        xp: 0,
-        level: 1,
-        coins: 0,
-      },
-      include: { roles: true, classes: true },
-    });
+        password: initialPassword,
+        displayName: name.trim(),
+      });
+    } catch (authErr: any) {
+      console.error("[Admin API] Firebase Auth user creation error:", authErr);
+      return NextResponse.json(
+        { error: authErr.message || "Failed to create Firebase Auth user account." },
+        { status: 400 }
+      );
+    }
+
+    const uid = createdAuthUser.uid;
+
+    // 2. Set Custom Role Claim in Firebase Auth
+    try {
+      await adminAuth.setCustomUserClaims(uid, { role: roleName });
+    } catch (claimErr) {
+      console.warn("[Admin API] Failed setting custom user claims:", claimErr);
+    }
+
+    // 3. Write user document to Cloud Firestore using UID as Document ID
+    const newUserObj = {
+      id: uid,
+      uid: uid,
+      email: cleanEmail,
+      full_name: name.trim(),
+      username: name.trim().toLowerCase().replace(/\s+/g, ""),
+      roll_number: rollNumber ? rollNumber.trim().toUpperCase() : null,
+      role: roleName,
+      className: className || null,
+      branch: branch || null,
+      academicYear: academicYear || null,
+      profile_image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80",
+      xp: 0,
+      level: 1,
+      coins: 0,
+      streakDays: 0,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
+    await FirebaseStoreService.saveUser(newUserObj);
 
     return NextResponse.json({
-      message: `User ${newUser.full_name} created successfully!`,
-      user: {
-        id: newUser.id,
-        name: newUser.full_name,
-        email: newUser.email,
-        role: newUser.roles?.name ? newUser.roles.name.toUpperCase() : "STUDENT",
-        rollNumber: newUser.roll_number,
-        className: newUser.classes?.name || className,
-      },
+      message: "User created successfully with matching Firebase Auth UID and Firestore record.",
+      user: newUserObj,
     });
   } catch (error: any) {
+    console.error("POST /api/admin error:", error);
     return NextResponse.json({ error: error.message || "Failed to create user" }, { status: 500 });
   }
 }
 
 export async function PUT(req: Request) {
   try {
+    const authHeader = req.headers.get("Authorization");
+    const token = authHeader?.startsWith("Bearer ") ? authHeader.substring(7) : "";
+    const authUser = await verifyServerToken(token);
+
+    if (!authUser || (authUser.role !== "ADMIN" && authUser.role !== "SUPER_ADMIN")) {
+      return NextResponse.json({ error: "Unauthorized. Admin role required." }, { status: 403 });
+    }
+
     const body = await req.json();
-    const { userId, name, email, role, rollNumber, className, xp, coins } = body;
+    const { userId, name, email, role, rollNumber, className, branch, academicYear } = body;
 
     if (!userId) {
       return NextResponse.json({ error: "User ID is required" }, { status: 400 });
     }
 
-    const updateData: any = { updated_at: new Date() };
-    if (name) updateData.full_name = name;
-    if (email) updateData.email = email.trim().toLowerCase();
-    if (rollNumber !== undefined) updateData.roll_number = rollNumber ? rollNumber.trim().toUpperCase() : null;
-    if (xp !== undefined && !isNaN(Number(xp))) updateData.xp = Number(xp);
-    if (coins !== undefined && !isNaN(Number(coins))) updateData.coins = Number(coins);
-
-    if (role) {
-      const roleRecord = await prisma.roles.findFirst({ where: { name: { equals: role.toLowerCase(), mode: "insensitive" } } });
-      if (roleRecord) updateData.role_id = roleRecord.id;
+    const existingUser: any = await FirebaseStoreService.getUserById(userId);
+    if (!existingUser) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    if (className) {
-      const classRecord = await prisma.classes.findFirst({ where: { name: { equals: className, mode: "insensitive" } } });
-      if (classRecord) updateData.class_id = classRecord.id;
+    const newRole = role ? role.toUpperCase() : existingUser.role;
+
+    // Update custom claim if role changed
+    if (role && newRole !== existingUser.role) {
+      try {
+        await adminAuth.setCustomUserClaims(userId, { role: newRole });
+      } catch (claimErr) {
+        console.warn("[Admin API] Failed updating custom user claim:", claimErr);
+      }
     }
 
-    const updatedUser = await prisma.users.update({
-      where: { id: userId },
-      data: updateData,
-      include: { roles: true, classes: true },
-    });
+    const updatedUser = {
+      ...existingUser,
+      full_name: name ? name.trim() : existingUser.full_name,
+      email: email ? email.trim().toLowerCase() : existingUser.email,
+      role: newRole,
+      roll_number: rollNumber ? rollNumber.trim().toUpperCase() : existingUser.roll_number,
+      className: className !== undefined ? className : existingUser.className,
+      branch: branch !== undefined ? branch : existingUser.branch,
+      academicYear: academicYear !== undefined ? academicYear : existingUser.academicYear,
+      updated_at: new Date().toISOString(),
+    };
+
+    await FirebaseStoreService.saveUser(updatedUser);
 
     return NextResponse.json({
-      message: `User ${updatedUser.full_name} details updated successfully!`,
-      user: {
-        id: updatedUser.id,
-        name: updatedUser.full_name,
-        email: updatedUser.email,
-        role: updatedUser.roles?.name ? updatedUser.roles.name.toUpperCase() : "STUDENT",
-        rollNumber: updatedUser.roll_number,
-        className: updatedUser.classes?.name || className,
-        xp: updatedUser.xp,
-        coins: updatedUser.coins,
-      },
-    });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Failed to update user details" }, { status: 500 });
-  }
-}
-
-export async function PATCH(req: Request) {
-  try {
-    const body = await req.json();
-    const { userId, newRole } = body;
-
-    if (!userId || !newRole) {
-      return NextResponse.json({ error: "User ID and new role are required" }, { status: 400 });
-    }
-
-    const roleRecord = await prisma.roles.findFirst({ where: { name: { equals: newRole.toLowerCase(), mode: "insensitive" } } });
-
-    const updatedUser = await prisma.users.update({
-      where: { id: userId },
-      data: { role_id: roleRecord?.id || null, updated_at: new Date() },
-      include: { roles: true },
-    });
-
-    return NextResponse.json({
-      message: `User ${updatedUser.full_name} role changed to ${newRole} by Admin`,
+      message: "User updated successfully",
       user: updatedUser,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Failed to update user role" }, { status: 500 });
+    console.error("PUT /api/admin error:", error);
+    return NextResponse.json({ error: error.message || "Failed to update user" }, { status: 500 });
   }
 }
 
-export async function DELETE(req: Request) {
-  try {
-    const { searchParams } = new URL(req.url);
-    const userId = searchParams.get("userId");
-
-    if (userId) {
-      const deletedUser = await prisma.users.delete({ where: { id: userId } });
-      return NextResponse.json({ message: `User ${deletedUser.full_name} deleted successfully.` });
-    }
-
-    return NextResponse.json({ error: "User ID required for deletion" }, { status: 400 });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Deletion failed" }, { status: 500 });
-  }
-}

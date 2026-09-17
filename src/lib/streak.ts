@@ -1,61 +1,58 @@
-import { prisma } from "./prisma";
-
-export function getISTDateStr(dateInput: Date | string | number): string {
-  const d = new Date(dateInput);
-  if (isNaN(d.getTime())) return "";
-  return d.toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
-}
+import { adminDb } from "./firebase/admin";
+import { COLLECTIONS } from "./firebase/firestore";
+import { getISTDateStr } from "./date-utils";
 
 export async function calculateAndUpdateStreak(userId: string): Promise<number> {
+  if (!userId) return 0;
   try {
-    const submissions = await prisma.submissions.findMany({
-      where: {
-        user_id: userId,
-        OR: [
-          { status: "ACCEPTED" },
-          { verdict: "ACCEPTED" },
-        ],
-      },
-      select: {
-        created_at: true,
-        submitted_at: true,
-      },
-      orderBy: {
-        created_at: "desc",
-      },
-    });
+    const snap = await adminDb
+      .collection(COLLECTIONS.SUBMISSIONS)
+      .where("user_id", "==", userId)
+      .where("verdict", "==", "ACCEPTED")
+      .get();
 
-    if (!submissions || submissions.length === 0) {
-      await prisma.daily_streaks.upsert({
-        where: { user_id: userId },
-        update: { current_streak: 0, updated_at: new Date() },
-        create: { user_id: userId, current_streak: 0, longest_streak: 0 },
-      });
+    const submissions = snap.empty ? [] : snap.docs.map((d) => d.data());
+
+    const streakDocRef = adminDb.collection("streaks").doc(userId);
+    const streakDoc = await streakDocRef.get();
+    const existingStreakData = streakDoc.exists ? streakDoc.data() : null;
+
+    if (submissions.length === 0) {
+      await streakDocRef.set(
+        {
+          user_id: userId,
+          current_streak: 0,
+          longest_streak: existingStreakData?.longest_streak || 0,
+          updated_at: new Date().toISOString(),
+        },
+        { merge: true }
+      );
+      // Also sync user document
+      await adminDb.collection(COLLECTIONS.USERS).doc(userId).set({ streakDays: 0 }, { merge: true });
       return 0;
     }
 
     const activeDates = new Set(
       submissions
-        .map((s) => getISTDateStr(s.created_at || s.submitted_at))
+        .map((s) => getISTDateStr(s.submitted_at || s.created_at))
         .filter(Boolean)
     );
 
     const now = new Date();
     const todayStr = getISTDateStr(now);
-
-    const yesterday = new Date(now.getTime() - 86400000);
-    const yesterdayStr = getISTDateStr(yesterday);
+    const yesterdayStr = getISTDateStr(new Date(now.getTime() - 86400000));
 
     if (!activeDates.has(todayStr) && !activeDates.has(yesterdayStr)) {
-      const existingStreak = await prisma.daily_streaks.findUnique({
-        where: { user_id: userId },
-        select: { longest_streak: true },
-      });
-      await prisma.daily_streaks.upsert({
-        where: { user_id: userId },
-        update: { current_streak: 0, updated_at: new Date() },
-        create: { user_id: userId, current_streak: 0, longest_streak: existingStreak?.longest_streak || 0 },
-      });
+      await streakDocRef.set(
+        {
+          user_id: userId,
+          current_streak: 0,
+          longest_streak: existingStreakData?.longest_streak || 0,
+          updated_at: new Date().toISOString(),
+        },
+        { merge: true }
+      );
+      await adminDb.collection(COLLECTIONS.USERS).doc(userId).set({ streakDays: 0 }, { merge: true });
       return 0;
     }
 
@@ -73,32 +70,24 @@ export async function calculateAndUpdateStreak(userId: string): Promise<number> 
       }
     }
 
-    const existingStreak = await prisma.daily_streaks.findUnique({
-      where: { user_id: userId },
-      select: { longest_streak: true },
-    });
-    const longest = Math.max(streak, existingStreak?.longest_streak || 0);
+    const longest = Math.max(streak, existingStreakData?.longest_streak || 0);
 
-    await prisma.daily_streaks.upsert({
-      where: { user_id: userId },
-      update: {
-        current_streak: streak,
-        longest_streak: longest,
-        last_submission_date: now,
-        updated_at: now,
-      },
-      create: {
+    await streakDocRef.set(
+      {
         user_id: userId,
         current_streak: streak,
-        longest_streak: streak,
-        last_submission_date: now,
-        updated_at: now,
+        longest_streak: longest,
+        last_submission_date: now.toISOString(),
+        updated_at: now.toISOString(),
       },
-    });
+      { merge: true }
+    );
+
+    await adminDb.collection(COLLECTIONS.USERS).doc(userId).set({ streakDays: streak }, { merge: true });
 
     return streak;
   } catch (error) {
-    console.error("Error calculating streak:", error);
+    console.error("Error calculating streak via Firestore:", error);
     return 0;
   }
 }

@@ -45,10 +45,18 @@ export default function ProblemsPage() {
   const isTeacherOrAdmin = user?.role === "TEACHER" || user?.role === "ADMIN" || user?.role === "SUPER_ADMIN";
 
   useEffect(() => {
-    fetchProblems();
+    const controller = new AbortController();
+    const timer = setTimeout(() => {
+      fetchProblems(controller.signal);
+    }, search ? 250 : 0);
+
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
   }, [selectedDifficulty, selectedCategory, selectedCompany, search]);
 
-  const fetchProblems = async () => {
+  const fetchProblems = async (signal?: AbortSignal) => {
     setLoading(true);
     try {
       const query = new URLSearchParams();
@@ -57,15 +65,19 @@ export default function ProblemsPage() {
       if (selectedCompany !== "ALL") query.append("company", selectedCompany);
       if (search) query.append("search", search);
 
-      const res = await fetch(`/api/problems?${query.toString()}&t=${Date.now()}`, { cache: "no-store" });
+      const res = await fetch(`/api/problems?${query.toString()}`, { signal, cache: "no-store" });
       const data = await res.json();
       if (data.problems) {
         setProblems(data.problems);
       }
     } catch (err: any) {
-      console.error("Failed to fetch problems:", err);
+      if (err.name !== "AbortError") {
+        console.error("Failed to fetch problems:", err);
+      }
     } finally {
-      setLoading(false);
+      if (!signal?.aborted) {
+        setLoading(false);
+      }
     }
   };
 

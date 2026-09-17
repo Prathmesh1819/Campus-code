@@ -1,0 +1,1352 @@
+[
+  {
+    "order": 1,
+    "title": "Two Sum",
+    "slug": "two-sum",
+    "difficulty": "EASY",
+    "category": "Array / Hash Table",
+    "description": "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target. You may assume that each input would have exactly one solution, and you may not use the same element twice.",
+    "constraints": "2 \u2264 nums.length \u2264 10^4\n-10^9 \u2264 nums[i], target \u2264 10^9\nExactly one valid answer exists.",
+    "testCases": [
+      {
+        "input": "[2,7,11,15], 9",
+        "expected": "[0,1]",
+        "isHidden": false
+      },
+      {
+        "input": "[3,2,4], 6",
+        "expected": "[1,2]",
+        "isHidden": false
+      },
+      {
+        "input": "[3,3], 6",
+        "expected": "[0,1]",
+        "isHidden": true
+      },
+      {
+        "input": "[-1,-8,10,20], 2",
+        "expected": "[1,2]",
+        "isHidden": true
+      },
+      {
+        "input": "[1,5,4,7,10,14,18], 25",
+        "expected": "[3,6]",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 2,
+    "title": "Palindrome Number",
+    "slug": "palindrome-number",
+    "difficulty": "EASY",
+    "category": "Math",
+    "description": "Given an integer x, return true if x is a palindrome, and false otherwise. Do not convert the integer to a string if solving in O(1) space.",
+    "constraints": "-2^31 \u2264 x \u2264 2^31 - 1",
+    "testCases": [
+      {
+        "input": "121",
+        "expected": "true",
+        "isHidden": false
+      },
+      {
+        "input": "-121",
+        "expected": "false",
+        "isHidden": false
+      },
+      {
+        "input": "10",
+        "expected": "false",
+        "isHidden": true
+      },
+      {
+        "input": "0",
+        "expected": "true",
+        "isHidden": true
+      },
+      {
+        "input": "12321",
+        "expected": "true",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 3,
+    "title": "Valid Parentheses",
+    "slug": "valid-parentheses",
+    "difficulty": "EASY",
+    "category": "Stack / String",
+    "description": "Given a string s containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid. Open brackets must be closed by the same type of brackets and in the correct order.",
+    "constraints": "1 \u2264 s.length \u2264 10^4\ns consists of parentheses only.",
+    "testCases": [
+      {
+        "input": "\"()[]{}\"",
+        "expected": "true",
+        "isHidden": false
+      },
+      {
+        "input": "\"(]\"",
+        "expected": "false",
+        "isHidden": false
+      },
+      {
+        "input": "\"{[]}\"",
+        "expected": "true",
+        "isHidden": true
+      },
+      {
+        "input": "\"(\"",
+        "expected": "false",
+        "isHidden": true
+      },
+      {
+        "input": "\"]\"",
+        "expected": "false",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 4,
+    "title": "Merge Two Sorted Lists",
+    "slug": "merge-two-sorted-lists",
+    "difficulty": "EASY",
+    "category": "Linked List",
+    "description": "You are given the heads of two sorted linked lists list1 and list2. Merge the two lists into one sorted list by splicing together the nodes of the first two lists.",
+    "constraints": "Number of nodes in both lists is in [0, 50]\n-100 \u2264 Node.val \u2264 100",
+    "testCases": [
+      {
+        "input": "[1,2,4], [1,3,4]",
+        "expected": "[1,1,2,3,4,4]",
+        "isHidden": false
+      },
+      {
+        "input": "[], []",
+        "expected": "[]",
+        "isHidden": false
+      },
+      {
+        "input": "[], [0]",
+        "expected": "[0]",
+        "isHidden": true
+      },
+      {
+        "input": "[2], [1]",
+        "expected": "[1,2]",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 5,
+    "title": "Maximum Subarray",
+    "slug": "maximum-subarray",
+    "difficulty": "EASY",
+    "category": "Dynamic Programming / Kadane's",
+    "description": "Given an integer array nums, find the subarray with the largest sum, and return its sum.",
+    "constraints": "1 \u2264 nums.length \u2264 10^5\n-10^4 \u2264 nums[i] \u2264 10^4",
+    "testCases": [
+      {
+        "input": "[-2,1,-3,4,-1,2,1,-5,4]",
+        "expected": "6",
+        "isHidden": false
+      },
+      {
+        "input": "[5,4,-1,7,8]",
+        "expected": "23",
+        "isHidden": false
+      },
+      {
+        "input": "[1]",
+        "expected": "1",
+        "isHidden": true
+      },
+      {
+        "input": "[-1,-2,-3]",
+        "expected": "-1",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 6,
+    "title": "Best Time to Buy and Sell Stock",
+    "slug": "best-time-to-buy-and-sell-stock",
+    "difficulty": "EASY",
+    "category": "Array / Two Pointers",
+    "description": "You are given an array prices where prices[i] is the price of a given stock on the ith day. Choose a single day to buy one stock and a future day to sell. Return maximum profit.",
+    "constraints": "1 \u2264 prices.length \u2264 10^5\n0 \u2264 prices[i] \u2264 10^4",
+    "testCases": [
+      {
+        "input": "[7,1,5,3,6,4]",
+        "expected": "5",
+        "isHidden": false
+      },
+      {
+        "input": "[7,6,4,3,1]",
+        "expected": "0",
+        "isHidden": false
+      },
+      {
+        "input": "[1,2]",
+        "expected": "1",
+        "isHidden": true
+      },
+      {
+        "input": "[3,3,5,0,0,3,1,4]",
+        "expected": "4",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 7,
+    "title": "Reverse Linked List",
+    "slug": "reverse-linked-list",
+    "difficulty": "EASY",
+    "category": "Linked List",
+    "description": "Given the head of a singly linked list, reverse the list, and return the reversed list head.",
+    "constraints": "Number of nodes in list is in [0, 5000]\n-5000 \u2264 Node.val \u2264 5000",
+    "testCases": [
+      {
+        "input": "[1,2,3,4,5]",
+        "expected": "[5,4,3,2,1]",
+        "isHidden": false
+      },
+      {
+        "input": "[1,2]",
+        "expected": "[2,1]",
+        "isHidden": false
+      },
+      {
+        "input": "[]",
+        "expected": "[]",
+        "isHidden": true
+      },
+      {
+        "input": "[1]",
+        "expected": "[1]",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 8,
+    "title": "Binary Tree Inorder Traversal",
+    "slug": "binary-tree-inorder-traversal",
+    "difficulty": "EASY",
+    "category": "Tree / DFS",
+    "description": "Given the root of a binary tree, return the inorder traversal of its nodes' values.",
+    "constraints": "Number of nodes in tree is in [0, 100]\n-100 \u2264 Node.val \u2264 100",
+    "testCases": [
+      {
+        "input": "[1,null,2,3]",
+        "expected": "[1,3,2]",
+        "isHidden": false
+      },
+      {
+        "input": "[1]",
+        "expected": "[1]",
+        "isHidden": false
+      },
+      {
+        "input": "[]",
+        "expected": "[]",
+        "isHidden": true
+      },
+      {
+        "input": "[1,2,3,4,5]",
+        "expected": "[4,2,5,1,3]",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 9,
+    "title": "Maximum Depth of Binary Tree",
+    "slug": "maximum-depth-of-binary-tree",
+    "difficulty": "EASY",
+    "category": "Tree / BFS / DFS",
+    "description": "Given the root of a binary tree, return its maximum depth (number of nodes along the longest path from root down to leaf).",
+    "constraints": "Number of nodes in tree is in [0, 10^4]\n-100 \u2264 Node.val \u2264 100",
+    "testCases": [
+      {
+        "input": "[3,9,20,null,null,15,7]",
+        "expected": "3",
+        "isHidden": false
+      },
+      {
+        "input": "[1,null,2]",
+        "expected": "2",
+        "isHidden": false
+      },
+      {
+        "input": "[]",
+        "expected": "0",
+        "isHidden": true
+      },
+      {
+        "input": "[0]",
+        "expected": "1",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 10,
+    "title": "Single Number",
+    "slug": "single-number",
+    "difficulty": "EASY",
+    "category": "Bit Manipulation",
+    "description": "Given a non-empty array of integers nums, every element appears twice except for one. Find that single one. Must implement with linear runtime and O(1) space.",
+    "constraints": "1 \u2264 nums.length \u2264 3 \u00d7 10^4\n-3 \u00d7 10^4 \u2264 nums[i] \u2264 3 \u00d7 10^4",
+    "testCases": [
+      {
+        "input": "[2,2,1]",
+        "expected": "1",
+        "isHidden": false
+      },
+      {
+        "input": "[4,1,2,1,2]",
+        "expected": "4",
+        "isHidden": false
+      },
+      {
+        "input": "[1]",
+        "expected": "1",
+        "isHidden": true
+      },
+      {
+        "input": "[-1,-1,-2]",
+        "expected": "-2",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 11,
+    "title": "Linked List Cycle",
+    "slug": "linked-list-cycle",
+    "difficulty": "EASY",
+    "category": "Linked List / Two Pointers",
+    "description": "Given head, the head of a linked list, determine if the linked list has a cycle in it.",
+    "constraints": "Number of nodes in list is in [0, 10^4]\n-10^5 \u2264 Node.val \u2264 10^5",
+    "testCases": [
+      {
+        "input": "[3,2,0,-4], pos = 1",
+        "expected": "true",
+        "isHidden": false
+      },
+      {
+        "input": "[1], pos = -1",
+        "expected": "false",
+        "isHidden": false
+      },
+      {
+        "input": "[1,2], pos = 0",
+        "expected": "true",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 12,
+    "title": "Valid Anagram",
+    "slug": "valid-anagram",
+    "difficulty": "EASY",
+    "category": "Hash Table / String",
+    "description": "Given two strings s and t, return true if t is an anagram of s, and false otherwise.",
+    "constraints": "1 \u2264 s.length, t.length \u2264 5 \u00d7 10^4\nconsisting of lowercase English letters.",
+    "testCases": [
+      {
+        "input": "\"anagram\", \"nagaram\"",
+        "expected": "true",
+        "isHidden": false
+      },
+      {
+        "input": "\"rat\", \"car\"",
+        "expected": "false",
+        "isHidden": false
+      },
+      {
+        "input": "\"a\", \"a\"",
+        "expected": "true",
+        "isHidden": true
+      },
+      {
+        "input": "\"listen\", \"silent\"",
+        "expected": "true",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 13,
+    "title": "Binary Search",
+    "slug": "binary-search",
+    "difficulty": "EASY",
+    "category": "Binary Search",
+    "description": "Given an array of integers nums sorted in ascending order, and an integer target, write a function to search target in nums in O(log n) time.",
+    "constraints": "1 \u2264 nums.length \u2264 10^4\nall elements are unique and sorted.",
+    "testCases": [
+      {
+        "input": "[-1,0,3,5,9,12], 9",
+        "expected": "4",
+        "isHidden": false
+      },
+      {
+        "input": "[-1,0,3,5,9,12], 2",
+        "expected": "-1",
+        "isHidden": false
+      },
+      {
+        "input": "[1,2,3,4], 5",
+        "expected": "-1",
+        "isHidden": true
+      },
+      {
+        "input": "[5], 5",
+        "expected": "0",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 14,
+    "title": "Climbing Stairs",
+    "slug": "climbing-stairs",
+    "difficulty": "EASY",
+    "category": "Dynamic Programming",
+    "description": "You are climbing a staircase. It takes n steps to reach the top. Each time you can climb 1 or 2 steps. In how many distinct ways can you climb to the top?",
+    "constraints": "1 \u2264 n \u2264 45",
+    "testCases": [
+      {
+        "input": "2",
+        "expected": "2",
+        "isHidden": false
+      },
+      {
+        "input": "3",
+        "expected": "3",
+        "isHidden": false
+      },
+      {
+        "input": "5",
+        "expected": "8",
+        "isHidden": true
+      },
+      {
+        "input": "1",
+        "expected": "1",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 15,
+    "title": "Invert Binary Tree",
+    "slug": "invert-binary-tree",
+    "difficulty": "EASY",
+    "category": "Tree / DFS",
+    "description": "Given the root of a binary tree, invert the tree (mirror left and right subtrees), and return its root.",
+    "constraints": "Number of nodes in tree is in [0, 100]\n-100 \u2264 Node.val \u2264 100",
+    "testCases": [
+      {
+        "input": "[4,2,7,1,3,6,9]",
+        "expected": "[4,7,2,9,6,3,1]",
+        "isHidden": false
+      },
+      {
+        "input": "[2,1,3]",
+        "expected": "[2,3,1]",
+        "isHidden": false
+      },
+      {
+        "input": "[]",
+        "expected": "[]",
+        "isHidden": true
+      },
+      {
+        "input": "[1,2]",
+        "expected": "[1,null,2]",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 16,
+    "title": "Add Two Numbers",
+    "slug": "add-two-numbers",
+    "difficulty": "MEDIUM",
+    "category": "Linked List / Math",
+    "description": "Given two non-empty linked lists representing two non-negative integers stored in reverse order, add the two numbers and return the sum as a linked list.",
+    "constraints": "Number of nodes in each list is in [1, 100]\n0 \u2264 Node.val \u2264 9",
+    "testCases": [
+      {
+        "input": "[2,4,3], [5,6,4]",
+        "expected": "[7,0,8]",
+        "isHidden": false
+      },
+      {
+        "input": "[0], [0]",
+        "expected": "[0]",
+        "isHidden": false
+      },
+      {
+        "input": "[9,9,9,9,9,9,9], [9,9,9,9]",
+        "expected": "[8,9,9,9,0,0,0,1]",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 17,
+    "title": "Longest Substring Without Repeating Characters",
+    "slug": "longest-substring-without-repeating-characters",
+    "difficulty": "MEDIUM",
+    "category": "Sliding Window / Hash Table",
+    "description": "Given a string s, find the length of the longest substring without repeating characters.",
+    "constraints": "0 \u2264 s.length \u2264 5 \u00d7 10^4\ns consists of English letters, digits, symbols and spaces.",
+    "testCases": [
+      {
+        "input": "\"abcabcbb\"",
+        "expected": "3",
+        "isHidden": false
+      },
+      {
+        "input": "\"bbbbb\"",
+        "expected": "1",
+        "isHidden": false
+      },
+      {
+        "input": "\"pwwkew\"",
+        "expected": "3",
+        "isHidden": true
+      },
+      {
+        "input": "\"\"",
+        "expected": "0",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 18,
+    "title": "Longest Palindromic Substring",
+    "slug": "longest-palindromic-substring",
+    "difficulty": "MEDIUM",
+    "category": "String / Dynamic Programming",
+    "description": "Given a string s, return the longest palindromic substring in s.",
+    "constraints": "1 \u2264 s.length \u2264 1000\ns consists of digits and English letters.",
+    "testCases": [
+      {
+        "input": "\"babad\"",
+        "expected": "\"bab\"",
+        "isHidden": false
+      },
+      {
+        "input": "\"cbbd\"",
+        "expected": "\"bb\"",
+        "isHidden": false
+      },
+      {
+        "input": "\"a\"",
+        "expected": "\"a\"",
+        "isHidden": true
+      },
+      {
+        "input": "\"ac\"",
+        "expected": "\"a\"",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 19,
+    "title": "Container With Most Water",
+    "slug": "container-with-most-water",
+    "difficulty": "MEDIUM",
+    "category": "Two Pointers / Greedy",
+    "description": "Given an integer array height of length n. Find two lines that together with the x-axis form a container containing the most water. Return maximum amount of water.",
+    "constraints": "n == height.length, 2 \u2264 n \u2264 10^5, 0 \u2264 height[i] \u2264 10^4",
+    "testCases": [
+      {
+        "input": "[1,8,6,2,5,4,8,3,7]",
+        "expected": "49",
+        "isHidden": false
+      },
+      {
+        "input": "[1,1]",
+        "expected": "1",
+        "isHidden": false
+      },
+      {
+        "input": "[4,3,2,1,4]",
+        "expected": "16",
+        "isHidden": true
+      },
+      {
+        "input": "[1,2,1]",
+        "expected": "2",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 20,
+    "title": "3Sum",
+    "slug": "3sum",
+    "difficulty": "MEDIUM",
+    "category": "Array / Two Pointers",
+    "description": "Given an integer array nums, return all the triplets [nums[i], nums[j], nums[k]] such that i != j, i != k, and j != k, and nums[i] + nums[j] + nums[k] == 0. The solution set must not contain duplicate triplets.",
+    "constraints": "3 \u2264 nums.length \u2264 3000\n-10^5 \u2264 nums[i] \u2264 10^5",
+    "testCases": [
+      {
+        "input": "[-1,0,1,2,-1,-4]",
+        "expected": "[[-1,-1,2],[-1,0,1]]",
+        "isHidden": false
+      },
+      {
+        "input": "[0,1,1]",
+        "expected": "[]",
+        "isHidden": false
+      },
+      {
+        "input": "[0,0,0]",
+        "expected": "[[0,0,0]]",
+        "isHidden": true
+      },
+      {
+        "input": "[-2,0,1,1,2]",
+        "expected": "[[-2,0,2],[-2,1,1]]",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 21,
+    "title": "Remove Nth Node From End of List",
+    "slug": "remove-nth-node-from-end-of-list",
+    "difficulty": "MEDIUM",
+    "category": "Linked List / Two Pointers",
+    "description": "Given the head of a linked list, remove the nth node from the end of the list and return its head.",
+    "constraints": "Number of nodes is sz, 1 \u2264 sz \u2264 30, 0 \u2264 Node.val \u2264 100, 1 \u2264 n \u2264 sz",
+    "testCases": [
+      {
+        "input": "[1,2,3,4,5], 2",
+        "expected": "[1,2,3,5]",
+        "isHidden": false
+      },
+      {
+        "input": "[1], 1",
+        "expected": "[]",
+        "isHidden": false
+      },
+      {
+        "input": "[1,2], 1",
+        "expected": "[1]",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 22,
+    "title": "Generate Parentheses",
+    "slug": "generate-parentheses",
+    "difficulty": "MEDIUM",
+    "category": "Backtracking",
+    "description": "Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.",
+    "constraints": "1 \u2264 n \u2264 8",
+    "testCases": [
+      {
+        "input": "3",
+        "expected": "[\"((()))\",\"(()())\",\"(())()\",\"()(())\",\"()()()\"]",
+        "isHidden": false
+      },
+      {
+        "input": "1",
+        "expected": "[\"()\"]",
+        "isHidden": false
+      },
+      {
+        "input": "2",
+        "expected": "[\"(())\",\"()()\"]",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 23,
+    "title": "Search in Rotated Sorted Array",
+    "slug": "search-in-rotated-sorted-array",
+    "difficulty": "MEDIUM",
+    "category": "Binary Search",
+    "description": "Given integer array nums sorted in ascending order with distinct values, rotated at an unknown pivot, and a target. Return index if found, else -1 in O(log n) time.",
+    "constraints": "1 \u2264 nums.length \u2264 5000, -10^4 \u2264 nums[i], target \u2264 10^4. All values unique.",
+    "testCases": [
+      {
+        "input": "[4,5,6,7,0,1,2], 0",
+        "expected": "4",
+        "isHidden": false
+      },
+      {
+        "input": "[4,5,6,7,0,1,2], 3",
+        "expected": "-1",
+        "isHidden": false
+      },
+      {
+        "input": "[1], 0",
+        "expected": "-1",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 24,
+    "title": "Combination Sum",
+    "slug": "combination-sum",
+    "difficulty": "MEDIUM",
+    "category": "Backtracking",
+    "description": "Given an array of distinct integers candidates and a target integer, return a list of all unique combinations where chosen numbers sum to target. Same number may be chosen unlimited times.",
+    "constraints": "1 \u2264 candidates.length \u2264 30, 2 \u2264 candidates[i] \u2264 40, 1 \u2264 target \u2264 40.",
+    "testCases": [
+      {
+        "input": "[2,3,6,7], 7",
+        "expected": "[[2,2,3],[7]]",
+        "isHidden": false
+      },
+      {
+        "input": "[2,3,5], 8",
+        "expected": "[[2,2,2,2],[2,3,3],[3,5]]",
+        "isHidden": false
+      },
+      {
+        "input": "[2], 1",
+        "expected": "[]",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 25,
+    "title": "Permutations",
+    "slug": "permutations",
+    "difficulty": "MEDIUM",
+    "category": "Backtracking",
+    "description": "Given an array nums of distinct integers, return all the possible permutations in any order.",
+    "constraints": "1 \u2264 nums.length \u2264 6, -10 \u2264 nums[i] \u2264 10. All integers unique.",
+    "testCases": [
+      {
+        "input": "[1,2,3]",
+        "expected": "[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]",
+        "isHidden": false
+      },
+      {
+        "input": "[0,1]",
+        "expected": "[[0,1],[1,0]]",
+        "isHidden": false
+      },
+      {
+        "input": "[1]",
+        "expected": "[[1]]",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 26,
+    "title": "Group Anagrams",
+    "slug": "group-anagrams",
+    "difficulty": "MEDIUM",
+    "category": "Hash Table / String",
+    "description": "Given an array of strings strs, group the anagrams together. You can return the answer in any order.",
+    "constraints": "1 \u2264 strs.length \u2264 10^4, 0 \u2264 strs[i].length \u2264 100. Lowercase English letters.",
+    "testCases": [
+      {
+        "input": "[\"eat\",\"tea\",\"tan\",\"ate\",\"nat\",\"bat\"]",
+        "expected": "[[\"bat\"],[\"nat\",\"tan\"],[\"ate\",\"eat\",\"tea\"]]",
+        "isHidden": false
+      },
+      {
+        "input": "[\"\"]",
+        "expected": "[[\"\"]]",
+        "isHidden": false
+      },
+      {
+        "input": "[\"a\"]",
+        "expected": "[[\"a\"]]",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 27,
+    "title": "Merge Intervals",
+    "slug": "merge-intervals",
+    "difficulty": "MEDIUM",
+    "category": "Sorting / Array",
+    "description": "Given an array of intervals where intervals[i] = [start_i, end_i], merge all overlapping intervals and return non-overlapping intervals that cover all intervals in input.",
+    "constraints": "1 \u2264 intervals.length \u2264 10^4, intervals[i].length == 2, 0 \u2264 start_i \u2264 end_i \u2264 10^4.",
+    "testCases": [
+      {
+        "input": "[[1,3],[2,6],[8,10],[15,18]]",
+        "expected": "[[1,6],[8,10],[15,18]]",
+        "isHidden": false
+      },
+      {
+        "input": "[[1,4],[4,5]]",
+        "expected": "[[1,5]]",
+        "isHidden": false
+      },
+      {
+        "input": "[[1,4],[0,4]]",
+        "expected": "[[0,4]]",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 28,
+    "title": "Unique Paths",
+    "slug": "unique-paths",
+    "difficulty": "MEDIUM",
+    "category": "Dynamic Programming / Combinatorics",
+    "description": "A robot is located at top-left of an m x n grid. It can only move either down or right. Return the number of possible unique paths to bottom-right corner.",
+    "constraints": "1 \u2264 m, n \u2264 100. Answer fits in a 32-bit integer.",
+    "testCases": [
+      {
+        "input": "3, 7",
+        "expected": "28",
+        "isHidden": false
+      },
+      {
+        "input": "3, 2",
+        "expected": "3",
+        "isHidden": false
+      },
+      {
+        "input": "7, 3",
+        "expected": "28",
+        "isHidden": true
+      },
+      {
+        "input": "3, 3",
+        "expected": "6",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 29,
+    "title": "Set Matrix Zeroes",
+    "slug": "set-matrix-zeroes",
+    "difficulty": "MEDIUM",
+    "category": "Array / Matrix",
+    "description": "Given an m x n integer matrix, if an element is 0, set its entire row and column to 0's in-place.",
+    "constraints": "m == matrix.length, n == matrix[0].length, 1 \u2264 m, n \u2264 200, -2^31 \u2264 matrix[i][j] \u2264 2^31 - 1.",
+    "testCases": [
+      {
+        "input": "[[1,1,1],[1,0,1],[1,1,1]]",
+        "expected": "[[1,0,1],[0,0,0],[1,0,1]]",
+        "isHidden": false
+      },
+      {
+        "input": "[[0,1,2,0],[3,4,5,2],[1,3,1,5]]",
+        "expected": "[[0,0,0,0],[0,4,5,0],[0,3,1,0]]",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "order": 30,
+    "title": "Word Search",
+    "slug": "word-search",
+    "difficulty": "MEDIUM",
+    "category": "Backtracking / Matrix",
+    "description": "Given an m x n grid of characters board and a string word, return true if word exists in the grid. Word must be constructed from sequentially adjacent cells.",
+    "constraints": "m == board.length, n == board[i].length, 1 \u2264 m, n \u2264 6, 1 \u2264 word.length \u2264 15.",
+    "testCases": [
+      {
+        "input": "[[\"A\",\"B\",\"C\",\"E\"],[\"S\",\"F\",\"C\",\"S\"],[\"A\",\"D\",\"E\",\"E\"]], \"ABCCED\"",
+        "expected": "true",
+        "isHidden": false
+      },
+      {
+        "input": "[[\"A\",\"B\",\"C\",\"E\"],[\"S\",\"F\",\"C\",\"S\"],[\"A\",\"D\",\"E\",\"E\"]], \"ABCB\"",
+        "expected": "false",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "order": 31,
+    "title": "Binary Tree Level Order Traversal",
+    "slug": "binary-tree-level-order-traversal",
+    "difficulty": "MEDIUM",
+    "category": "Tree / BFS",
+    "description": "Given the root of a binary tree, return the level order traversal of its nodes' values (i.e., from left to right, level by level).",
+    "constraints": "Number of nodes in tree is in [0, 2000], -1000 \u2264 Node.val \u2264 1000.",
+    "testCases": [
+      {
+        "input": "[3,9,20,null,null,15,7]",
+        "expected": "[[3],[9,20],[15,7]]",
+        "isHidden": false
+      },
+      {
+        "input": "[1]",
+        "expected": "[[1]]",
+        "isHidden": false
+      },
+      {
+        "input": "[]",
+        "expected": "[]",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 32,
+    "title": "Validate Binary Search Tree",
+    "slug": "validate-binary-search-tree",
+    "difficulty": "MEDIUM",
+    "category": "Tree / DFS / Binary Search Tree",
+    "description": "Given the root of a binary tree, determine if it is a valid binary search tree (BST).",
+    "constraints": "Number of nodes is in [1, 10^4], -2^31 \u2264 Node.val \u2264 2^31 - 1.",
+    "testCases": [
+      {
+        "input": "[2,1,3]",
+        "expected": "true",
+        "isHidden": false
+      },
+      {
+        "input": "[5,1,4,null,null,3,6]",
+        "expected": "false",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "order": 33,
+    "title": "Construct Binary Tree from Preorder and Inorder",
+    "slug": "construct-binary-tree-from-preorder-and-inorder",
+    "difficulty": "MEDIUM",
+    "category": "Tree / Divide and Conquer",
+    "description": "Given two integer arrays preorder and inorder where preorder is preorder traversal and inorder is inorder traversal of the same tree, construct and return the binary tree.",
+    "constraints": "1 \u2264 preorder.length \u2264 3000, inorder.length == preorder.length, all values are unique.",
+    "testCases": [
+      {
+        "input": "[3,9,20,15,7], [9,3,15,20,7]",
+        "expected": "[3,9,20,null,null,15,7]",
+        "isHidden": false
+      },
+      {
+        "input": "[-1], [-1]",
+        "expected": "[-1]",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "order": 34,
+    "title": "Number of Islands",
+    "slug": "number-of-islands",
+    "difficulty": "MEDIUM",
+    "category": "Graph / BFS / DFS / Union Find",
+    "description": "Given an m x n 2D binary grid grid representing a map of '1's (land) and '0's (water), return the number of islands.",
+    "constraints": "m == grid.length, n == grid[i].length, 1 \u2264 m, n \u2264 300.",
+    "testCases": [
+      {
+        "input": "[[\"1\",\"1\",\"1\",\"1\",\"0\"],[\"1\",\"1\",\"0\",\"1\",\"0\"],[\"1\",\"1\",\"0\",\"0\",\"0\"],[\"0\",\"0\",\"0\",\"0\",\"0\"]]",
+        "expected": "1",
+        "isHidden": false
+      },
+      {
+        "input": "[[\"1\",\"1\",\"0\",\"0\",\"0\"],[\"1\",\"1\",\"0\",\"0\",\"0\"],[\"0\",\"0\",\"1\",\"0\",\"0\"],[\"0\",\"0\",\"0\",\"1\",\"1\"]]",
+        "expected": "3",
+        "isHidden": false
+      },
+      {
+        "input": "[[\"1\"]]",
+        "expected": "1",
+        "isHidden": true
+      },
+      {
+        "input": "[[\"0\",\"0\"],[\"0\",\"0\"]]",
+        "expected": "0",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 35,
+    "title": "Course Schedule",
+    "slug": "course-schedule",
+    "difficulty": "MEDIUM",
+    "category": "Graph / Topological Sort",
+    "description": "There are a total of numCourses courses to take (0 to numCourses - 1). Given array prerequisites where prerequisites[i] = [a_i, b_i] indicates you must take course b_i before a_i. Return true if you can finish all courses.",
+    "constraints": "1 \u2264 numCourses \u2264 2000, 0 \u2264 prerequisites.length \u2264 5000, prerequisites[i].length == 2.",
+    "testCases": [
+      {
+        "input": "2, [[1,0]]",
+        "expected": "true",
+        "isHidden": false
+      },
+      {
+        "input": "2, [[1,0],[0,1]]",
+        "expected": "false",
+        "isHidden": false
+      },
+      {
+        "input": "3, [[1,0],[2,1]]",
+        "expected": "true",
+        "isHidden": true
+      },
+      {
+        "input": "3, [[1,0],[0,2],[2,1]]",
+        "expected": "false",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 36,
+    "title": "Implement Trie (Prefix Tree)",
+    "slug": "implement-trie-prefix-tree",
+    "difficulty": "MEDIUM",
+    "category": "Trie / Design",
+    "description": "Implement the Trie class with insert(word), search(word), and startsWith(prefix) methods.",
+    "constraints": "1 \u2264 word.length, prefix.length \u2264 2000, lowercase English letters. At most 3 \u00d7 10^4 calls total.",
+    "testCases": [
+      {
+        "input": "[\"Trie\",\"insert\",\"search\",\"search\",\"startsWith\",\"insert\",\"search\"], [[],[\"apple\"],[\"apple\"],[\"app\"],[\"app\"],[\"app\"],[\"app\"]]",
+        "expected": "[null,null,true,false,true,null,true]",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "order": 37,
+    "title": "Coin Change",
+    "slug": "coin-change",
+    "difficulty": "MEDIUM",
+    "category": "Dynamic Programming / BFS",
+    "description": "Given an integer array coins representing coins of different denominations and an integer amount, return fewest coins needed to make up amount. If not possible, return -1.",
+    "constraints": "1 \u2264 coins.length \u2264 12, 1 \u2264 coins[i] \u2264 2^31 - 1, 0 \u2264 amount \u2264 10^4.",
+    "testCases": [
+      {
+        "input": "[1,2,5], 11",
+        "expected": "3",
+        "isHidden": false
+      },
+      {
+        "input": "[2], 3",
+        "expected": "-1",
+        "isHidden": false
+      },
+      {
+        "input": "[1], 0",
+        "expected": "0",
+        "isHidden": true
+      },
+      {
+        "input": "[1,2,5], 100",
+        "expected": "20",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 38,
+    "title": "Product of Array Except Self",
+    "slug": "product-of-array-except-self",
+    "difficulty": "MEDIUM",
+    "category": "Array / Prefix Sum",
+    "description": "Given an integer array nums, return an array answer such that answer[i] is equal to the product of all elements of nums except nums[i]. Must run in O(n) time without using division.",
+    "constraints": "2 \u2264 nums.length \u2264 10^5, -30 \u2264 nums[i] \u2264 30. Product fits in 32-bit integer.",
+    "testCases": [
+      {
+        "input": "[1,2,3,4]",
+        "expected": "[24,12,8,6]",
+        "isHidden": false
+      },
+      {
+        "input": "[-1,1,0,-3,3]",
+        "expected": "[0,0,9,0,0]",
+        "isHidden": false
+      },
+      {
+        "input": "[2,3,0,0]",
+        "expected": "[0,0,0,0]",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 39,
+    "title": "Longest Increasing Subsequence",
+    "slug": "longest-increasing-subsequence",
+    "difficulty": "MEDIUM",
+    "category": "Dynamic Programming / Binary Search",
+    "description": "Given an integer array nums, return the length of the longest strictly increasing subsequence.",
+    "constraints": "1 \u2264 nums.length \u2264 2500, -10^4 \u2264 nums[i] \u2264 10^4.",
+    "testCases": [
+      {
+        "input": "[10,9,2,5,3,7,101,18]",
+        "expected": "4",
+        "isHidden": false
+      },
+      {
+        "input": "[0,1,0,3,2,3]",
+        "expected": "4",
+        "isHidden": false
+      },
+      {
+        "input": "[7,7,7,7,7,7,7]",
+        "expected": "1",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 40,
+    "title": "Top K Frequent Elements",
+    "slug": "top-k-frequent-elements",
+    "difficulty": "MEDIUM",
+    "category": "Heap / Bucket Sort / Hash Table",
+    "description": "Given an integer array nums and an integer k, return the k most frequent elements. You may return the answer in any order.",
+    "constraints": "1 \u2264 nums.length \u2264 10^5, -10^4 \u2264 nums[i] \u2264 10^4, k is in range [1, number of unique elements].",
+    "testCases": [
+      {
+        "input": "[1,1,1,2,2,3], 2",
+        "expected": "[1,2]",
+        "isHidden": false
+      },
+      {
+        "input": "[1], 1",
+        "expected": "[1]",
+        "isHidden": false
+      },
+      {
+        "input": "[-1,-1,2,2,2,3], 2",
+        "expected": "[2,-1]",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 41,
+    "title": "Median of Two Sorted Arrays",
+    "slug": "median-of-two-sorted-arrays",
+    "difficulty": "HARD",
+    "category": "Binary Search / Divide & Conquer",
+    "description": "Given two sorted arrays nums1 and nums2 of size m and n respectively, return the median of the two sorted arrays. Time complexity should be O(log (m+n)).",
+    "constraints": "nums1.length == m, nums2.length == n, 0 \u2264 m, n \u2264 1000, 1 \u2264 m + n \u2264 2000.",
+    "testCases": [
+      {
+        "input": "[1,3], [2]",
+        "expected": "2.00000",
+        "isHidden": false
+      },
+      {
+        "input": "[1,2], [3,4]",
+        "expected": "2.50000",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "order": 42,
+    "title": "Merge k Sorted Lists",
+    "slug": "merge-k-sorted-lists",
+    "difficulty": "HARD",
+    "category": "Heap / Priority Queue / Divide & Conquer",
+    "description": "You are given an array of k linked-lists lists, each linked-list is sorted in ascending order. Merge all the linked-lists into one sorted linked-list and return it.",
+    "constraints": "k == lists.length, 0 \u2264 k \u2264 10^4, 0 \u2264 lists[i].length \u2264 500.",
+    "testCases": [
+      {
+        "input": "[[1,4,5],[1,3,4],[2,6]]",
+        "expected": "[1,1,2,3,4,4,5,6]",
+        "isHidden": false
+      },
+      {
+        "input": "[]",
+        "expected": "[]",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "order": 43,
+    "title": "Trapping Rain Water",
+    "slug": "trapping-rain-water",
+    "difficulty": "HARD",
+    "category": "Two Pointers / Stack / DP",
+    "description": "Given n non-negative integers representing an elevation map where width of each bar is 1, compute how much water it can trap after raining.",
+    "constraints": "n == height.length, 1 \u2264 n \u2264 2 \u00d7 10^4, 0 \u2264 height[i] \u2264 10^5.",
+    "testCases": [
+      {
+        "input": "[0,1,0,2,1,0,1,3,2,1,2,1]",
+        "expected": "6",
+        "isHidden": false
+      },
+      {
+        "input": "[4,2,0,3,2,5]",
+        "expected": "9",
+        "isHidden": false
+      },
+      {
+        "input": "[3,0,2,0,4]",
+        "expected": "7",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 44,
+    "title": "N-Queens",
+    "slug": "n-queens",
+    "difficulty": "HARD",
+    "category": "Backtracking",
+    "description": "The n-queens puzzle is the problem of placing n queens on an n x n chessboard such that no two queens attack each other. Return all distinct solutions.",
+    "constraints": "1 \u2264 n \u2264 9.",
+    "testCases": [
+      {
+        "input": "4",
+        "expected": "[ [\".Q..\",\"...Q\",\"Q...\",\"..Q.\"], [\"..Q.\",\"Q...\",\"...Q\",\".Q..\"] ]",
+        "isHidden": false
+      },
+      {
+        "input": "1",
+        "expected": "[[\"Q\"]]",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "order": 45,
+    "title": "Edit Distance",
+    "slug": "edit-distance",
+    "difficulty": "HARD",
+    "category": "Dynamic Programming / String",
+    "description": "Given two strings word1 and word2, return the minimum number of operations required to convert word1 to word2 (Operations: insert character, delete character, replace character).",
+    "constraints": "0 \u2264 word1.length, word2.length \u2264 500, consists of lowercase English letters.",
+    "testCases": [
+      {
+        "input": "\"horse\", \"ros\"",
+        "expected": "3",
+        "isHidden": false
+      },
+      {
+        "input": "\"intention\", \"execution\"",
+        "expected": "5",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "order": 46,
+    "title": "Minimum Window Substring",
+    "slug": "minimum-window-substring",
+    "difficulty": "HARD",
+    "category": "Sliding Window / Hash Table",
+    "description": "Given two strings s and t of lengths m and n, return the minimum window substring of s such that every character in t (including duplicates) is included in the window.",
+    "constraints": "m == s.length, n == t.length, 1 \u2264 m, n \u2264 10^5, uppercase & lowercase letters.",
+    "testCases": [
+      {
+        "input": "\"ADOBECODEBANC\", \"ABC\"",
+        "expected": "\"BANC\"",
+        "isHidden": false
+      },
+      {
+        "input": "\"a\", \"aa\"",
+        "expected": "\"\"",
+        "isHidden": false
+      },
+      {
+        "input": "\"a\", \"a\"",
+        "expected": "\"a\"",
+        "isHidden": true
+      }
+    ]
+  },
+  {
+    "order": 47,
+    "title": "Largest Rectangle in Histogram",
+    "slug": "largest-rectangle-in-histogram",
+    "difficulty": "HARD",
+    "category": "Stack / Monotonic Stack",
+    "description": "Given an array of integers heights representing the histogram's bar height where width of each bar is 1, return the area of the largest rectangle in the histogram.",
+    "constraints": "1 \u2264 heights.length \u2264 10^5, 0 \u2264 heights[i] \u2264 10^4.",
+    "testCases": [
+      {
+        "input": "[2,1,5,6,2,3]",
+        "expected": "10",
+        "isHidden": false
+      },
+      {
+        "input": "[2,4]",
+        "expected": "4",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "order": 48,
+    "title": "Binary Tree Maximum Path Sum",
+    "slug": "binary-tree-maximum-path-sum",
+    "difficulty": "HARD",
+    "category": "Tree / DFS / Dynamic Programming",
+    "description": "A path in a binary tree is a sequence of nodes where each pair of adjacent nodes has an edge connecting them. Node can appear at most once. Return maximum path sum of any non-empty path.",
+    "constraints": "Number of nodes in tree is in [1, 3 \u00d7 10^4], -1000 \u2264 Node.val \u2264 1000.",
+    "testCases": [
+      {
+        "input": "[1,2,3]",
+        "expected": "6",
+        "isHidden": false
+      },
+      {
+        "input": "[-10,9,20,null,null,15,7]",
+        "expected": "42",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "order": 49,
+    "title": "Word Ladder",
+    "slug": "word-ladder",
+    "difficulty": "HARD",
+    "category": "BFS / Hash Table",
+    "description": "Given two words, beginWord and endWord, and a dictionary wordList, return length of shortest transformation sequence from beginWord to endWord changing 1 letter at a time. Return 0 if impossible.",
+    "constraints": "1 \u2264 beginWord.length \u2264 10, 1 \u2264 wordList.length \u2264 5000, wordList[i].length == beginWord.length.",
+    "testCases": [
+      {
+        "input": "\"hit\", \"cog\", [\"hot\",\"dot\",\"dog\",\"lot\",\"log\",\"cog\"]",
+        "expected": "5",
+        "isHidden": false
+      },
+      {
+        "input": "\"hit\", \"cog\", [\"hot\",\"dot\",\"dog\",\"lot\",\"log\"]",
+        "expected": "0",
+        "isHidden": false
+      }
+    ]
+  },
+  {
+    "order": 50,
+    "title": "LRU Cache",
+    "slug": "lru-cache",
+    "difficulty": "HARD",
+    "category": "Hash Table / Doubly Linked List / Design",
+    "description": "Design a data structure that follows Least Recently Used (LRU) cache constraints. Implement get(key) and put(key, value) in O(1) average time complexity.",
+    "constraints": "1 \u2264 capacity \u2264 3000, 0 \u2264 key \u2264 10^4, 0 \u2264 value \u2264 10^5. At most 2 \u00d7 10^5 calls to get/put.",
+    "testCases": [
+      {
+        "input": "[\"LRUCache\", \"put\", \"put\", \"get\", \"put\", \"get\", \"put\", \"get\", \"get\", \"get\"], [[2], [1, 1], [2, 2], [1], [3, 3], [2], [4, 4], [1], [3], [4]]",
+        "expected": "[null, null, null, 1, null, -1, null, -1, 3, 4]",
+        "isHidden": false
+      }
+    ]
+  }
+]

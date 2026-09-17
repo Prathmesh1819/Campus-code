@@ -133,7 +133,7 @@ export default function DashboardPage() {
 
   const fetchRealAnnouncements = async () => {
     try {
-      const cName = user?.className || "TY BSc CS";
+      const cName = user?.className || "CSE";
       const res = await fetch(`/api/classrooms?className=${encodeURIComponent(cName)}`);
       const data = await res.json();
       if (data.announcements) setAnnouncements(data.announcements);
@@ -514,7 +514,7 @@ export default function DashboardPage() {
                 <div className="space-y-3">
                   {announcements.length === 0 ? (
                     <div className="p-6 text-center text-xs text-gray-500 font-medium bg-slate-950/60 rounded-2xl border border-slate-800/80">
-                      No announcements posted for {user?.className || "TY BSc CS"} yet.
+                      No announcements posted for {user?.className || "your class"} yet.
                     </div>
                   ) : (
                     announcements.map((anc, i) => (

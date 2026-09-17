@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Sidebar } from "@/components/Sidebar";
 import { useAuth } from "@/context/AuthContext";
-import { supabase } from "@/lib/supabase";
 import { Send, Search, CheckCheck, MessageSquare, MoreVertical, Trash2 } from "lucide-react";
 
 export default function MessagesPage() {
@@ -41,50 +40,7 @@ export default function MessagesPage() {
     }
   }, [user?.id, activePeer?.id]);
 
-  // Supabase Realtime Direct Messaging Subscription
-  useEffect(() => {
-    if (!user?.id) return;
 
-    const channel = supabase.channel("messages-realtime-channel", {
-      config: { broadcast: { self: false } },
-    });
-
-    channel
-      .on("broadcast", { event: "new_message" }, (event) => {
-        const payload = event?.payload;
-        if (!payload || !payload.id) return;
-
-        const currentUserId = userRef.current?.id;
-        const currentPeerId = activePeerRef.current?.id;
-
-        // Conversation filtering: Only append message if it belongs to current active peer chat
-        if (
-          currentUserId &&
-          currentPeerId &&
-          ((payload.senderId === currentPeerId && payload.receiverId === currentUserId) ||
-            (payload.senderId === currentUserId && payload.receiverId === currentPeerId))
-        ) {
-          setMessages((prev) => {
-            if (prev.some((m) => m.id === payload.id)) return prev;
-            return [...prev, payload];
-          });
-        }
-
-        // Refresh contacts list preview
-        if (currentUserId && (payload.receiverId === currentUserId || payload.senderId === currentUserId)) {
-          fetchContacts();
-        }
-      })
-      .subscribe((status, err) => {
-        if (err) {
-          console.warn("[Realtime Messages] Subscription error:", err);
-        }
-      });
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [user?.id]);
 
   const fetchContacts = async () => {
     try {
@@ -136,16 +92,6 @@ export default function MessagesPage() {
 
     // Optimistic UI update for sender
     setMessages((prev) => [...prev, newMsg]);
-
-    // Broadcast live message event over Supabase Realtime channel
-    try {
-      const channel = supabase.channel("messages-realtime-channel");
-      channel.send({
-        type: "broadcast",
-        event: "new_message",
-        payload: newMsg,
-      });
-    } catch {}
 
     try {
       const res = await fetch("/api/messages", {

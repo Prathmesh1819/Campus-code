@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/context/ToastContext";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
+import { firebaseAuth } from "@/lib/firebase/client";
 import { X, Lock, Mail, User, KeyRound, GraduationCap, Building2, ChevronDown, Send } from "lucide-react";
 
 interface AuthModalProps {
@@ -65,29 +67,36 @@ export function AuthModal({ isOpen = false, onClose = () => {}, defaultMode = "l
 
     try {
       if (mode === "login") {
-        const res = await fetch("/api/auth", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "login", email, password }),
+        const userCred = await signInWithEmailAndPassword(firebaseAuth, email.trim(), password);
+        const idToken = await userCred.user.getIdToken();
+
+        const res = await fetch(`/api/auth?userId=${userCred.user.uid}`, {
+          headers: { Authorization: `Bearer ${idToken}` },
         });
 
         const data = await res.json();
         if (!res.ok) {
-          throw new Error(data.error || "Invalid login credentials.");
+          throw new Error(data.error || "Failed to load user profile.");
         }
 
-        login(data.user, data.token);
+        login(data.user, idToken);
         showToast("Welcome Back! 🎉", `Signed in successfully as ${data.user.name}`, "success");
         onClose();
       } else if (mode === "register") {
+        const userCred = await createUserWithEmailAndPassword(firebaseAuth, email.trim(), password);
+        const idToken = await userCred.user.getIdToken();
+
         const res = await fetch("/api/auth", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${idToken}`,
+          },
           body: JSON.stringify({
-            action: "register",
+            action: "register_profile",
+            uid: userCred.user.uid,
             name,
-            email,
-            password,
+            email: email.trim(),
             role,
             facultyType,
             rollNumber,
@@ -99,62 +108,25 @@ export function AuthModal({ isOpen = false, onClose = () => {}, defaultMode = "l
 
         const data = await res.json();
         if (!res.ok) {
-          throw new Error(data.error || "Registration failed.");
+          throw new Error(data.error || "Registration profile creation failed.");
         }
 
-        login(data.user, data.token);
+        login(data.user, idToken);
         showToast("Account Created! 🚀", `Welcome to CampusCode, ${data.user.name}`, "info");
         onClose();
       } else if (mode === "forgot") {
-        const res = await fetch("/api/auth", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "forgot_password", email }),
-        });
-
-        const data = await res.json();
-        if (!res.ok) {
-          throw new Error(data.error || "Email not registered.");
-        }
-
-        // Keep OTP inputs empty for manual entry
-        setOtp(["", "", "", ""]);
-        setGeneratedOtpDisplay(data.otp);
+        await sendPasswordResetEmail(firebaseAuth, email.trim());
         showToast(
-          "Email Sent! 📧",
-          `OTP Code [ ${data.otp} ] sent to ${data.email}. Check email & enter code below.`,
+          "Reset Email Sent! 📧",
+          `Password reset link sent to ${email.trim()}. Check your inbox to reset password.`,
           "info"
         );
-        setMode("otp");
-      } else if (mode === "otp") {
-        const otpCodeStr = otp.join("");
-        if (otpCodeStr.length < 4) {
-          throw new Error("Please enter all 4 digits of the OTP code.");
-        }
-
-        const res = await fetch("/api/auth", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            action: "verify_otp",
-            email,
-            otpCode: otpCodeStr,
-            newPassword: newPassword || "password123",
-          }),
-        });
-
-        const data = await res.json();
-        if (!res.ok) {
-          throw new Error(data.error || "OTP verification failed.");
-        }
-
-        login(data.user, data.token);
-        showToast("Password Reset Successful! 🎉", "Your password has been updated and you are now logged in.", "success");
         onClose();
       }
     } catch (err: any) {
-      setErrorMsg(err.message || "An authentication error occurred.");
-      showToast("Auth Notice", err.message || "Invalid credentials", "error");
+      const msg = err.message || "An authentication error occurred.";
+      setErrorMsg(msg);
+      showToast("Auth Notice", msg, "error");
     } finally {
       setLoading(false);
     }

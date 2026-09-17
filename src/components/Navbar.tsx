@@ -201,7 +201,7 @@ export function Navbar({ onToggleSidebar }: NavbarProps) {
                       <p className="text-[10px] text-purple-400 truncate font-mono">{user?.email}</p>
                       <div className="flex items-center justify-between text-[10px] text-gray-400 uppercase font-semibold pt-1 border-t border-slate-800/80">
                         <span>Role: {user?.role}</span>
-                        <span>{user?.className || "TY BSc CS"}</span>
+                        <span>{user?.className || "Classroom"}</span>
                       </div>
                     </div>
 

@@ -1,103 +1,61 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { verifyAccessToken } from "@/lib/auth";
-import { cookies } from "next/headers";
+import { verifyServerToken } from "@/lib/firebase/auth";
+import { adminDb } from "@/lib/firebase/admin";
+import { COLLECTIONS } from "@/lib/firebase/firestore";
 
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
-async function getAuthUser(req: Request) {
-  let token = "";
-  const authHeader = req.headers.get("authorization");
-  if (authHeader && authHeader.startsWith("Bearer ")) {
-    token = authHeader.substring(7);
-  } else {
-    const cookieStore = await cookies();
-    token = cookieStore.get("token")?.value || "";
-  }
-
-  if (!token) return null;
-  const payload = verifyAccessToken(token);
-  if (!payload?.userId) return null;
-
-  return await prisma.users.findUnique({
-    where: { id: payload.userId },
-    include: { roles: true },
-  });
-}
-
 export async function GET(_req: Request) {
   try {
-    const rawNotes = await prisma.teacher_notes.findMany({
-      include: {
-        users: { select: { full_name: true, username: true, profile_image: true } },
-      },
-      orderBy: { created_at: "desc" },
-    });
-
-    const notes = rawNotes.map((n) => ({
-      id: n.id,
-      title: n.title,
-      description: n.content,
-      fileUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-      fileType: "PDF",
-      subject: "Computer Science",
-      createdAt: n.created_at,
-      teacher: n.users ? { name: n.users.full_name || n.users.username, avatar: n.users.profile_image } : { name: "Department Faculty" },
-    }));
+    let notes: any[] = [];
+    const snap = await adminDb.collection(COLLECTIONS.NOTES).get();
+    if (!snap.empty) {
+      notes = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    }
 
     return NextResponse.json({ notes });
   } catch (error: any) {
+    console.error("GET /api/notes error:", error);
     return NextResponse.json({ error: error.message || "Failed to fetch notes" }, { status: 500 });
   }
 }
 
 export async function POST(req: Request) {
   try {
-    const authUser = await getAuthUser(req);
-    const userRole = authUser?.roles?.name?.toLowerCase() || "";
+    const authHeader = req.headers.get("Authorization");
+    const token = authHeader?.startsWith("Bearer ") ? authHeader.substring(7) : "";
+    const authUser = await verifyServerToken(token);
 
-    if (!authUser || (userRole !== "teacher" && userRole !== "admin" && userRole !== "super_admin")) {
-      return NextResponse.json({ error: "Unauthorized. Only Faculty & Teachers can upload notes." }, { status: 403 });
+    if (!authUser || (authUser.role !== "TEACHER" && authUser.role !== "ADMIN" && authUser.role !== "SUPER_ADMIN" && authUser.role !== "FACULTY")) {
+      return NextResponse.json({ error: "Unauthorized. Only Teachers/Faculty can upload notes." }, { status: 403 });
     }
 
     const body = await req.json();
-    const { teacherId, title, description, courseId } = body;
+    const { title, description, subject, fileUrl, classroomId } = body;
 
-    const course = courseId ? await prisma.courses.findUnique({ where: { id: courseId } }) : await prisma.courses.findFirst();
-
-    if (!course) {
-      return NextResponse.json({ message: "Note processed", note: { id: "note-" + Date.now(), title } });
+    if (!title) {
+      return NextResponse.json({ error: "Title is required" }, { status: 400 });
     }
 
-    // Teacher authorization check: Must have active teaching assignment if not Admin
-    if (userRole === "teacher") {
-      const assignmentCount = await prisma.faculty_teaching_assignments.count({
-        where: {
-          teacher_id: authUser.id,
-          OR: [{ course_id: course.id }, { course_id: null }],
-        },
-      });
+    const noteId = `note-${Date.now()}`;
+    const noteObj = {
+      id: noteId,
+      title: title.trim(),
+      description: description ? description.trim() : title.trim(),
+      subject: subject || "Computer Science",
+      fileUrl: fileUrl || "",
+      classroomId: classroomId || "class-ty-bsc-cs",
+      uploaded_by: authUser.userId,
+      teacher: { name: authUser.name, email: authUser.email },
+      createdAt: new Date().toISOString(),
+    };
 
-      if (assignmentCount === 0) {
-        return NextResponse.json(
-          { error: "Access Denied. You do not have an active teaching assignment for this course/class." },
-          { status: 403 }
-        );
-      }
-    }
+    await adminDb.collection(COLLECTIONS.NOTES).doc(noteId).set(noteObj);
 
-    const note = await prisma.teacher_notes.create({
-      data: {
-        title: title || "Lecture Note",
-        content: description || title || "Course material",
-        uploaded_by: authUser.id,
-        course_id: course.id,
-      },
-    });
-
-    return NextResponse.json({ message: "Note uploaded successfully", note });
+    return NextResponse.json({ message: "Note uploaded successfully", note: noteObj });
   } catch (error: any) {
+    console.error("POST /api/notes error:", error);
     return NextResponse.json({ error: error.message || "Failed to upload note" }, { status: 500 });
   }
 }

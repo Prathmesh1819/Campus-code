@@ -1,12 +1,15 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { onAuthStateChanged, signOut as fbSignOut } from "firebase/auth";
+import { firebaseAuth } from "@/lib/firebase/client";
 import { useToast } from "@/context/ToastContext";
 
 export interface User {
   id: string;
   name: string;
   email: string;
+  username?: string;
   role: "STUDENT" | "TEACHER" | "ADMIN" | "SUPER_ADMIN";
   rollNumber?: string;
   className?: string;
@@ -47,39 +50,46 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { showToast } = useToast();
 
   useEffect(() => {
-    const savedUser = localStorage.getItem("campuscode_user");
-    const savedToken = localStorage.getItem("campuscode_token");
-
-    if (savedUser && savedToken) {
-      try {
-        const parsed = JSON.parse(savedUser);
-        setUser(parsed);
-        setToken(savedToken);
-        // Refresh live stats from database
-        if (parsed.id) {
-          fetchLatestUserStats(parsed.id);
+    // Single centralized Auth Listener via Firebase Auth Client SDK
+    const unsubscribe = onAuthStateChanged(firebaseAuth, async (fbUser) => {
+      if (fbUser) {
+        try {
+          const idToken = await fbUser.getIdToken();
+          setToken(idToken);
+          await fetchLatestUserStats(fbUser.uid, idToken);
+        } catch (err) {
+          console.error("Error fetching Firebase Auth token:", err);
         }
-      } catch {
+      } else {
         setUser(null);
         setToken(null);
+        localStorage.removeItem("campuscode_user");
+        localStorage.removeItem("campuscode_token");
       }
-    }
+    });
+
+    return () => unsubscribe();
   }, []);
 
-  const fetchLatestUserStats = async (userId: string) => {
+  const fetchLatestUserStats = async (userId: string, idToken?: string) => {
     try {
+      const activeToken = idToken || token;
+      const headers: Record<string, string> = {
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        Pragma: "no-cache",
+      };
+      if (activeToken) {
+        headers["Authorization"] = `Bearer ${activeToken}`;
+      }
+
       const res = await fetch(`/api/auth?userId=${userId}&t=${Date.now()}`, {
         cache: "no-store",
-        headers: {
-          "Cache-Control": "no-cache, no-store, must-revalidate",
-          "Pragma": "no-cache",
-        },
+        headers,
       });
       const data = await res.json();
       if (data.user) {
         setUser((prev) => {
-          if (!prev) return data.user;
-          const updated = { ...prev, ...data.user };
+          const updated = { ...(prev || {}), ...data.user };
           localStorage.setItem("campuscode_user", JSON.stringify(updated));
           return updated;
         });
@@ -114,8 +124,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.setItem("campuscode_token", authToken);
   };
 
-  const logout = () => {
+  const logout = async () => {
     showToast("Signed Out 👋", "You have been logged out of CampusCode.", "logout");
+    try {
+      await fbSignOut(firebaseAuth);
+    } catch (err) {
+      console.error("Error signing out from Firebase Auth:", err);
+    }
     setUser(null);
     setToken(null);
     localStorage.removeItem("campuscode_user");
@@ -129,9 +144,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.setItem("campuscode_user", JSON.stringify(updated));
 
     try {
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+
       await fetch("/api/auth", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({ action: "update_profile", userId: user.id, avatar: newAvatarUrl }),
       });
     } catch (err) {
@@ -156,9 +174,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.setItem("campuscode_user", JSON.stringify(updatedUserObject));
 
     try {
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+
       const res = await fetch("/api/auth", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify(payload),
       });
       const data = await res.json();
@@ -171,24 +192,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const switchRole = async (role: "STUDENT" | "TEACHER" | "ADMIN" | "SUPER_ADMIN") => {
-    try {
-      const res = await fetch("/api/auth", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "demo_switch", role }),
-      });
-      const data = await res.json();
-      if (data.user) {
-        setUser(data.user);
-        setToken(data.token || "token");
-        localStorage.setItem("campuscode_user", JSON.stringify(data.user));
-        localStorage.setItem("campuscode_token", data.token || "token");
-        showToast("Role Switched 🛡️", `Active account role: ${role}`, "info");
-      }
-    } catch {
-      // fallback
-    }
+  const switchRole = async (_role: "STUDENT" | "TEACHER" | "ADMIN" | "SUPER_ADMIN") => {
+    showToast("Role Security 🛡️", "User roles are managed securely via Firebase Admin.", "info");
   };
 
   const openAuthModal = (mode: "login" | "register" = "login") => {
@@ -200,27 +205,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const isAuthenticated = Boolean(user && token);
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        token,
-        isAuthenticated,
-        login,
-        logout,
-        refreshUserData,
-        switchRole,
-        updateUserAvatar,
-        updateUserProfile,
-        isAuthModalOpen,
-        openAuthModal,
-        closeAuthModal,
-        authMode,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+  const contextValue = React.useMemo(
+    () => ({
+      user,
+      token,
+      isAuthenticated,
+      login,
+      logout,
+      refreshUserData,
+      switchRole,
+      updateUserAvatar,
+      updateUserProfile,
+      isAuthModalOpen,
+      openAuthModal,
+      closeAuthModal,
+      authMode,
+    }),
+    [user, token, isAuthenticated, isAuthModalOpen, authMode]
   );
+
+  return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {

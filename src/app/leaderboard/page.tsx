@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Sidebar } from "@/components/Sidebar";
-import { supabase } from "@/lib/supabase";
 import {
   Trophy,
   Crown,
@@ -35,25 +34,6 @@ export default function LeaderboardPage() {
 
   useEffect(() => {
     fetchLeaderboard();
-
-    const channel = supabase
-      .channel("leaderboard-realtime-channel")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "solved_problems" },
-        () => {
-          fetchLeaderboard();
-        }
-      )
-      .subscribe((status, err) => {
-        if (err) {
-          console.warn("[Realtime Leaderboard] Subscription error:", err);
-        }
-      });
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
   }, [scope, period]);
 
   const top3 = rankings.slice(0, 3);

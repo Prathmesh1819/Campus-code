@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { FirebaseStoreService } from "@/lib/firebase/store";
 
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
@@ -8,70 +8,61 @@ export const revalidate = 0;
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
-    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
-    const problem = await prisma.problems.findFirst({
-      where: isUuid ? { OR: [{ id: id }, { slug: id }] } : { slug: id },
-      include: {
-        test_cases: true,
-        starter_codes: {
-          include: { languages: true },
-        },
-        examples: true,
-        hints: true,
-        editorials: true,
-        submissions: {
-          take: 10,
-          orderBy: { created_at: "desc" },
-          include: {
-            users: {
-              select: { full_name: true, username: true, profile_image: true },
-            },
-          },
-        },
-      },
-    });
+
+    const problem: any = await FirebaseStoreService.getProblemByIdOrSlug(id);
 
     if (!problem) {
       return NextResponse.json({ error: "Problem not found" }, { status: 404 });
     }
+
+    // Fetch test cases from Firestore with includeHidden = false for client safety
+    const rawTestCases = await FirebaseStoreService.getTestCases(problem.id, false);
+
+    // CRITICAL SECURITY REQUIREMENT: Filter out any hidden test cases before responding to client
+    const publicTestCases = rawTestCases.filter((tc: any) => !tc.is_hidden);
 
     const formattedProblem = {
       id: problem.id,
       title: problem.title,
       slug: problem.slug,
       difficulty: problem.difficulty,
-      category: "Algorithms",
+      category: problem.category || "Algorithms",
       description: problem.description,
       constraints: problem.constraints,
-      hints: problem.hints ? JSON.stringify(problem.hints.map((h) => h.content)) : "[]",
-      editorial: problem.editorials?.content || "Editorial solution coming soon.",
-      examples: problem.examples && problem.examples.length > 0
-        ? JSON.stringify(problem.examples.map((e) => ({ input: e.input, output: e.output, explanation: e.explanation })))
-        : JSON.stringify(problem.test_cases.filter((tc) => !tc.is_hidden).map((tc) => ({ input: tc.input, output: tc.expected_output }))),
-      testCases: problem.test_cases.map((tc) => ({
+      hints: problem.hints ? (typeof problem.hints === "string" ? problem.hints : JSON.stringify(problem.hints)) : "[]",
+      editorial: problem.editorial?.content || problem.editorial || "Editorial solution coming soon.",
+      examples:
+        problem.examples && problem.examples.length > 0
+          ? typeof problem.examples === "string"
+            ? problem.examples
+            : JSON.stringify(problem.examples.map((e: any) => ({ input: e.input, output: e.output || e.expected_output, explanation: e.explanation })))
+          : JSON.stringify(publicTestCases.map((tc: any) => ({ input: tc.input, output: tc.expected_output || tc.output }))),
+      testCases: publicTestCases.map((tc: any) => ({
         id: tc.id,
         input: tc.input,
-        expectedOutput: tc.expected_output,
-        isHidden: tc.is_hidden,
+        expectedOutput: tc.expected_output || tc.output,
+        isHidden: false,
       })),
-      starterCodes: problem.starter_codes.map((sc) => ({
-        language: sc.languages?.slug || "java",
-        code: sc.starter_code,
+      starterCodes: (problem.starter_codes || problem.starterCodes || []).map((sc: any) => ({
+        language: sc.language || sc.languages?.slug || "java",
+        code: sc.starter_code || sc.code,
       })),
-      companyTags: JSON.stringify(["Google", "Amazon", "Meta"]),
+      companyTags: JSON.stringify(problem.companyTags || ["Google", "Amazon", "Meta"]),
       acceptedLanguages: JSON.stringify(["c", "cpp", "java", "python", "javascript", "go", "rust", "kotlin"]),
-      submissions: problem.submissions.map((s) => ({
-        id: s.id,
-        user: { name: s.users.full_name || s.users.username || "Student", avatar: s.users.profile_image },
-        status: s.status || s.verdict,
-        verdict: s.verdict || s.status,
-        executionTimeMs: s.execution_time || s.runtime_ms || 0,
-        createdAt: s.created_at || s.submitted_at,
-      })),
+      submissions: [],
     };
 
-    return NextResponse.json({ problem: formattedProblem });
+    return NextResponse.json(
+      { problem: formattedProblem },
+      {
+        headers: {
+          "Cache-Control": "no-cache, no-store, must-revalidate, max-age=0",
+          Pragma: "no-cache",
+        },
+      }
+    );
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Failed to fetch problem" }, { status: 500 });
+    console.error("GET /api/problems/[id] error:", error);
+    return NextResponse.json({ error: error.message || "Failed to fetch problem detail" }, { status: 500 });
   }
 }

@@ -30,6 +30,11 @@ next-env.d.ts
 *.db
 *.db-journal
 
+# archives and system files
+*.zip
+.DS_Store
+
 # backup folders
 .CampusCode-*
+
 

@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Sidebar } from "@/components/Sidebar";
 import { useAuth } from "@/context/AuthContext";
-import { supabase } from "@/lib/supabase";
 import {
   FolderGit2,
   Heart,
@@ -46,37 +45,7 @@ export default function ProjectsPage() {
       const data = await res.json();
       if (data.projects) setProjects(data.projects);
     } catch {
-      // Fallback mock projects
-      setProjects([
-        {
-          id: "proj-1",
-          title: "CampusCode - Real-time AI Code Reviewer",
-          description: "Automated AST code analysis and runtime optimizations for college student submissions.",
-          category: "AI/ML",
-          tags: '["Next.js 15", "TypeScript", "Prisma", "Tailwind CSS"]',
-          githubUrl: "https://github.com/aaravsharma/campuscode",
-          liveDemoUrl: "https://campuscode.demo",
-          imageUrl: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&auto=format&fit=crop&q=80",
-          likesCount: 42,
-          viewsCount: 280,
-          isHackathonWinner: true,
-          user: { name: "Aarav Sharma", avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80", branch: "CSE" },
-        },
-        {
-          id: "proj-2",
-          title: "PulseGuard - Smart Campus Health Monitor",
-          description: "IoT and React Native mobile application for tracking campus emergency alerts.",
-          category: "Mobile App",
-          tags: '["React Native", "Node.js", "Socket.io", "PostgreSQL"]',
-          githubUrl: "https://github.com/ananyaroy/pulseguard",
-          liveDemoUrl: "https://pulseguard.io",
-          imageUrl: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&auto=format&fit=crop&q=80",
-          likesCount: 29,
-          viewsCount: 195,
-          isHackathonWinner: false,
-          user: { name: "Ananya Roy", avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&auto=format&fit=crop&q=80", branch: "IT" },
-        },
-      ]);
+      setProjects([]);
     } finally {
       setLoading(false);
     }
@@ -84,39 +53,6 @@ export default function ProjectsPage() {
 
   useEffect(() => {
     fetchProjects();
-
-    const channel = supabase
-      .channel("projects-realtime-channel")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "projects" },
-        () => {
-          fetchProjects();
-        }
-      )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "project_likes" },
-        () => {
-          fetchProjects();
-        }
-      )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "project_comments" },
-        () => {
-          fetchProjects();
-        }
-      )
-      .subscribe((status, err) => {
-        if (err) {
-          console.warn("[Realtime Projects] Subscription error:", err);
-        }
-      });
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
   }, [selectedCategory, search]);
 
   const handleLike = async (projectId: string) => {

@@ -34,7 +34,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
   const mainNavigation = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { name: "Virtual Classrooms", href: "/classrooms", icon: GraduationCap, badge: "TY BSc CS" },
+    { name: "Virtual Classrooms", href: "/classrooms", icon: GraduationCap, badge: user?.className || "Classroom" },
     { name: "Coding Problems", href: "/problems", icon: Code2 },
     { name: "Leaderboard", href: "/leaderboard", icon: Trophy },
     { name: "Project Showcase", href: "/projects", icon: FolderGit2 },

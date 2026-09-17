@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { verifyAccessToken } from "@/lib/auth";
+import { verifyServerToken } from "@/lib/firebase/auth";
+import { FirebaseStoreService } from "@/lib/firebase/store";
 import { cookies } from "next/headers";
 import fs from "fs";
 import path from "path";
@@ -42,13 +42,10 @@ async function getAuthUser(req: Request) {
   }
 
   if (!token) return null;
-  const payload = verifyAccessToken(token);
+  const payload = await verifyServerToken(token);
   if (!payload?.userId) return null;
 
-  return await prisma.users.findUnique({
-    where: { id: payload.userId },
-    include: { roles: true, classes: true },
-  });
+  return await FirebaseStoreService.getUserById(payload.userId);
 }
 
 export async function POST(req: Request) {
@@ -61,11 +58,11 @@ export async function POST(req: Request) {
     }
 
     const aiSettings = getAiSettings();
-    const dbUser = await getAuthUser(req);
+    const dbUser: any = await getAuthUser(req);
 
-    const name = dbUser?.full_name || dbUser?.username || userName || "Student";
-    const role = dbUser?.roles?.name?.toUpperCase() || userRole || "STUDENT";
-    const batchClass = dbUser?.classes?.name || className || "TY BSc CS";
+    const name = dbUser?.full_name || dbUser?.name || dbUser?.username || userName || "Student";
+    const role = (dbUser?.role || userRole || "STUDENT").toUpperCase();
+    const batchClass = dbUser?.className || className || "TY BSc CS";
 
     const authUserInfo = {
       id: dbUser?.id,
@@ -141,7 +138,7 @@ export async function POST(req: Request) {
     ];
 
     if (problemContext) {
-      // Filter out any hidden test cases just in case
+      // Filter out any hidden test cases strictly for client security
       const safeExamples = (problemContext.examples || []).filter((ex: any) => !ex.isHidden && !ex.is_hidden);
       systemPromptParts.push(`\n--- CURRENT ACTIVE PROBLEM CONTEXT ---
 Title: ${problemContext.title || "Coding Challenge"}
@@ -187,9 +184,6 @@ ${problemContext.userCode ? `User's Current Code:\n\`\`\`\n${problemContext.user
     // 8. INVOKE GEMINI MODEL PROVIDER WITH DIAGNOSTICS
     const geminiApiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
-    console.log(`[IDO] Gemini configured: ${Boolean(geminiApiKey)} (Length: ${geminiApiKey ? geminiApiKey.length : 0})`);
-    console.log(`[IDO] Gemini request started`);
-
     let lastErrorCategory = "UNCONFIGURED";
     let lastHttpStatus = 503;
 
@@ -204,7 +198,6 @@ ${problemContext.userCode ? `User's Current Code:\n\`\`\`\n${problemContext.user
 
       for (const modelName of modelsToTry) {
         try {
-          console.log(`[IDO] Model attempted: ${modelName}`);
           const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${geminiApiKey}`;
           const geminiRes = await fetch(geminiUrl, {
             method: "POST",
@@ -213,13 +206,11 @@ ${problemContext.userCode ? `User's Current Code:\n\`\`\`\n${problemContext.user
           });
 
           lastHttpStatus = geminiRes.status;
-          console.log(`[IDO] HTTP status: ${geminiRes.status}`);
 
           if (geminiRes.ok) {
             const geminiData = await geminiRes.json();
             const aiText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
             if (aiText && aiText.trim().length > 0) {
-              console.log(`[IDO] Gemini response successfully retrieved from ${modelName}!`);
               return NextResponse.json({
                 success: true,
                 reply: aiText.trim(),
@@ -229,7 +220,6 @@ ${problemContext.userCode ? `User's Current Code:\n\`\`\`\n${problemContext.user
               });
             }
           } else {
-            const errText = await geminiRes.text();
             if (geminiRes.status === 401 || geminiRes.status === 403) {
               lastErrorCategory = "AUTH";
             } else if (geminiRes.status === 404) {
@@ -239,17 +229,12 @@ ${problemContext.userCode ? `User's Current Code:\n\`\`\`\n${problemContext.user
             } else {
               lastErrorCategory = "SERVER_ERROR";
             }
-            console.error(`[IDO] Provider error category: ${lastErrorCategory} (HTTP status: ${geminiRes.status})`);
           }
         } catch (e: any) {
           lastErrorCategory = "SERVER_ERROR";
-          console.error(`[IDO] Network error trying ${modelName}:`, e.message);
         }
       }
     }
-
-    // If Gemini API call failed or key is unauthenticated, return proper error response
-    console.error(`[IDO] Provider error category: ${lastErrorCategory} (HTTP status: ${lastHttpStatus})`);
 
     const errorMessage =
       lastErrorCategory === "AUTH"

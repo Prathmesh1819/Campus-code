@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Sidebar } from "@/components/Sidebar";
 import { useAuth } from "@/context/AuthContext";
-import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import {
   GraduationCap,
@@ -27,11 +26,17 @@ import {
 export default function ClassroomsPage() {
   const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [selectedClass, setSelectedClass] = useState<string>(user?.className || "TY BSc CS");
+  const [selectedClass, setSelectedClass] = useState<string>(user?.className || "CSE");
   const [activeTab, setActiveTab] = useState<"classmates" | "projects" | "notes" | "announcements">("classmates");
 
+  useEffect(() => {
+    if (user?.className) {
+      setSelectedClass(user.className);
+    }
+  }, [user?.className]);
+
   const isTeacherOrAdmin = user?.role === "TEACHER" || user?.role === "ADMIN" || user?.role === "SUPER_ADMIN";
-  const isClassTeacher = selectedClass === "TY BSc CS";
+  const isClassTeacher = isTeacherOrAdmin;
 
   const [classroomData, setClassroomData] = useState<any>({
     classroom: null,
@@ -171,24 +176,6 @@ export default function ClassroomsPage() {
       setSelectedClass(user.className);
     }
     fetchClassroomData(targetClass);
-
-    const channel = supabase
-      .channel("classrooms-realtime-channel")
-      .on("postgres_changes", { event: "*", schema: "public", table: "announcements" }, () => {
-        fetchClassroomData(targetClass);
-      })
-      .on("postgres_changes", { event: "*", schema: "public", table: "teacher_notes" }, () => {
-        fetchClassroomData(targetClass);
-      })
-      .subscribe((status, err) => {
-        if (err) {
-          console.warn("[Realtime Classrooms] Subscription error:", err);
-        }
-      });
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
   }, [user?.className, user?.role, fetchClassroomData]);
 
   const handleUploadNote = async (e: React.FormEvent) => {
@@ -269,7 +256,7 @@ export default function ClassroomsPage() {
             ) : (
               <div className="px-3.5 py-1.5 rounded-2xl bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-bold flex items-center gap-2">
                 <Lock className="w-3.5 h-3.5 text-purple-400" />
-                <span>Enrolled Batch: <b>{user?.className || "TY BSc CS"}</b></span>
+                <span>Enrolled Batch: <b>{user?.className || "Classroom"}</b></span>
               </div>
             )}
           </div>
