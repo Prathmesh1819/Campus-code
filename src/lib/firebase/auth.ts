@@ -14,8 +14,15 @@ export async function verifyServerToken(token: string): Promise<TokenPayload | n
   try {
     const decoded = await adminAuth.verifyIdToken(token);
     if (decoded && decoded.uid) {
-      const userDoc = await adminDb.collection(COLLECTIONS.USERS).doc(decoded.uid).get();
-      const userData = userDoc.exists ? userDoc.data() : null;
+      let userData: any = null;
+      try {
+        const userDoc = await adminDb.collection(COLLECTIONS.USERS).doc(decoded.uid).get();
+        if (userDoc && userDoc.exists) {
+          userData = userDoc.data();
+        }
+      } catch (dbErr) {
+        console.warn("[verifyServerToken] Firestore user doc lookup warning:", dbErr);
+      }
 
       return {
         userId: decoded.uid,
