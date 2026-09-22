@@ -122,18 +122,24 @@ export function AuthModal({ isOpen = false, onClose = () => {}, defaultMode = "l
 
         currentStep = "Parse Profile API Response";
         const contentType = res.headers.get("content-type") || "";
-        let data: any = {};
+        const rawBody = await res.text();
+        let data: any = null;
+
         if (contentType.includes("application/json")) {
-          data = await res.json();
+          try {
+            data = JSON.parse(rawBody);
+          } catch {
+            console.error("[Auth Diagnostic] Profile API returned invalid JSON:", res.status, rawBody);
+            throw new Error(`Profile API returned invalid JSON format (HTTP ${res.status})`);
+          }
         } else {
-          const rawText = await res.text();
-          console.error(`[Auth Diagnostic] Non-JSON response received (Status: ${res.status}, Type: ${contentType}):`, rawText);
-          throw new Error(`Server Error (${res.status}): ${rawText.substring(0, 120)}`);
+          console.error("[Auth Diagnostic] Profile API returned non-JSON:", res.status, contentType, rawBody);
+          throw new Error(`Profile API returned ${contentType || "non-JSON"} response (HTTP ${res.status}): ${rawBody.substring(0, 100)}`);
         }
 
         console.log(`[Auth Diagnostic] Step: ${currentStep}, Status: ${res.status}, OK: ${res.ok}`);
-        if (!res.ok) {
-          throw new Error(data.error || `Registration API profile creation failed (${res.status})`);
+        if (!res.ok || (data && data.success === false)) {
+          throw new Error(data?.error || `Registration API profile creation failed (HTTP ${res.status})`);
         }
 
         currentStep = "Auth Context State Update";

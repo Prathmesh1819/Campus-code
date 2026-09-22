@@ -65,11 +65,17 @@ export async function POST(req: Request) {
     const authUser = await verifyServerToken(token);
 
     if (!authUser || !authUser.userId) {
-      return NextResponse.json({ error: "Unauthorized. Valid Firebase ID token is required." }, { status: 401 });
+      return NextResponse.json({ success: false, error: "Unauthorized. Valid Firebase ID token is required." }, { status: 401 });
     }
 
     const targetUid = authUser.userId;
-    const body = await req.json();
+    let body: any = {};
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json({ success: false, error: "Invalid JSON request body." }, { status: 400 });
+    }
+
     const {
       action,
       email,
@@ -91,7 +97,18 @@ export async function POST(req: Request) {
       const userName = (name || authUser.name || userEmail.split("@")[0] || "User").trim();
 
       if (!targetUid || !userEmail) {
-        return NextResponse.json({ error: "UID and Email are required for profile creation" }, { status: 400 });
+        return NextResponse.json({ success: false, error: "UID and Email are required for profile creation" }, { status: 400 });
+      }
+
+      // Idempotency check: If profile already exists in Firestore, return existing profile cleanly
+      const existingUser = await FirebaseStoreService.getUserById(targetUid);
+      if (existingUser) {
+        console.log("[POST /api/auth] Profile already exists for UID:", targetUid);
+        return NextResponse.json({
+          success: true,
+          message: "User profile already registered",
+          user: formatUserObject(existingUser),
+        });
       }
 
       // Public registration ALWAYS forces role STUDENT to prevent privilege escalation
@@ -130,12 +147,13 @@ export async function POST(req: Request) {
       } catch (saveErr: any) {
         console.error("[Auth API] Firestore saveUser failed:", saveErr);
         return NextResponse.json(
-          { error: `Database Save Failed: ${saveErr?.message || "Firestore write permission error"}` },
+          { success: false, error: `Database Save Failed: ${saveErr?.message || "Firestore write permission error"}` },
           { status: 500 }
         );
       }
 
       return NextResponse.json({
+        success: true,
         message: "User profile registered successfully",
         user: formatUserObject(newUserObj),
       });
@@ -145,7 +163,7 @@ export async function POST(req: Request) {
     if (action === "update_profile") {
       const existing: any = await FirebaseStoreService.getUserById(targetUid);
       if (!existing) {
-        return NextResponse.json({ error: "User profile not found" }, { status: 404 });
+        return NextResponse.json({ success: false, error: "User profile not found" }, { status: 404 });
       }
 
       // Security: Prevent client from modifying sensitive fields (role, xp, coins, level, streakDays)
@@ -164,15 +182,19 @@ export async function POST(req: Request) {
       await FirebaseStoreService.saveUser(updatedUser);
 
       return NextResponse.json({
+        success: true,
         message: "Profile updated successfully",
         user: formatUserObject(updatedUser),
       });
     }
 
-    return NextResponse.json({ error: "Invalid or unsupported action" }, { status: 400 });
+    return NextResponse.json({ success: false, error: "Invalid or unsupported action" }, { status: 400 });
   } catch (error: any) {
-    console.error("POST /api/auth error:", error);
-    return NextResponse.json({ error: error.message || "Authentication error" }, { status: 500 });
+    console.error("[POST /api/auth] UNHANDLED TOP-LEVEL ERROR:", error);
+    return NextResponse.json(
+      { success: false, error: error?.message || "Internal server error during profile registration" },
+      { status: 500 }
+    );
   }
 }
 
