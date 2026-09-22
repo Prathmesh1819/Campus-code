@@ -65,11 +65,17 @@ export function AuthModal({ isOpen = false, onClose = () => {}, defaultMode = "l
     setErrorMsg("");
     setLoading(true);
 
+    let currentStep = "Start Form Submit";
     try {
       if (mode === "login") {
+        currentStep = "Firebase signInWithEmailAndPassword";
+        console.log(`[Auth Diagnostic] Executing ${currentStep}...`);
         const userCred = await signInWithEmailAndPassword(firebaseAuth, email.trim(), password);
+
+        currentStep = "Get ID Token (Login)";
         const idToken = await userCred.user.getIdToken();
 
+        currentStep = "Fetch GET /api/auth";
         const res = await fetch(`/api/auth?userId=${userCred.user.uid}`, {
           headers: { Authorization: `Bearer ${idToken}` },
         });
@@ -79,13 +85,21 @@ export function AuthModal({ isOpen = false, onClose = () => {}, defaultMode = "l
           throw new Error(data.error || "Failed to load user profile.");
         }
 
+        currentStep = "Auth Context Login";
         login(data.user, idToken);
         showToast("Welcome Back! 🎉", `Signed in successfully as ${data.user.name}`, "success");
         onClose();
       } else if (mode === "register") {
+        currentStep = "Firebase createUserWithEmailAndPassword";
+        console.log(`[Auth Diagnostic] Executing ${currentStep} for email: ${email.trim()}`);
         const userCred = await createUserWithEmailAndPassword(firebaseAuth, email.trim(), password);
+
+        currentStep = "Get ID Token (Register)";
+        console.log(`[Auth Diagnostic] Executing ${currentStep}, UID: ${userCred.user.uid}`);
         const idToken = await userCred.user.getIdToken();
 
+        currentStep = "Fetch POST /api/auth (register_profile)";
+        console.log(`[Auth Diagnostic] Executing ${currentStep}`);
         const res = await fetch("/api/auth", {
           method: "POST",
           headers: {
@@ -106,15 +120,21 @@ export function AuthModal({ isOpen = false, onClose = () => {}, defaultMode = "l
           }),
         });
 
+        currentStep = "Parse Profile API Response";
         const data = await res.json();
+        console.log(`[Auth Diagnostic] Step: ${currentStep}, Status: ${res.status}, OK: ${res.ok}`);
         if (!res.ok) {
-          throw new Error(data.error || "Registration profile creation failed.");
+          throw new Error(data.error || `Registration API profile creation failed (${res.status})`);
         }
 
+        currentStep = "Auth Context State Update";
+        console.log(`[Auth Diagnostic] Executing ${currentStep}`);
         login(data.user, idToken);
+
         showToast("Account Created! 🚀", `Welcome to CampusCode, ${data.user.name}`, "info");
         onClose();
       } else if (mode === "forgot") {
+        currentStep = "Firebase sendPasswordResetEmail";
         await sendPasswordResetEmail(firebaseAuth, email.trim());
         showToast(
           "Reset Email Sent! 📧",
@@ -124,23 +144,33 @@ export function AuthModal({ isOpen = false, onClose = () => {}, defaultMode = "l
         onClose();
       }
     } catch (err: any) {
-      let msg = err.message || "An authentication error occurred.";
+      console.error(`[Auth Diagnostic FAIL at step: "${currentStep}"]`, {
+        step: currentStep,
+        name: err?.name,
+        code: err?.code,
+        message: err?.message,
+        stack: err?.stack,
+      });
+
+      let rawMessage = err?.message || "An authentication error occurred.";
+      let codePrefix = err?.code ? `[${err.code}] ` : "";
+      let stepPrefix = `Failed at step (${currentStep}): `;
+
       if (err.code === "auth/email-already-in-use") {
-        msg = "This email address is already registered. Please sign in instead.";
+        rawMessage = "This email address is already registered. Please sign in instead.";
       } else if (err.code === "auth/weak-password") {
-        msg = "Password should be at least 6 characters long.";
+        rawMessage = "Password should be at least 6 characters long.";
       } else if (err.code === "auth/invalid-email") {
-        msg = "Please enter a valid email address.";
+        rawMessage = "Please enter a valid email address.";
       } else if (err.code === "auth/operation-not-allowed") {
-        msg = "Email/Password sign-in is currently disabled in Firebase Console.";
+        rawMessage = "Email/Password sign-in is currently disabled in Firebase Console.";
       } else if (err.code === "auth/user-not-found" || err.code === "auth/wrong-password" || err.code === "auth/invalid-credential") {
-        msg = "Invalid email address or password.";
-      } else if (err.name === "SyntaxError" || (typeof msg === "string" && msg.includes("string did not match"))) {
-        msg = "Registration validation notice. Please ensure email format and password meet standard requirements.";
+        rawMessage = "Invalid email address or password.";
       }
 
-      setErrorMsg(msg);
-      showToast("Auth Notice", msg, "error");
+      const displayMsg = `${stepPrefix}${codePrefix}${rawMessage}`;
+      setErrorMsg(displayMsg);
+      showToast("Auth Diagnostic Notice", displayMsg, "error");
     } finally {
       setLoading(false);
     }
