@@ -125,7 +125,15 @@ export async function POST(req: Request) {
         updated_at: new Date().toISOString(),
       };
 
-      await FirebaseStoreService.saveUser(newUserObj);
+      try {
+        await FirebaseStoreService.saveUser(newUserObj);
+      } catch (saveErr: any) {
+        console.error("[Auth API] Firestore saveUser failed:", saveErr);
+        return NextResponse.json(
+          { error: `Database Save Failed: ${saveErr?.message || "Firestore write permission error"}` },
+          { status: 500 }
+        );
+      }
 
       return NextResponse.json({
         message: "User profile registered successfully",

@@ -121,7 +121,16 @@ export function AuthModal({ isOpen = false, onClose = () => {}, defaultMode = "l
         });
 
         currentStep = "Parse Profile API Response";
-        const data = await res.json();
+        const contentType = res.headers.get("content-type") || "";
+        let data: any = {};
+        if (contentType.includes("application/json")) {
+          data = await res.json();
+        } else {
+          const rawText = await res.text();
+          console.error(`[Auth Diagnostic] Non-JSON response received (Status: ${res.status}, Type: ${contentType}):`, rawText);
+          throw new Error(`Server Error (${res.status}): ${rawText.substring(0, 120)}`);
+        }
+
         console.log(`[Auth Diagnostic] Step: ${currentStep}, Status: ${res.status}, OK: ${res.ok}`);
         if (!res.ok) {
           throw new Error(data.error || `Registration API profile creation failed (${res.status})`);
