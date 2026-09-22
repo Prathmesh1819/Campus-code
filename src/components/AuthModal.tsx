@@ -124,7 +124,21 @@ export function AuthModal({ isOpen = false, onClose = () => {}, defaultMode = "l
         onClose();
       }
     } catch (err: any) {
-      const msg = err.message || "An authentication error occurred.";
+      let msg = err.message || "An authentication error occurred.";
+      if (err.code === "auth/email-already-in-use") {
+        msg = "This email address is already registered. Please sign in instead.";
+      } else if (err.code === "auth/weak-password") {
+        msg = "Password should be at least 6 characters long.";
+      } else if (err.code === "auth/invalid-email") {
+        msg = "Please enter a valid email address.";
+      } else if (err.code === "auth/operation-not-allowed") {
+        msg = "Email/Password sign-in is currently disabled in Firebase Console.";
+      } else if (err.code === "auth/user-not-found" || err.code === "auth/wrong-password" || err.code === "auth/invalid-credential") {
+        msg = "Invalid email address or password.";
+      } else if (err.name === "SyntaxError" || (typeof msg === "string" && msg.includes("string did not match"))) {
+        msg = "Registration validation notice. Please ensure email format and password meet standard requirements.";
+      }
+
       setErrorMsg(msg);
       showToast("Auth Notice", msg, "error");
     } finally {
