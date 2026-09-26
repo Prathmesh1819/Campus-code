@@ -1,64 +1,54 @@
 import { NextResponse } from "next/server";
-import { adminDb, isFirebaseAdminConfigured } from "@/lib/firebase/admin";
+import { getApps } from "firebase-admin/app";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
-  try {
-    const diagnosticReport: any = {
-      timestamp: new Date().toISOString(),
-      isFirebaseAdminConfigured,
-      readSuccess: false,
-      writeSuccess: false,
-      testDocExists: false,
-      testDocData: null,
-      error: null,
-    };
-
-    if (!isFirebaseAdminConfigured) {
-      diagnosticReport.error = "Firebase Admin is not configured with valid service account credentials.";
-      return NextResponse.json(diagnosticReport, { status: 500 });
-    }
-
-    // 1. Read TEST-REGISTRATION
-    try {
-      const docRef = adminDb.collection("users").doc("TEST-REGISTRATION");
-      const docSnap = await docRef.get();
-      diagnosticReport.readSuccess = true;
-      diagnosticReport.testDocExists = docSnap.exists;
-      if (docSnap.exists) {
-        diagnosticReport.testDocData = docSnap.data();
-      }
-    } catch (readErr: any) {
-      console.error("[Diagnostic] Error reading TEST-REGISTRATION:", readErr);
-      diagnosticReport.error = `Read failed: ${readErr?.message || String(readErr)}`;
-      return NextResponse.json(diagnosticReport, { status: 500 });
-    }
-
-    // 2. Write/Update TEST-REGISTRATION safely
-    try {
-      const docRef = adminDb.collection("users").doc("TEST-REGISTRATION");
-      await docRef.set(
-        {
-          lastDiagnosticCheck: new Date().toISOString(),
-          status: "CONNECTED",
-          testedBy: "Firebase Admin Diagnostic Route",
-        },
-        { merge: true }
-      );
-      diagnosticReport.writeSuccess = true;
-    } catch (writeErr: any) {
-      console.error("[Diagnostic] Error writing TEST-REGISTRATION:", writeErr);
-      diagnosticReport.error = `Write failed: ${writeErr?.message || String(writeErr)}`;
-      return NextResponse.json(diagnosticReport, { status: 500 });
-    }
-
-    return NextResponse.json(diagnosticReport, { status: 200 });
-  } catch (err: any) {
-    console.error("[Diagnostic] Top level failure:", err);
-    return NextResponse.json(
-      { success: false, error: err?.message || String(err) },
-      { status: 500 }
-    );
+function cleanEnvString(val: string | undefined): string | undefined {
+  if (!val) return undefined;
+  let str = val.trim();
+  while (
+    (str.startsWith('"') && str.endsWith('"')) ||
+    (str.startsWith("'") && str.endsWith("'"))
+  ) {
+    str = str.slice(1, -1).trim();
   }
+  return str.length > 0 ? str : undefined;
+}
+
+function cleanPrivateKey(val: string | undefined): string | undefined {
+  let key = cleanEnvString(val);
+  if (!key) return undefined;
+  key = key.replace(/\\n/g, "\n");
+  key = key.replace(/^["']+|["']+$|\r/g, "");
+  return key.length > 20 ? key : undefined;
+}
+
+export async function GET() {
+  const rawProjectId = process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+  const rawEmail = process.env.FIREBASE_CLIENT_EMAIL;
+  const rawKey = process.env.FIREBASE_PRIVATE_KEY;
+
+  const projectId = cleanEnvString(rawProjectId);
+  const clientEmail = cleanEnvString(rawEmail);
+  const privateKey = cleanPrivateKey(rawKey);
+
+  const appsCount = getApps().length;
+
+  return NextResponse.json({
+    timestamp: new Date().toISOString(),
+    envCheck: {
+      FIREBASE_PROJECT_ID: Boolean(projectId),
+      FIREBASE_PROJECT_ID_VAL: projectId || "campus-code-7dbb5",
+      FIREBASE_CLIENT_EMAIL: Boolean(clientEmail),
+      FIREBASE_CLIENT_EMAIL_LEN: rawEmail ? rawEmail.length : 0,
+      FIREBASE_PRIVATE_KEY: Boolean(privateKey),
+      FIREBASE_PRIVATE_KEY_LEN: rawKey ? rawKey.length : 0,
+      FIREBASE_PRIVATE_KEY_CONTAINS_BEGIN: rawKey ? rawKey.includes("BEGIN PRIVATE KEY") : false,
+      FIREBASE_PRIVATE_KEY_CONTAINS_ESCAPED_N: rawKey ? rawKey.includes("\\n") : false,
+    },
+    firebaseAdmin: {
+      appsCount,
+      initialized: appsCount > 0,
+    },
+  });
 }
