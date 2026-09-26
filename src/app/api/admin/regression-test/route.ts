@@ -235,20 +235,35 @@ export async function GET() {
       mdContent += `| ${prob.order} | ${prob.title} | \`${prob.slug}\` | ${cStat} | ${cppStat} | ${javaStat} | ${pyStat} | ${jsStat} | ${goStat} | ${rustStat} | ${ktStat} |\n`;
     }
 
-    try {
-      const reportsDir = path.join(process.cwd(), "reports");
-      if (!fs.existsSync(reportsDir)) {
-        fs.mkdirSync(reportsDir, { recursive: true });
+    // Write to local disk ONLY in non-serverless local development environments
+    if (!process.env.VERCEL && process.env.NODE_ENV !== "production") {
+      try {
+        const reportsDir = path.join(process.cwd(), "reports");
+        if (!fs.existsSync(reportsDir)) {
+          fs.mkdirSync(reportsDir, { recursive: true });
+        }
+        fs.writeFileSync(path.join(reportsDir, "campuscode-regression-report.json"), JSON.stringify(problemResults, null, 2), "utf8");
+        fs.writeFileSync(path.join(reportsDir, "campuscode-regression-report.md"), mdContent, "utf8");
+      } catch (e) {
+        // Ignore filesystem write errors in non-local environments
       }
-      const jsonReportPath = path.join(reportsDir, "campuscode-regression-report.json");
-      const mdReportPath = path.join(reportsDir, "campuscode-regression-report.md");
-      fs.writeFileSync(jsonReportPath, JSON.stringify(fullJsonReport, null, 2), "utf8");
-      fs.writeFileSync(mdReportPath, mdContent, "utf8");
-    } catch (fsErr) {
-      console.warn("[Regression Test API] Local report file write skipped (read-only filesystem):", fsErr);
     }
 
-    return NextResponse.json({ ...fullJsonReport, markdownReport: mdContent }, { status: 200 });
+    return NextResponse.json({
+      success: true,
+      timestamp: new Date().toISOString(),
+      totalProblems,
+      totalLanguages,
+      totalCombinations,
+      executed: executedCombinations,
+      passed: passedCombinations,
+      failed: failedCombinations,
+      skipped: missingReferenceSolutions,
+      missingReferenceSolutions,
+      results: problemResults,
+      failures: failuresList,
+      markdownReport: mdContent,
+    }, { status: 200 });
   } catch (err: any) {
     console.error("[Regression Test API Error]:", err);
     return NextResponse.json(
