@@ -33,78 +33,72 @@ import Link from "next/link";
 const Editor = dynamic(() => import("@monaco-editor/react"), { ssr: false });
 
 const starterCodeTemplates: Record<string, string> = {
-  sql: `-- SQL Query Starter Solution
-SELECT * FROM Employee;`,
+  c: `#include <stdio.h>
+#include <stdlib.h>
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* twoSum(int* nums, int numsSize, int target, int* returnSize) {
+    *returnSize = 2;
+    int* result = (int*)malloc(2 * sizeof(int));
+    // Write your solution algorithm here
+    return result;
+}`,
+
+  cpp: `#include <vector>
+using namespace std;
+
+class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        // Write your solution algorithm here
+        return {};
+    }
+};`,
+
+  java: `import java.util.*;
+
+class Solution {
+    public int[] twoSum(int[] nums, int target) {
+        // Write your solution algorithm here
+        return new int[]{};
+    }
+}`,
+
+  python: `class Solution:
+    def twoSum(self, nums: list[int], target: int) -> list[int]:
+        # Write your solution algorithm here
+        pass`,
 
   javascript: `/**
  * @param {number[]} nums
  * @param {number} target
  * @return {number[]}
  */
-function solve(nums, target) {
-    // TODO: Write your solution algorithm here
-    
+var twoSum = function(nums, target) {
+    // Write your solution algorithm here
+    return [];
+};`,
+
+  go: `func twoSum(nums []int, target int) []int {
+    // Write your solution algorithm here
+    return []int{}
 }`,
 
-  python: `# Python 3 Starter Solution
-def solve(nums, target):
-    # TODO: Write your solution algorithm here
-    pass
-`,
-
-  java: `// Java 17 Starter Solution
-import java.util.*;
-
-public class Solution {
-    public int[] solve(int[] nums, int target) {
-        // TODO: Write your solution algorithm here
-        return new int[]{};
+  rust: `impl Solution {
+    pub fn two_sum(nums: Vec<i32>, target: i32) -> Vec<i32> {
+        // Write your solution algorithm here
+        vec![]
     }
-}
-`,
+}`,
 
-  cpp: `// C++ 20 Starter Solution
-#include <vector>
-using namespace std;
-
-class Solution {
-public:
-    vector<int> solve(vector<int>& nums, int target) {
-        // TODO: Write your solution algorithm here
-        return {};
-    }
-};
-`,
-
-  c: `// C Starter Solution
-#include <stdio.h>
-
-void solve(int nums[], int numsSize, int target) {
-    // TODO: Write your solution algorithm in C
-}
-`,
-
-  go: `// Go 1.22 Starter Solution
-package main
-
-func solve(nums []int, target int) []int {
-    return nil
-}
-`,
-
-  rust: `// Rust 2021 Starter Solution
-pub fn solve(nums: Vec<i32>, target: i32) -> Vec<i32> {
-    vec![]
-}
-`,
-
-  kotlin: `// Kotlin Starter Solution
-class Solution {
-    fun solve(nums: IntArray, target: Int): IntArray {
+  kotlin: `class Solution {
+    fun twoSum(nums: IntArray, target: Int): IntArray {
+        // Write your solution algorithm here
         return intArrayOf()
     }
-}
-`,
+}`,
 };
 
 export default function SingleProblemPage({ params }: { params: Promise<{ id: string }> }) {
@@ -484,7 +478,6 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
                 onChange={(e) => handleLanguageChange(e.target.value)}
                 className="bg-slate-900 border border-slate-800 text-xs font-bold text-purple-300 rounded-xl px-3 py-1.5 focus:outline-none hover:border-purple-500/50 transition-colors"
               >
-                <option value="sql">SQL Query</option>
                 <option value="c">C Language</option>
                 <option value="cpp">C++ 20</option>
                 <option value="java">Java 17</option>
@@ -499,7 +492,7 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
             <div className="flex items-center gap-3">
               <button
                 onClick={() => {
-                  const tmpl = starterCodeTemplates[language] || starterCodeTemplates.sql;
+                  const tmpl = starterCodeTemplates[language] || starterCodeTemplates.cpp;
                   setCode(tmpl);
                   if (editorRef.current) {
                     editorRef.current.setValue(tmpl);

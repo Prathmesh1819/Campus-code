@@ -5,31 +5,47 @@ import path from "path";
 
 function formatStarterCodes(probTitle: string, probSlug: string) {
   const methodCamel = probSlug.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+  const methodSnake = probSlug.replace(/-/g, "_");
   return [
     {
-      language: "java",
-      language_id: "62",
-      starter_code: `import java.util.*;\n\npublic class Solution {\n    public Object ${methodCamel}(Object input) {\n        // Write your solution here\n        return null;\n    }\n}`,
-    },
-    {
-      language: "python",
-      language_id: "92",
-      starter_code: `class Solution:\n    def ${methodCamel}(self, input):\n        # Write your solution here\n        pass`,
+      language: "c",
+      language_id: "50",
+      starter_code: `#include <stdio.h>\n#include <stdlib.h>\n\n/**\n * Note: The returned array must be malloced, assume caller calls free().\n */\nint* ${methodCamel}(int* nums, int numsSize, int target, int* returnSize) {\n    *returnSize = 2;\n    int* result = (int*)malloc(2 * sizeof(int));\n    // Write your solution here\n    return result;\n}`,
     },
     {
       language: "cpp",
       language_id: "54",
-      starter_code: `#include <iostream>\n#include <vector>\n#include <string>\nusing namespace std;\n\nclass Solution {\npublic:\n    void ${methodCamel}() {\n        // Write your solution here\n    }\n};`,
+      starter_code: `#include <vector>\nusing namespace std;\n\nclass Solution {\npublic:\n    vector<int> ${methodCamel}(vector<int>& nums, int target) {\n        // Write your solution here\n        return {};\n    }\n};`,
     },
     {
-      language: "c",
-      language_id: "50",
-      starter_code: `#include <stdio.h>\n#include <stdlib.h>\n\nint main() {\n    // Write your code here\n    return 0;\n}`,
+      language: "java",
+      language_id: "62",
+      starter_code: `import java.util.*;\n\nclass Solution {\n    public int[] ${methodCamel}(int[] nums, int target) {\n        // Write your solution here\n        return new int[]{};\n    }\n}`,
+    },
+    {
+      language: "python",
+      language_id: "92",
+      starter_code: `class Solution:\n    def ${methodCamel}(self, nums: list[int], target: int) -> list[int]:\n        # Write your solution here\n        pass`,
     },
     {
       language: "javascript",
       language_id: "63",
-      starter_code: `var ${methodCamel} = function(input) {\n    // Write your solution here\n    return null;\n};`,
+      starter_code: `/**\n * @param {number[]} nums\n * @param {number} target\n * @return {number[]}\n */\nvar ${methodCamel} = function(nums, target) {\n    // Write your solution here\n    return [];\n};`,
+    },
+    {
+      language: "go",
+      language_id: "60",
+      starter_code: `func ${methodCamel}(nums []int, target int) []int {\n    // Write your solution here\n    return []int{}\n}`,
+    },
+    {
+      language: "rust",
+      language_id: "73",
+      starter_code: `impl Solution {\n    pub fn ${methodSnake}(nums: Vec<i32>, target: i32) -> Vec<i32> {\n        // Write your solution here\n        vec![]\n    }\n}`,
+    },
+    {
+      language: "kotlin",
+      language_id: "78",
+      starter_code: `class Solution {\n    fun ${methodCamel}(nums: IntArray, target: Int): IntArray {\n        // Write your solution here\n        return intArrayOf()\n    }\n}`,
     },
   ];
 }
