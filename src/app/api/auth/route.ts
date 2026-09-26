@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { FirebaseStoreService } from "@/lib/firebase/store";
 import { verifyServerToken } from "@/lib/firebase/auth";
-import { adminAuth } from "@/lib/firebase/admin";
+import { adminAuth, adminDb, isFirebaseAdminConfigured } from "@/lib/firebase/admin";
+import { COLLECTIONS } from "@/lib/firebase/firestore";
 
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
@@ -43,18 +44,21 @@ export async function GET(req: Request) {
     const identifier = userId || username;
 
     if (!identifier) {
-      return NextResponse.json({ error: "User ID or username required" }, { status: 400 });
+      return NextResponse.json({ success: false, error: "User ID or username required" }, { status: 400 });
     }
 
     const user = (await FirebaseStoreService.getUserById(identifier)) || (await FirebaseStoreService.getUserByEmail(identifier));
     if (!user) {
-      return NextResponse.json({ error: "User profile not found" }, { status: 404 });
+      return NextResponse.json({ success: false, error: "User profile not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ user: formatUserObject(user) });
+    return NextResponse.json({ success: true, user: formatUserObject(user) });
   } catch (error: any) {
-    console.error("GET /api/auth error:", error);
-    return NextResponse.json({ error: error.message || "Auth GET error" }, { status: 500 });
+    console.error("[GET /api/auth] Error:", error?.message || error);
+    return NextResponse.json(
+      { success: false, error: "User profile service temporarily unavailable." },
+      { status: 500 }
+    );
   }
 }
 
@@ -65,10 +69,14 @@ export async function POST(req: Request) {
     const authUser = await verifyServerToken(token);
 
     if (!authUser || !authUser.userId) {
-      return NextResponse.json({ success: false, error: "Unauthorized. Valid Firebase ID token is required." }, { status: 401 });
+      return NextResponse.json(
+        { success: false, error: "Unauthorized. Valid Firebase ID token is required." },
+        { status: 401 }
+      );
     }
 
     const targetUid = authUser.userId;
+
     let body: any = {};
     try {
       body = await req.json();
@@ -91,6 +99,18 @@ export async function POST(req: Request) {
       linkedinUrl,
     } = body;
 
+    // Check Firebase Admin configuration
+    if (!isFirebaseAdminConfigured) {
+      console.error("[POST /api/auth] Firebase Admin Service Account credentials missing or invalid.");
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Registration service temporarily unavailable due to server configuration.",
+        },
+        { status: 500 }
+      );
+    }
+
     // 1. REGISTER PROFILE (Authenticated via verified Firebase ID Token)
     if (action === "register_profile") {
       const userEmail = (email || authUser.email || "").trim().toLowerCase();
@@ -100,15 +120,23 @@ export async function POST(req: Request) {
         return NextResponse.json({ success: false, error: "UID and Email are required for profile creation" }, { status: 400 });
       }
 
-      // Idempotency check: If profile already exists in Firestore, return existing profile cleanly
-      const existingUser = await FirebaseStoreService.getUserById(targetUid);
-      if (existingUser) {
-        console.log("[POST /api/auth] Profile already exists for UID:", targetUid);
-        return NextResponse.json({
-          success: true,
-          message: "User profile already registered",
-          user: formatUserObject(existingUser),
-        });
+      // Idempotency check: If profile document users/{targetUid} already exists in Firestore, return existing profile cleanly
+      try {
+        const existingDoc = await adminDb.collection(COLLECTIONS.USERS).doc(targetUid).get();
+        if (existingDoc.exists) {
+          console.log("[POST /api/auth] Profile already exists for UID:", targetUid);
+          return NextResponse.json({
+            success: true,
+            message: "User profile already registered",
+            user: formatUserObject({ id: existingDoc.id, ...existingDoc.data() }),
+          });
+        }
+      } catch (checkErr: any) {
+        console.error("[POST /api/auth] Error checking existing profile:", checkErr);
+        return NextResponse.json(
+          { success: false, error: "Registration service temporarily unavailable." },
+          { status: 500 }
+        );
       }
 
       // Public registration ALWAYS forces role STUDENT to prevent privilege escalation
@@ -126,28 +154,35 @@ export async function POST(req: Request) {
         uid: targetUid,
         email: userEmail,
         full_name: userName,
+        name: userName,
         username: userName.toLowerCase().replace(/\s+/g, ""),
         roll_number: rollNumber ? rollNumber.trim().toUpperCase() : null,
+        rollNumber: rollNumber ? rollNumber.trim().toUpperCase() : null,
         role: enforcedRole,
         faculty_type: facultyType || null,
-        className: className || null,
+        className: className || "TY BSc CS",
+        class_name: className || "TY BSc CS",
         branch: branch || null,
-        academicYear: academicYear || null,
+        academicYear: academicYear || "2026-27",
+        academic_year: academicYear || "2026-27",
         profile_image: avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80",
+        avatar: avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80",
         xp: 0,
         level: 1,
         coins: 0,
+        streak: 0,
         streakDays: 0,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
 
       try {
-        await FirebaseStoreService.saveUser(newUserObj);
+        await adminDb.collection(COLLECTIONS.USERS).doc(targetUid).set(newUserObj, { merge: true });
+        console.log("[POST /api/auth] Firestore set user succeeded for UID:", targetUid);
       } catch (saveErr: any) {
         console.error("[Auth API] Firestore saveUser failed:", saveErr);
         return NextResponse.json(
-          { success: false, error: `Database Save Failed: ${saveErr?.message || "Firestore write permission error"}` },
+          { success: false, error: "Registration service temporarily unavailable." },
           { status: 500 }
         );
       }
@@ -161,7 +196,16 @@ export async function POST(req: Request) {
 
     // 2. UPDATE PROFILE
     if (action === "update_profile") {
-      const existing: any = await FirebaseStoreService.getUserById(targetUid);
+      let existing: any = null;
+      try {
+        const existingDoc = await adminDb.collection(COLLECTIONS.USERS).doc(targetUid).get();
+        if (existingDoc.exists) {
+          existing = { id: existingDoc.id, ...existingDoc.data() };
+        }
+      } catch (err) {
+        console.error("[POST /api/auth] Error fetching user for update:", err);
+      }
+
       if (!existing) {
         return NextResponse.json({ success: false, error: "User profile not found" }, { status: 404 });
       }
@@ -170,16 +214,27 @@ export async function POST(req: Request) {
       const updatedUser = {
         ...existing,
         full_name: name ? name.trim() : existing.full_name,
+        name: name ? name.trim() : existing.name,
         profile_image: avatar ? avatar.trim() : existing.profile_image,
+        avatar: avatar ? avatar.trim() : existing.avatar,
         bio: bio !== undefined ? bio : existing.bio,
         branch: branch !== undefined ? branch : existing.branch,
         academicYear: academicYear !== undefined ? academicYear : existing.academicYear,
+        academic_year: academicYear !== undefined ? academicYear : existing.academic_year,
         github_url: githubUrl !== undefined ? githubUrl : existing.github_url,
         linkedin_url: linkedinUrl !== undefined ? linkedinUrl : existing.linkedin_url,
         updated_at: new Date().toISOString(),
       };
 
-      await FirebaseStoreService.saveUser(updatedUser);
+      try {
+        await adminDb.collection(COLLECTIONS.USERS).doc(targetUid).set(updatedUser, { merge: true });
+      } catch (err) {
+        console.error("[POST /api/auth] Error updating user profile:", err);
+        return NextResponse.json(
+          { success: false, error: "Profile update temporarily unavailable." },
+          { status: 500 }
+        );
+      }
 
       return NextResponse.json({
         success: true,
@@ -190,11 +245,12 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: false, error: "Invalid or unsupported action" }, { status: 400 });
   } catch (error: any) {
-    console.error("[POST /api/auth] UNHANDLED TOP-LEVEL ERROR:", error);
+    console.error("[POST /api/auth] UNHANDLED TOP-LEVEL ERROR:", error?.message || error);
     return NextResponse.json(
-      { success: false, error: error?.message || "Internal server error during profile registration" },
+      { success: false, error: "Registration service temporarily unavailable." },
       { status: 500 }
     );
   }
 }
+
 

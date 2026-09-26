@@ -3,22 +3,49 @@ import { getFirestore } from "firebase-admin/firestore";
 import { getAuth } from "firebase-admin/auth";
 import { getStorage } from "firebase-admin/storage";
 
-let isConfigured = false;
+function cleanEnvString(val: string | undefined): string | undefined {
+  if (!val) return undefined;
+  let str = val.trim();
+  while (
+    (str.startsWith('"') && str.endsWith('"')) ||
+    (str.startsWith("'") && str.endsWith("'"))
+  ) {
+    str = str.slice(1, -1).trim();
+  }
+  return str.length > 0 ? str : undefined;
+}
+
+function cleanPrivateKey(val: string | undefined): string | undefined {
+  let key = cleanEnvString(val);
+  if (!key) return undefined;
+  key = key.replace(/\\n/g, "\n");
+  key = key.replace(/^["']+|["']+$|\r/g, "");
+  return key.length > 20 ? key : undefined;
+}
+
+const projectId =
+  cleanEnvString(process.env.FIREBASE_PROJECT_ID) ||
+  cleanEnvString(process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) ||
+  "campus-code-7dbb5";
+
+const clientEmail = cleanEnvString(process.env.FIREBASE_CLIENT_EMAIL);
+const privateKey = cleanPrivateKey(process.env.FIREBASE_PRIVATE_KEY);
+
+console.log("[Firebase Admin Config Status]");
+console.log(`  - FIREBASE_PROJECT_ID configured: ${projectId ? "YES" : "NO"} (${projectId})`);
+console.log(`  - FIREBASE_CLIENT_EMAIL configured: ${clientEmail ? "YES" : "NO"}`);
+console.log(`  - FIREBASE_PRIVATE_KEY configured: ${privateKey ? "YES" : "NO"}`);
+
+let initError: Error | null = null;
 
 if (!getApps().length) {
-  try {
-    const projectId = process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "campus-code-7dbb5";
-    const rawEmail = process.env.FIREBASE_CLIENT_EMAIL?.trim().replace(/^"|"$/g, "").replace(/^'|'$/g, "");
-    let rawKey = process.env.FIREBASE_PRIVATE_KEY?.trim().replace(/^"|"$/g, "").replace(/^'|'$/g, "");
-
-    if (rawKey && rawKey.includes("\\n")) {
-      rawKey = rawKey.replace(/\\n/g, "\n");
-    }
-
-    const clientEmail = rawEmail && rawEmail.length > 5 ? rawEmail : undefined;
-    const privateKey = rawKey && rawKey.length > 20 ? rawKey : undefined;
-
-    if (clientEmail && privateKey) {
+  if (!clientEmail || !privateKey) {
+    initError = new Error(
+      "Firebase Admin Service Account credentials (FIREBASE_CLIENT_EMAIL and/or FIREBASE_PRIVATE_KEY) are missing in environment variables."
+    );
+    console.warn(`[Firebase Admin] ${initError.message}`);
+  } else {
+    try {
       initializeApp({
         credential: cert({
           projectId,
@@ -27,22 +54,75 @@ if (!getApps().length) {
         }),
         storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || `${projectId}.appspot.com`,
       });
-      isConfigured = true;
-    } else {
-      console.warn("[Firebase Admin] Service Account credentials (FIREBASE_CLIENT_EMAIL / FIREBASE_PRIVATE_KEY) not found. Initializing with Project ID only.");
-      initializeApp({
-        projectId,
-        storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || `${projectId}.appspot.com`,
-      });
+      console.log("[Firebase Admin] Firebase Admin initialized: YES");
+    } catch (err: any) {
+      initError = err instanceof Error ? err : new Error(String(err));
+      console.error("[Firebase Admin] Initialization failed:", initError.message);
     }
-  } catch (error) {
-    console.error("[Firebase Admin] Initialization warning:", error);
   }
 } else {
-  isConfigured = Boolean(process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PRIVATE_KEY);
+  console.log("[Firebase Admin] Firebase Admin initialized: YES (reusing existing app)");
 }
 
-export const isFirebaseAdminConfigured = isConfigured;
-export const adminDb = getFirestore();
-export const adminAuth = getAuth();
-export const adminStorage = getStorage();
+export const isFirebaseAdminConfigured = Boolean(getApps().length > 0 && !initError);
+
+function getAdminDbInstance() {
+  if (!getApps().length || initError) {
+    throw (
+      initError ||
+      new Error(
+        "Firebase Admin Service Account credentials (FIREBASE_CLIENT_EMAIL and FIREBASE_PRIVATE_KEY) are missing or failed to initialize."
+      )
+    );
+  }
+  return getFirestore();
+}
+
+function getAdminAuthInstance() {
+  if (!getApps().length || initError) {
+    throw (
+      initError ||
+      new Error(
+        "Firebase Admin Service Account credentials (FIREBASE_CLIENT_EMAIL and FIREBASE_PRIVATE_KEY) are missing or failed to initialize."
+      )
+    );
+  }
+  return getAuth();
+}
+
+function getAdminStorageInstance() {
+  if (!getApps().length || initError) {
+    throw (
+      initError ||
+      new Error(
+        "Firebase Admin Service Account credentials (FIREBASE_CLIENT_EMAIL and FIREBASE_PRIVATE_KEY) are missing or failed to initialize."
+      )
+    );
+  }
+  return getStorage();
+}
+
+export const adminDb = new Proxy({} as ReturnType<typeof getFirestore>, {
+  get(_target, prop) {
+    const instance = getAdminDbInstance();
+    const val = (instance as any)[prop];
+    return typeof val === "function" ? val.bind(instance) : val;
+  },
+});
+
+export const adminAuth = new Proxy({} as ReturnType<typeof getAuth>, {
+  get(_target, prop) {
+    const instance = getAdminAuthInstance();
+    const val = (instance as any)[prop];
+    return typeof val === "function" ? val.bind(instance) : val;
+  },
+});
+
+export const adminStorage = new Proxy({} as ReturnType<typeof getStorage>, {
+  get(_target, prop) {
+    const instance = getAdminStorageInstance();
+    const val = (instance as any)[prop];
+    return typeof val === "function" ? val.bind(instance) : val;
+  },
+});
+
