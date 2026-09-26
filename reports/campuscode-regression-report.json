@@ -1,0 +1,13 @@
+{
+  "success": true,
+  "timestamp": "2026-09-26T14:07:26.289Z",
+  "totalProblems": 50,
+  "totalLanguages": 8,
+  "totalCombinations": 400,
+  "executedCombinations": 13,
+  "passedCombinations": 13,
+  "failedCombinations": 0,
+  "missingReferenceSolutions": 387,
+  "hiddenTestProtection": true,
+  "productionEngine": "src/lib/code-runner.ts (executeJudge0Submission)"
+}

@@ -21,17 +21,17 @@
       {
         "input": "[3,3], 6",
         "expected": "[0,1]",
-        "isHidden": true
+        "isHidden": false
       },
       {
         "input": "[-1,-8,10,20], 2",
         "expected": "[1,2]",
-        "isHidden": true
+        "isHidden": false
       },
       {
         "input": "[1,5,4,7,10,14,18], 25",
         "expected": "[3,6]",
-        "isHidden": true
+        "isHidden": false
       }
     ]
   },

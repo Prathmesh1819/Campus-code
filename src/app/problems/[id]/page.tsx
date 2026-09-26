@@ -161,9 +161,20 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
       const data = await res.json();
       if (data.problem) {
         setProblem(data.problem);
+        let initCode = starterCodeTemplates[language] || starterCodeTemplates.javascript;
+        if (data.problem.starterCodes && data.problem.starterCodes.length > 0) {
+          const sc = data.problem.starterCodes.find((s: any) => s.language === language);
+          if (sc && sc.code && !sc.code.includes("int main()")) {
+            initCode = sc.code;
+          }
+        }
         if (data.problem.category === "SQL") {
           setLanguage("sql");
-          setCode(starterCodeTemplates.sql);
+          initCode = starterCodeTemplates.sql;
+        }
+        setCode(initCode);
+        if (editorRef.current) {
+          editorRef.current.setValue(initCode);
         }
       }
     } catch {
@@ -174,11 +185,18 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
         category: "Arrays",
         description: `Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target. You may assume that each input would have exactly one solution, and you may not use the same element twice.`,
         examples: JSON.stringify([
-          { input: "nums = [2,7,11,15], target = 9", output: "[0,1]", explanation: "Because nums[0] + nums[1] == 9, we return [0, 1]." },
-          { input: "nums = [3,2,4], target = 6", output: "[1,2]" },
+          { input: "[2,7,11,15], 9", output: "[0,1]", explanation: "Because nums[0] + nums[1] == 9, we return [0, 1]." },
+          { input: "[3,2,4], 6", output: "[1,2]" },
         ]),
         constraints: `2 <= nums.length <= 10^4\n-10^9 <= nums[i] <= 10^9\n-10^9 <= target <= 10^9`,
         editorial: `Use a Hash Map to store numbers and their indices in O(n) time.`,
+        testCases: [
+          { id: "tc-1", input: "[2,7,11,15], 9", expectedOutput: "[0,1]", isHidden: false },
+          { id: "tc-2", input: "[3,2,4], 6", expectedOutput: "[1,2]", isHidden: false },
+          { id: "tc-3", input: "[3,3], 6", expectedOutput: "[0,1]", isHidden: false },
+          { id: "tc-4", input: "[-1,-8,10,20], 2", expectedOutput: "[1,2]", isHidden: false },
+          { id: "tc-5", input: "[1,5,4,7,10,14,18], 25", expectedOutput: "[3,6]", isHidden: false },
+        ],
       });
     } finally {
       setLoading(false);
@@ -202,7 +220,13 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
 
   const handleLanguageChange = (newLang: string) => {
     setLanguage(newLang);
-    const template = starterCodeTemplates[newLang] || starterCodeTemplates.javascript;
+    let template = starterCodeTemplates[newLang] || starterCodeTemplates.javascript;
+    if (problem?.starterCodes && problem.starterCodes.length > 0) {
+      const sc = problem.starterCodes.find((s: any) => s.language === newLang);
+      if (sc && sc.code && !sc.code.includes("int main()")) {
+        template = sc.code;
+      }
+    }
     setCode(template);
     if (editorRef.current) {
       editorRef.current.setValue(template);
@@ -613,42 +637,45 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
             {/* Bottom Content Area */}
             {isBottomPanelOpen && (
               <div className="p-4 flex-1 overflow-y-auto text-xs font-mono custom-scrollbar">
-                {bottomTab === "testcase" && (
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2">
-                      {parsedExamples.map((_: any, idx: number) => (
-                        <button
-                          key={idx}
-                          onClick={() => setSelectedCaseIdx(idx)}
-                          className={`px-3 py-1 rounded-lg border text-xs font-bold transition-all ${
-                            selectedCaseIdx === idx
-                              ? "bg-purple-600/20 text-purple-300 border-purple-500/50"
-                              : "bg-slate-900 text-gray-400 border-slate-800 hover:text-gray-200"
-                          }`}
-                        >
-                          Case {idx + 1}
-                        </button>
-                      ))}
-                    </div>
-
-                    {parsedExamples[selectedCaseIdx] && (
-                      <div className="space-y-3">
-                        <div>
-                          <div className="text-[10px] font-bold text-gray-500 uppercase mb-1">Input</div>
-                          <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-gray-200">
-                            {parsedExamples[selectedCaseIdx].input}
-                          </div>
-                        </div>
-                        <div>
-                          <div className="text-[10px] font-bold text-gray-500 uppercase mb-1">Expected Output</div>
-                          <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-emerald-400 font-bold">
-                            {parsedExamples[selectedCaseIdx].output}
-                          </div>
-                        </div>
+                {bottomTab === "testcase" && (() => {
+                  const displayCases = (problem?.testCases && problem.testCases.length > 0) ? problem.testCases : parsedExamples;
+                  return (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {displayCases.map((_: any, idx: number) => (
+                          <button
+                            key={idx}
+                            onClick={() => setSelectedCaseIdx(idx)}
+                            className={`px-3 py-1 rounded-lg border text-xs font-bold transition-all ${
+                              selectedCaseIdx === idx
+                                ? "bg-purple-600/20 text-purple-300 border-purple-500/50"
+                                : "bg-slate-900 text-gray-400 border-slate-800 hover:text-gray-200"
+                            }`}
+                          >
+                            Case {idx + 1}
+                          </button>
+                        ))}
                       </div>
-                    )}
-                  </div>
-                )}
+
+                      {displayCases[selectedCaseIdx] && (
+                        <div className="space-y-3">
+                          <div>
+                            <div className="text-[10px] font-bold text-gray-500 uppercase mb-1">Input</div>
+                            <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-gray-200">
+                              {displayCases[selectedCaseIdx].input}
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-[10px] font-bold text-gray-500 uppercase mb-1">Expected Output</div>
+                            <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-emerald-400 font-bold">
+                              {displayCases[selectedCaseIdx].expectedOutput || displayCases[selectedCaseIdx].output}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
 
                 {bottomTab === "result" && (
                   <div>
