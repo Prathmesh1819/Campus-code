@@ -16,9 +16,15 @@ function cleanEnvString(val: string | undefined): string | undefined {
 }
 
 function cleanPrivateKey(val: string | undefined): string | undefined {
-  let key = cleanEnvString(val);
-  if (!key) return undefined;
-  key = key.replace(/\\n/g, "\n");
+  if (!val) return undefined;
+  let key = val.trim();
+  while (
+    (key.startsWith('"') && key.endsWith('"')) ||
+    (key.startsWith("'") && key.endsWith("'"))
+  ) {
+    key = key.slice(1, -1).trim();
+  }
+  key = key.replace(/\\\\n/g, "\n").replace(/\\n/g, "\n").replace(/\r/g, "");
   key = key.replace(/^["']+|["']+$|\r/g, "");
   return key.length > 20 ? key : undefined;
 }
@@ -102,8 +108,19 @@ function getAdminStorageInstance() {
   return getStorage();
 }
 
+function isInternalSymbol(prop: string | symbol): boolean {
+  return (
+    typeof prop === "symbol" ||
+    prop === "then" ||
+    prop === "toJSON" ||
+    prop === "constructor" ||
+    prop === "prototype"
+  );
+}
+
 export const adminDb = new Proxy({} as ReturnType<typeof getFirestore>, {
   get(_target, prop) {
+    if (isInternalSymbol(prop)) return undefined;
     const instance = getAdminDbInstance();
     const val = (instance as any)[prop];
     return typeof val === "function" ? val.bind(instance) : val;
@@ -112,6 +129,7 @@ export const adminDb = new Proxy({} as ReturnType<typeof getFirestore>, {
 
 export const adminAuth = new Proxy({} as ReturnType<typeof getAuth>, {
   get(_target, prop) {
+    if (isInternalSymbol(prop)) return undefined;
     const instance = getAdminAuthInstance();
     const val = (instance as any)[prop];
     return typeof val === "function" ? val.bind(instance) : val;
@@ -120,9 +138,11 @@ export const adminAuth = new Proxy({} as ReturnType<typeof getAuth>, {
 
 export const adminStorage = new Proxy({} as ReturnType<typeof getStorage>, {
   get(_target, prop) {
+    if (isInternalSymbol(prop)) return undefined;
     const instance = getAdminStorageInstance();
     const val = (instance as any)[prop];
     return typeof val === "function" ? val.bind(instance) : val;
   },
 });
+
 
