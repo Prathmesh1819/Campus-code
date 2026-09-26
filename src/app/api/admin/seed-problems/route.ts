@@ -37,11 +37,8 @@ function formatStarterCodes(probTitle: string, probSlug: string) {
   ];
 }
 
-export async function GET(req: Request) {
+export async function GET() {
   try {
-    const { searchParams } = new URL(req.url);
-    const key = searchParams.get("key");
-
     if (!isFirebaseAdminConfigured) {
       return NextResponse.json(
         { success: false, error: "Firebase Admin is not configured on server." },
@@ -70,6 +67,9 @@ export async function GET(req: Request) {
     if (fs.existsSync(pdfPath)) {
       pdfQuestions = JSON.parse(fs.readFileSync(pdfPath, "utf8"));
     }
+
+    const problemPromises: Promise<any>[] = [];
+    const testCasePromises: Promise<any>[] = [];
 
     for (let i = 0; i < pdfQuestions.length; i++) {
       const item = pdfQuestions[i];
@@ -104,7 +104,7 @@ export async function GET(req: Request) {
         updated_at: new Date().toISOString(),
       };
 
-      await adminDb.collection(COLLECTIONS.PROBLEMS).doc(probId).set(problemObj, { merge: true });
+      problemPromises.push(adminDb.collection(COLLECTIONS.PROBLEMS).doc(probId).set(problemObj, { merge: true }));
       report.publishedProblemsCount++;
       report.totalProblemsCount++;
 
@@ -119,18 +119,20 @@ export async function GET(req: Request) {
         else report.publicTestCasesCount++;
         report.totalTestCasesCount++;
 
-        await adminDb.collection(COLLECTIONS.TEST_CASES).doc(tcId).set(
-          {
-            id: tcId,
-            problem_id: probId,
-            input: String(tc.input),
-            expected_output: String(tc.expected),
-            is_hidden: isHidden,
-            weight: 1,
-            execution_order: j + 1,
-            created_at: new Date().toISOString(),
-          },
-          { merge: true }
+        testCasePromises.push(
+          adminDb.collection(COLLECTIONS.TEST_CASES).doc(tcId).set(
+            {
+              id: tcId,
+              problem_id: probId,
+              input: String(tc.input),
+              expected_output: String(tc.expected),
+              is_hidden: isHidden,
+              weight: 1,
+              execution_order: j + 1,
+              created_at: new Date().toISOString(),
+            },
+            { merge: true }
+          )
         );
       }
     }
@@ -165,10 +167,14 @@ export async function GET(req: Request) {
         updated_at: new Date().toISOString(),
       };
 
-      await adminDb.collection(COLLECTIONS.PROBLEMS).doc(probId).set(problemObj, { merge: true });
+      problemPromises.push(adminDb.collection(COLLECTIONS.PROBLEMS).doc(probId).set(problemObj, { merge: true }));
       report.archivedProblemsCount++;
       report.totalProblemsCount++;
     }
+
+    // Execute in parallel batches
+    await Promise.all(problemPromises);
+    await Promise.all(testCasePromises);
 
     report.status = "SUCCESS";
     return NextResponse.json(report, { status: 200 });
