@@ -45,12 +45,7 @@ console.log(`  - FIREBASE_PRIVATE_KEY configured: ${privateKey ? "YES" : "NO"}`)
 let initError: Error | null = null;
 
 if (!getApps().length) {
-  if (!clientEmail || !privateKey) {
-    initError = new Error(
-      "Firebase Admin Service Account credentials (FIREBASE_CLIENT_EMAIL and/or FIREBASE_PRIVATE_KEY) are missing in environment variables."
-    );
-    console.warn(`[Firebase Admin] ${initError.message}`);
-  } else {
+  if (clientEmail && privateKey) {
     try {
       initializeApp({
         credential: cert({
@@ -60,7 +55,22 @@ if (!getApps().length) {
         }),
         storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || `${projectId}.appspot.com`,
       });
-      console.log("[Firebase Admin] Firebase Admin initialized: YES");
+      console.log("[Firebase Admin] Firebase Admin initialized with cert credentials: YES");
+    } catch (err: any) {
+      console.error("[Firebase Admin] Cert initialization failed, falling back to default app:", err);
+      try {
+        initializeApp({ projectId });
+      } catch (fbErr: any) {
+        initError = fbErr instanceof Error ? fbErr : new Error(String(fbErr));
+      }
+    }
+  } else {
+    try {
+      initializeApp({
+        projectId,
+        storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || `${projectId}.appspot.com`,
+      });
+      console.log("[Firebase Admin] Firebase Admin initialized with projectId (no cert): YES");
     } catch (err: any) {
       initError = err instanceof Error ? err : new Error(String(err));
       console.error("[Firebase Admin] Initialization failed:", initError.message);

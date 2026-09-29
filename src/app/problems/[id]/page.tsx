@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Navbar } from "@/components/Navbar";
 import { useAuth } from "@/context/AuthContext";
+import { firebaseAuth } from "@/lib/firebase/client";
 import dynamic from "next/dynamic";
 import {
   Play,
@@ -102,7 +103,7 @@ var twoSum = function(nums, target) {
 };
 
 export default function SingleProblemPage({ params }: { params: Promise<{ id: string }> }) {
-  const { user, refreshUserData } = useAuth();
+  const { user, token: authContextToken, refreshUserData } = useAuth();
   const [problem, setProblem] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"description" | "editorial" | "submissions">("description");
@@ -246,8 +247,23 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
 
     try {
       const resolvedParams = await params;
-      const activeToken = localStorage.getItem("campuscode_token");
-      const savedUserStr = localStorage.getItem("campuscode_user");
+      let activeToken = authContextToken || (typeof window !== "undefined" ? localStorage.getItem("campuscode_token") : null);
+
+      if (firebaseAuth?.currentUser) {
+        try {
+          const freshToken = await firebaseAuth.currentUser.getIdToken(true);
+          if (freshToken) {
+            activeToken = freshToken;
+            if (typeof window !== "undefined") {
+              localStorage.setItem("campuscode_token", freshToken);
+            }
+          }
+        } catch (e) {
+          console.warn("Could not refresh Firebase Auth ID token:", e);
+        }
+      }
+
+      const savedUserStr = typeof window !== "undefined" ? localStorage.getItem("campuscode_user") : null;
       const savedUserId = savedUserStr ? JSON.parse(savedUserStr)?.id : null;
       const targetUserId = user?.id || savedUserId;
 
@@ -265,10 +281,34 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
           code: currentCode,
           language,
           isSubmit,
+          token: activeToken,
         }),
       });
 
-      const data = await res.json();
+      const responseText = await res.text();
+      let data: any = null;
+      try {
+        data = JSON.parse(responseText);
+      } catch {
+        throw new Error(`Server returned non-JSON response (${res.status}): ${responseText.slice(0, 120)}`);
+      }
+
+      if (!res.ok || data.error) {
+        const errorMsg = data.error || `Execution failed with status ${res.status}`;
+        alert(errorMsg);
+        setExecutionResult({
+          status: "RUNTIME_ERROR",
+          executionTimeMs: 0,
+          memoryUsageKb: 0,
+          testCasesPassed: 0,
+          totalTestCases: problem?.testCases?.length || 5,
+          outputLogs: [`❌ ${errorMsg}`],
+          errorMessage: errorMsg,
+          testCaseDetails: [],
+        });
+        return;
+      }
+
       if (data.result) {
         setExecutionResult(data.result);
         setSelectedCaseIdx(0);
@@ -280,7 +320,7 @@ export default function SingleProblemPage({ params }: { params: Promise<{ id: st
             language,
             executionTimeMs: data.result.executionTimeMs,
             memoryUsageKb: data.result.memoryUsageKb,
-            createdAt: new Date().toISOString(),
+            createdAt: data.submission?.submitted_at || new Date().toISOString(),
           };
           setSubmissionsHistory((prev) => [newSubmission, ...prev]);
 

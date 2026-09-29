@@ -56,6 +56,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         try {
           const idToken = await fbUser.getIdToken();
           setToken(idToken);
+          if (typeof window !== "undefined") {
+            localStorage.setItem("campuscode_token", idToken);
+          }
           await fetchLatestUserStats(fbUser.uid, idToken);
         } catch (err) {
           console.error("Error fetching Firebase Auth token:", err);
@@ -63,8 +66,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       } else {
         setUser(null);
         setToken(null);
-        localStorage.removeItem("campuscode_user");
-        localStorage.removeItem("campuscode_token");
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("campuscode_user");
+          localStorage.removeItem("campuscode_token");
+        }
       }
     });
 
