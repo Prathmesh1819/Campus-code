@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Sidebar } from "@/components/Sidebar";
 import { useAuth } from "@/context/AuthContext";
+import { firebaseAuth } from "@/lib/firebase/client";
 import {
   ShieldCheck,
   Users,
@@ -28,8 +29,26 @@ import Link from "next/link";
 import { availableStreams, availableClassrooms } from "@/components/AuthModal";
 
 export default function AdminPage() {
-  const { user } = useAuth();
+  const { user, token: authContextToken } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const getAuthHeaders = async (): Promise<Record<string, string>> => {
+    let activeToken = authContextToken || (typeof window !== "undefined" ? localStorage.getItem("campuscode_token") : null);
+    if (firebaseAuth?.currentUser) {
+      try {
+        const freshToken = await firebaseAuth.currentUser.getIdToken();
+        if (freshToken) {
+          activeToken = freshToken;
+          if (typeof window !== "undefined") {
+            localStorage.setItem("campuscode_token", freshToken);
+          }
+        }
+      } catch (e) {
+        console.warn("Could not refresh admin token:", e);
+      }
+    }
+    return activeToken ? { Authorization: `Bearer ${activeToken}` } : {};
+  };
   const [activeTab, setActiveTab] = useState<"users" | "faculty" | "posts" | "ai_assistant">("users");
   const [aiSettings, setAiSettings] = useState({
     aiName: "Ido",
@@ -97,11 +116,12 @@ export default function AdminPage() {
     fetchAdminData();
     fetchFacultyAssignments();
     fetchAiSettings();
-  }, []);
+  }, [user?.id]);
 
   const fetchFacultyAssignments = async () => {
     try {
-      const res = await fetch(`/api/admin/faculty-assignments?t=${Date.now()}`);
+      const headers = await getAuthHeaders();
+      const res = await fetch(`/api/admin/faculty-assignments?t=${Date.now()}`, { headers });
       const data = await res.json();
       if (res.ok) {
         setFacultyData(data.faculty || []);
@@ -126,9 +146,10 @@ export default function AdminPage() {
     }
     setAssigning(true);
     try {
+      const headers = await getAuthHeaders();
       const res = await fetch("/api/admin/faculty-assignments", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...headers },
         body: JSON.stringify({
           teacherId: assignTeacherId,
           classId: assignClassId,
@@ -156,7 +177,8 @@ export default function AdminPage() {
   const handleRemoveAssignment = async (assignmentId: string) => {
     if (!confirm("Are you sure you want to revoke this teaching assignment?")) return;
     try {
-      const res = await fetch(`/api/admin/faculty-assignments?assignmentId=${assignmentId}`, { method: "DELETE" });
+      const headers = await getAuthHeaders();
+      const res = await fetch(`/api/admin/faculty-assignments?assignmentId=${assignmentId}`, { method: "DELETE", headers });
       const data = await res.json();
       if (res.ok) {
         setUpdateMsg("Teaching assignment revoked.");
@@ -172,7 +194,8 @@ export default function AdminPage() {
 
   const fetchAiSettings = async () => {
     try {
-      const res = await fetch("/api/admin/ai-settings");
+      const headers = await getAuthHeaders();
+      const res = await fetch("/api/admin/ai-settings", { headers });
       const data = await res.json();
       if (data.settings) {
         setAiSettings(data.settings);
@@ -186,9 +209,10 @@ export default function AdminPage() {
     e.preventDefault();
     setSavingAiSettings(true);
     try {
+      const headers = await getAuthHeaders();
       const res = await fetch("/api/admin/ai-settings", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...headers },
         body: JSON.stringify(aiSettings),
       });
 
@@ -208,7 +232,8 @@ export default function AdminPage() {
 
   const fetchAdminData = async () => {
     try {
-      const res = await fetch(`/api/admin?t=${Date.now()}`, { cache: "no-store" });
+      const headers = await getAuthHeaders();
+      const res = await fetch(`/api/admin?t=${Date.now()}`, { cache: "no-store", headers });
       const data = await res.json();
       if (data.stats) {
         setAdminData(data);
@@ -227,9 +252,10 @@ export default function AdminPage() {
 
   const handleRoleChange = async (userId: string, newRole: string) => {
     try {
+      const headers = await getAuthHeaders();
       const res = await fetch("/api/admin", {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...headers },
         body: JSON.stringify({ userId, newRole }),
       });
 
@@ -264,9 +290,10 @@ export default function AdminPage() {
   const handleEditUserSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      const headers = await getAuthHeaders();
       const res = await fetch("/api/admin", {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...headers },
         body: JSON.stringify({
           userId: editingUserId,
           name: editUserName,
@@ -298,9 +325,10 @@ export default function AdminPage() {
   const handleAddUser = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      const headers = await getAuthHeaders();
       const res = await fetch("/api/admin", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...headers },
         body: JSON.stringify({
           name: newUserName,
           email: newUserEmail,
@@ -334,7 +362,8 @@ export default function AdminPage() {
     if (!confirm(`Are you sure you want to permanently delete user "${name}"?`)) return;
 
     try {
-      const res = await fetch(`/api/admin?userId=${userId}`, { method: "DELETE" });
+      const headers = await getAuthHeaders();
+      const res = await fetch(`/api/admin?userId=${userId}`, { method: "DELETE", headers });
       const data = await res.json();
       if (res.ok) {
         setUpdateMsg(data.message || "User deleted.");
@@ -352,7 +381,8 @@ export default function AdminPage() {
     if (!confirm("Are you sure you want to delete this community post?")) return;
 
     try {
-      const res = await fetch(`/api/admin?postId=${postId}`, { method: "DELETE" });
+      const headers = await getAuthHeaders();
+      const res = await fetch(`/api/admin?postId=${postId}`, { method: "DELETE", headers });
       const data = await res.json();
       if (res.ok) {
         setUpdateMsg(data.message || "Post deleted.");

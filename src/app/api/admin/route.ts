@@ -213,3 +213,41 @@ export async function PUT(req: Request) {
   }
 }
 
+export const PATCH = PUT;
+
+export async function DELETE(req: Request) {
+  try {
+    const authHeader = req.headers.get("Authorization");
+    const token = authHeader?.startsWith("Bearer ") ? authHeader.substring(7) : "";
+    const authUser = await verifyServerToken(token);
+
+    if (!authUser || (authUser.role !== "ADMIN" && authUser.role !== "SUPER_ADMIN")) {
+      return NextResponse.json({ error: "Unauthorized. Admin role required." }, { status: 403 });
+    }
+
+    const { searchParams } = new URL(req.url);
+    const userId = searchParams.get("userId");
+    const postId = searchParams.get("postId");
+
+    if (userId) {
+      try {
+        await adminAuth.deleteUser(userId);
+      } catch (authErr) {
+        console.warn("Firebase Auth deleteUser warning:", authErr);
+      }
+      await adminDb.collection(COLLECTIONS.USERS).doc(userId).delete();
+      return NextResponse.json({ message: "User deleted successfully." });
+    }
+
+    if (postId) {
+      await adminDb.collection("posts").doc(postId).delete();
+      return NextResponse.json({ message: "Post deleted successfully." });
+    }
+
+    return NextResponse.json({ error: "userId or postId query param required" }, { status: 400 });
+  } catch (error: any) {
+    console.error("DELETE /api/admin error:", error);
+    return NextResponse.json({ error: error.message || "Failed to delete" }, { status: 500 });
+  }
+}
+
