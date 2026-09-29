@@ -366,8 +366,8 @@ export default function AdminPage() {
     }
   };
 
-  // Guard Access: Only ADMIN role can view the Super Admin Console
-  if (user?.role !== "ADMIN") {
+  // Guard Access: Only ADMIN & SUPER_ADMIN role can view the Super Admin Console
+  if (user?.role !== "ADMIN" && user?.role !== "SUPER_ADMIN") {
     return (
       <div className="min-h-screen flex flex-col bg-[#070913] text-white">
         <Navbar />
@@ -561,6 +561,7 @@ export default function AdminPage() {
                               <option value="STUDENT">STUDENT</option>
                               <option value="TEACHER">TEACHER</option>
                               <option value="ADMIN">ADMIN</option>
+                              <option value="SUPER_ADMIN">SUPER_ADMIN</option>
                             </select>
                           </td>
                           <td className="px-6 py-4 text-right flex items-center justify-end gap-2">
