@@ -31,7 +31,7 @@ import {
 } from "lucide-react";
 
 export default function DashboardPage() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [solvedCount, setSolvedCount] = useState(0);
@@ -45,8 +45,8 @@ export default function DashboardPage() {
   const isTeacherOrAdmin = user?.role === "TEACHER" || isAdmin;
 
   useEffect(() => {
-    const savedUser = localStorage.getItem("campuscode_user");
-    if (!user && !savedUser) {
+    const savedUser = typeof window !== "undefined" ? localStorage.getItem("campuscode_user") : null;
+    if (!authLoading && !user && !savedUser) {
       router.push("/");
       return;
     }
@@ -55,7 +55,7 @@ export default function DashboardPage() {
     }
     fetchLeaderboardPreview();
     fetchRealAnnouncements();
-  }, [user?.id, user?.role, user?.className]);
+  }, [user?.id, user?.role, user?.className, authLoading]);
 
   const fetchUserDashboardStats = async () => {
     if (isAdmin) {

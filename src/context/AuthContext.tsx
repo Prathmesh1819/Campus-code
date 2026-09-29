@@ -27,6 +27,7 @@ export interface User {
 interface AuthContextType {
   user: User | null;
   token: string | null;
+  loading: boolean;
   isAuthenticated: boolean;
   login: (userData: User, token: string) => void;
   logout: () => void;
@@ -45,6 +46,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const { showToast } = useToast();
@@ -62,6 +64,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           await fetchLatestUserStats(fbUser.uid, idToken);
         } catch (err) {
           console.error("Error fetching Firebase Auth token:", err);
+        } finally {
+          setLoading(false);
         }
       } else {
         setUser(null);
@@ -70,11 +74,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           localStorage.removeItem("campuscode_user");
           localStorage.removeItem("campuscode_token");
         }
+        setLoading(false);
       }
     });
 
     return () => unsubscribe();
   }, []);
+
+  // Unauthenticated Route Guard Watcher: Redirects to public home "/" if unauthenticated on protected route
+  useEffect(() => {
+    if (!loading && !user && typeof window !== "undefined") {
+      const savedUser = localStorage.getItem("campuscode_user");
+      if (!savedUser && window.location.pathname !== "/") {
+        window.location.href = "/";
+      }
+    }
+  }, [loading, user]);
 
   const fetchLatestUserStats = async (userId: string, idToken?: string) => {
     try {
@@ -138,8 +153,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
     setUser(null);
     setToken(null);
-    localStorage.removeItem("campuscode_user");
-    localStorage.removeItem("campuscode_token");
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("campuscode_user");
+      localStorage.removeItem("campuscode_token");
+      if (window.location.pathname !== "/") {
+        window.location.href = "/";
+      }
+    }
   };
 
   const updateUserAvatar = async (newAvatarUrl: string) => {
@@ -214,6 +234,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     () => ({
       user,
       token,
+      loading,
       isAuthenticated,
       login,
       logout,
@@ -226,7 +247,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       closeAuthModal,
       authMode,
     }),
-    [user, token, isAuthenticated, isAuthModalOpen, authMode]
+    [user, token, loading, isAuthenticated, isAuthModalOpen, authMode]
   );
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
