@@ -4,10 +4,10 @@ import React, { useState, useEffect, useRef } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Sidebar } from "@/components/Sidebar";
 import { useAuth } from "@/context/AuthContext";
-import { Send, Search, CheckCheck, MessageSquare, MoreVertical, Trash2 } from "lucide-react";
+import { Send, Search, CheckCheck, MessageSquare, MoreVertical, Trash2, RefreshCw } from "lucide-react";
 
 export default function MessagesPage() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [contacts, setContacts] = useState<any[]>([]);
   const [activePeer, setActivePeer] = useState<any>(null);
@@ -15,6 +15,9 @@ export default function MessagesPage() {
   const [inputMessage, setInputMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeMenuMsgId, setActiveMenuMsgId] = useState<string | null>(null);
+  const [loadingContacts, setLoadingContacts] = useState(false);
+  const [loadingMessages, setLoadingMessages] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const activePeerRef = useRef(activePeer);
   const userRef = useRef(user);
@@ -27,50 +30,93 @@ export default function MessagesPage() {
     userRef.current = user;
   }, [user]);
 
+  // Fetch contacts when user ID becomes available
   useEffect(() => {
     if (user?.id) {
       fetchContacts();
     }
   }, [user?.id]);
 
+  // Fetch conversation when user ID or active peer changes
   useEffect(() => {
     if (user?.id && activePeer?.id) {
       fetchConversation(user.id, activePeer.id);
-      localStorage.setItem(`campuscode_active_peer_${user.id}`, activePeer.id);
+      try {
+        localStorage.setItem(`campuscode_active_peer_${user.id}`, activePeer.id);
+      } catch (e) {
+        console.warn("localStorage write error:", e);
+      }
     }
   }, [user?.id, activePeer?.id]);
 
-
+  // Realtime updates polling every 4 seconds when conversation is open
+  useEffect(() => {
+    if (!user?.id || !activePeer?.id) return;
+    const interval = setInterval(() => {
+      fetchConversation(user.id, activePeer.id, true);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [user?.id, activePeer?.id]);
 
   const fetchContacts = async () => {
+    if (!user?.id) return;
+    setLoadingContacts(true);
+    setErrorMessage(null);
     try {
-      const res = await fetch(`/api/messages?userId=${user?.id}`);
+      const res = await fetch(`/api/messages?userId=${user.id}`);
+      if (!res.ok) {
+        throw new Error(`Failed to load contacts (${res.status})`);
+      }
       const data = await res.json();
-      if (data.contacts && data.contacts.length > 0) {
-        setContacts(data.contacts);
+      if (data.contacts && Array.isArray(data.contacts)) {
+        // Safe mapping to guarantee all contact fields have non-null defaults
+        const safeContacts = data.contacts.map((c: any) => ({
+          ...c,
+          name: c.name || c.full_name || c.username || c.email?.split("@")[0] || "Campus User",
+          role: (c.role || "STUDENT").toUpperCase(),
+          avatar: c.avatar || c.profile_image || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80",
+          unreadCount: c.unreadCount || 0,
+        }));
+        setContacts(safeContacts);
 
-        const savedPeerId = localStorage.getItem(`campuscode_active_peer_${user?.id}`);
-        const foundSaved = data.contacts.find((c: any) => c.id === savedPeerId);
+        let savedPeerId: string | null = null;
+        try {
+          savedPeerId = localStorage.getItem(`campuscode_active_peer_${user.id}`);
+        } catch (e) {
+          console.warn("localStorage read error:", e);
+        }
+
+        const foundSaved = safeContacts.find((c: any) => c.id === savedPeerId);
         if (foundSaved) {
           setActivePeer((prev: any) => prev || foundSaved);
-        } else {
-          setActivePeer((prev: any) => prev || data.contacts[0]);
+        } else if (safeContacts.length > 0) {
+          setActivePeer((prev: any) => prev || safeContacts[0]);
         }
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Fetch contacts error:", err);
+      setErrorMessage("Could not load contact list. Please click retry.");
+    } finally {
+      setLoadingContacts(false);
     }
   };
 
-  const fetchConversation = async (userId: string, peerId: string) => {
+  const fetchConversation = async (userId: string, peerId: string, isSilent = false) => {
+    if (!userId || !peerId) return;
+    if (!isSilent) setLoadingMessages(true);
     try {
       const res = await fetch(`/api/messages?userId=${userId}&peerId=${peerId}`);
+      if (!res.ok) {
+        throw new Error(`Failed to load conversation (${res.status})`);
+      }
       const data = await res.json();
-      if (data.messages) {
+      if (data.messages && Array.isArray(data.messages)) {
         setMessages(data.messages);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Fetch conversation error:", err);
+    } finally {
+      if (!isSilent) setLoadingMessages(false);
     }
   };
 
@@ -78,7 +124,7 @@ export default function MessagesPage() {
     e.preventDefault();
     if (!inputMessage.trim() || !activePeer || !user?.id) return;
 
-    const messageContent = inputMessage;
+    const messageContent = inputMessage.trim();
     setInputMessage("");
 
     const newMsg = {
@@ -88,6 +134,7 @@ export default function MessagesPage() {
       content: messageContent,
       readStatus: false,
       createdAt: new Date().toISOString(),
+      created_at: new Date().toISOString(),
     };
 
     // Optimistic UI update for sender
@@ -106,9 +153,13 @@ export default function MessagesPage() {
 
       if (res.ok) {
         fetchContacts();
+        fetchConversation(user.id, activePeer.id, true);
+      } else {
+        const errorData = await res.json().catch(() => ({}));
+        console.error("Send message server error:", errorData);
       }
     } catch (err: any) {
-      alert("Failed to send message: " + err.message);
+      console.error("Failed to send message:", err);
     }
   };
 
@@ -124,25 +175,41 @@ export default function MessagesPage() {
       if (res.ok) {
         setMessages((prev) => prev.filter((m) => m.id !== messageId));
         if (activePeer?.id) {
-          fetchConversation(user.id, activePeer.id);
+          fetchConversation(user.id, activePeer.id, true);
           fetchContacts();
         }
       }
     } catch (err: any) {
-      alert("Error deleting message: " + err.message);
+      console.error("Error deleting message:", err);
     }
   };
 
   const selectContact = (contact: any) => {
+    if (!contact) return;
     setActivePeer(contact);
-    if (user?.id) {
+    if (user?.id && contact?.id) {
       fetchConversation(user.id, contact.id);
     }
   };
 
-  const filteredContacts = contacts.filter((c) =>
-    c.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Safe time formatting helper to prevent invalid date runtime exceptions
+  const formatMessageTime = (rawDate: any) => {
+    if (!rawDate) return "";
+    try {
+      const d = typeof rawDate === "object" && rawDate.seconds ? new Date(rawDate.seconds * 1000) : new Date(rawDate);
+      if (isNaN(d.getTime())) return "";
+      return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    } catch {
+      return "";
+    }
+  };
+
+  // Filter contacts safely with nullish coalescing
+  const filteredContacts = contacts.filter((c) => {
+    const nameStr = (c.name || "Campus User").toLowerCase();
+    const queryStr = (searchQuery || "").toLowerCase();
+    return nameStr.includes(queryStr);
+  });
 
   return (
     <div className="min-h-screen flex flex-col bg-[#070913]">
@@ -159,6 +226,15 @@ export default function MessagesPage() {
                 <h3 className="text-base font-bold text-white flex items-center gap-2">
                   <MessageSquare className="w-4 h-4 text-purple-400" /> Direct Messages
                 </h3>
+                {user?.id && (
+                  <button
+                    onClick={fetchContacts}
+                    className="p-1 text-gray-400 hover:text-white transition-colors"
+                    title="Refresh contacts"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 ${loadingContacts ? "animate-spin" : ""}`} />
+                  </button>
+                )}
               </div>
 
               <div className="relative">
@@ -172,53 +248,70 @@ export default function MessagesPage() {
                 />
               </div>
 
+              {errorMessage && (
+                <div className="p-2.5 bg-rose-500/10 border border-rose-500/20 rounded-xl text-[11px] text-rose-300 flex items-center justify-between">
+                  <span>{errorMessage}</span>
+                  <button onClick={fetchContacts} className="underline font-semibold ml-2 text-rose-200">Retry</button>
+                </div>
+              )}
+
               <div className="space-y-1 overflow-y-auto flex-1">
-                {filteredContacts.length === 0 ? (
+                {authLoading || loadingContacts ? (
+                  <div className="text-center py-8 text-xs text-gray-500 flex items-center justify-center gap-2">
+                    <RefreshCw className="w-4 h-4 animate-spin text-purple-400" /> Loading contacts...
+                  </div>
+                ) : filteredContacts.length === 0 ? (
                   <div className="text-center py-8 text-xs text-gray-500">No contacts found</div>
                 ) : (
-                  filteredContacts.map((c) => (
-                    <button
-                      key={c.id}
-                      onClick={() => selectContact(c)}
-                      className={`w-full p-3 rounded-2xl flex items-center gap-3 transition-all text-left ${
-                        activePeer?.id === c.id
-                          ? "bg-purple-600/20 border border-purple-500/40 text-white shadow-glow"
-                          : "hover:bg-slate-900 text-gray-300"
-                      }`}
-                    >
-                      <img
-                        src={c.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80"}
-                        alt={c.name}
-                        className="w-10 h-10 rounded-xl object-cover ring-2 ring-purple-500/30 shrink-0"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between mb-0.5">
-                          <h4 className="text-xs font-bold text-white truncate flex items-center gap-1.5">
-                            <span>{c.name}</span>
-                            {c.unreadCount > 0 && (
-                              <span className="px-1.5 py-0.2 rounded-full bg-emerald-500 text-slate-950 text-[9px] font-black animate-pulse">
-                                {c.unreadCount} NEW
-                              </span>
-                            )}
-                          </h4>
-                          <span
-                            className={`text-[9px] font-black uppercase px-1.5 py-0.5 rounded ${
-                              c.role === "ADMIN" || c.role === "SUPER_ADMIN"
-                                ? "bg-rose-500/20 text-rose-300"
-                                : c.role === "TEACHER"
-                                ? "bg-amber-500/20 text-amber-300"
-                                : "bg-purple-500/20 text-purple-300"
-                            }`}
-                          >
-                            {c.role}
-                          </span>
+                  filteredContacts.map((c) => {
+                    const peerName = c.name || "Campus User";
+                    const peerRole = (c.role || "STUDENT").toUpperCase();
+                    const peerAvatar = c.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80";
+
+                    return (
+                      <button
+                        key={c.id || Math.random().toString()}
+                        onClick={() => selectContact(c)}
+                        className={`w-full p-3 rounded-2xl flex items-center gap-3 transition-all text-left ${
+                          activePeer?.id === c.id
+                            ? "bg-purple-600/20 border border-purple-500/40 text-white shadow-glow"
+                            : "hover:bg-slate-900 text-gray-300"
+                        }`}
+                      >
+                        <img
+                          src={peerAvatar}
+                          alt={peerName}
+                          className="w-10 h-10 rounded-xl object-cover ring-2 ring-purple-500/30 shrink-0"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between mb-0.5">
+                            <h4 className="text-xs font-bold text-white truncate flex items-center gap-1.5">
+                              <span>{peerName}</span>
+                              {c.unreadCount > 0 && (
+                                <span className="px-1.5 py-0.2 rounded-full bg-emerald-500 text-slate-950 text-[9px] font-black animate-pulse">
+                                  {c.unreadCount} NEW
+                                </span>
+                              )}
+                            </h4>
+                            <span
+                              className={`text-[9px] font-black uppercase px-1.5 py-0.5 rounded ${
+                                peerRole === "ADMIN" || peerRole === "SUPER_ADMIN"
+                                  ? "bg-rose-500/20 text-rose-300"
+                                  : peerRole === "TEACHER"
+                                  ? "bg-amber-500/20 text-amber-300"
+                                  : "bg-purple-500/20 text-purple-300"
+                              }`}
+                            >
+                              {peerRole}
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-gray-400 truncate">
+                            {c.lastMessageText || c.branch || c.className || "Campus User"}
+                          </p>
                         </div>
-                        <p className="text-[10px] text-gray-400 truncate">
-                          {c.lastMessageText || c.branch || "Campus User"}
-                        </p>
-                      </div>
-                    </button>
-                  ))
+                      </button>
+                    );
+                  })
                 )}
               </div>
             </div>
@@ -232,12 +325,12 @@ export default function MessagesPage() {
                     <div className="flex items-center gap-3">
                       <img
                         src={activePeer.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80"}
-                        alt={activePeer.name}
+                        alt={activePeer.name || "Campus User"}
                         className="w-10 h-10 rounded-xl object-cover ring-2 ring-purple-500/50"
                       />
                       <div>
                         <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                          <span>{activePeer.name}</span>
+                          <span>{activePeer.name || "Campus User"}</span>
                           <span
                             className={`text-[9px] font-black uppercase px-2 py-0.5 rounded ${
                               activePeer.role === "ADMIN" || activePeer.role === "SUPER_ADMIN"
@@ -247,7 +340,7 @@ export default function MessagesPage() {
                                 : "bg-purple-500/20 text-purple-300"
                             }`}
                           >
-                            {activePeer.role}
+                            {activePeer.role || "STUDENT"}
                           </span>
                         </h4>
                         <span className="text-[10px] text-emerald-400 font-semibold">• Encrypted Live Chat Channel</span>
@@ -261,20 +354,25 @@ export default function MessagesPage() {
                       End-to-End Campus Encrypted Messaging
                     </div>
 
-                    {messages.length === 0 ? (
+                    {loadingMessages ? (
+                      <div className="text-center py-16 text-xs text-gray-500 flex items-center justify-center gap-2">
+                        <RefreshCw className="w-4 h-4 animate-spin text-purple-400" /> Loading conversation...
+                      </div>
+                    ) : messages.length === 0 ? (
                       <div className="text-center py-16 text-xs text-gray-500">
-                        No previous messages with {activePeer.name}. Type below to start the conversation!
+                        No previous messages with {activePeer.name || "this user"}. Type below to start the conversation!
                       </div>
                     ) : (
                       messages.map((m) => {
                         const isMe = m.senderId === user?.id;
                         const isMenuOpen = activeMenuMsgId === m.id;
-                        const timeStr = new Date(m.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-                        const seenTimeStr = m.readAt ? new Date(m.readAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : null;
+                        const rawDate = m.createdAt || m.created_at;
+                        const timeStr = formatMessageTime(rawDate);
+                        const seenTimeStr = m.readAt ? formatMessageTime(m.readAt) : null;
 
                         return (
                           <div
-                            key={m.id}
+                            key={m.id || Math.random().toString()}
                             className={`flex items-center gap-2 group relative ${
                               isMe ? "justify-end" : "justify-start"
                             }`}
@@ -363,7 +461,7 @@ export default function MessagesPage() {
                       type="text"
                       value={inputMessage}
                       onChange={(e) => setInputMessage(e.target.value)}
-                      placeholder={`Send a direct message to ${activePeer.name}...`}
+                      placeholder={`Send a direct message to ${activePeer.name || "this user"}...`}
                       className="flex-1 bg-slate-900 border border-slate-800 rounded-xl py-2.5 px-4 text-xs text-white focus:outline-none focus:border-purple-500"
                     />
                     <button
@@ -388,3 +486,4 @@ export default function MessagesPage() {
     </div>
   );
 }
+
